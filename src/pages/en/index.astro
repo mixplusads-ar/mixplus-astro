@@ -1,9 +1,17 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
 ---
-<BaseLayout lang="en" title="MixPlus — Landing (Phase 1)">
-  <main class="mx-auto max-w-[980px] px-6 py-16">
-    <h1 class="text-3xl font-bold mb-4">Project Start — Phase 1</h1>
-    <p class="text-[var(--fg-muted)]">Skeleton and configs are ready. Minimal header & hero will come in Phase 2.</p>
+<BaseLayout lang="en" title="MixPlus — Landing (Phase 2)">
+  <Header lang="en" />
+
+  <main class="mx-auto max-w-[980px] px-6 py-28">
+    <h1 class="text-3xl font-bold mb-4">Minimal header added</h1>
+    <p class="text-[var(--fg-muted)]">Hover/click the hashtag menu and language switch. In Phase 3 we'll implement the hero section and landing blocks.</p>
+
+    <div id="products" class="mt-24"></div>
+    <div id="about" class="mt-24"></div>
+    <div id="after-sales" class="mt-24"></div>
+    <div id="dealers" class="mt-24"></div>
   </main>
 </BaseLayout>
