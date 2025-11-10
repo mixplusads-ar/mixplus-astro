@@ -3,14 +3,13 @@ const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa, en)=> isFa ? fa : en;
 ---
-
 <section class="relative h-[86vh] overflow-hidden">
-  <!-- ویدیو بدون src؛ بعداً در کلاینت ست می‌کنیم -->
   <video id="heroVideo"
          class="absolute inset-0 w-full h-full object-cover"
          autoplay muted playsinline loop
          preload="metadata"
          poster="/video/hero-01.jpg">
+    <source id="heroSrc" src="/video/hero-01.mp4" type="video/mp4" />
   </video>
 
   <div class="absolute inset-0 hero-overlay"></div>
@@ -33,32 +32,37 @@ const t = (fa, en)=> isFa ? fa : en;
   </div>
 
   <script>
-    // لیست ویدیوها + پوسترها (هر چند تا خواستی اضافه کن)
-    const vids = [
+    // ویدیوها + پوسترها
+    const list = [
       { src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
       { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
       { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' },
     ];
+
     const v = document.getElementById('heroVideo');
-    if (v && vids.length) {
-      const pick = vids[Math.floor(Math.random() * vids.length)];
+    const s = document.getElementById('heroSrc');
+
+    if (v && s && list.length) {
+      const pick = list[Math.floor(Math.random() * list.length)];
       v.poster = pick.poster;
-      v.src = pick.src;         // set src بعد از اینکه mute/playsinline روی تگ هست
-      v.muted = true;
-      v.playsInline = true;
-      v.autoplay = true;
+      s.src = pick.src;        // روی <source> بگذار
       v.load();
 
       const tryPlay = () => {
         const p = v.play?.();
-        if (p?.catch) p.catch(() => { /* اگر Autoplay بلاک شد، پوستر می‌ماند */ });
+        if (p?.catch) p.catch(()=>{/* اگر بلاک شد، پوستر می‌ماند */});
       };
+
       if (v.readyState >= 2) tryPlay();
       else v.addEventListener('canplay', tryPlay, { once: true });
 
       v.addEventListener('error', () => {
-        console.warn('Video failed to load:', pick.src);
-        // اگر خواستی: v.style.display='none';
+        // اگر این فایل مشکل داشت، یکی دیگر را امتحان کن
+        const others = list.filter(x => x.src !== pick.src);
+        if (others.length) {
+          const p2 = others[Math.floor(Math.random()*others.length)];
+          s.src = p2.src; v.poster = p2.poster; v.load(); tryPlay();
+        }
       });
     }
   </script>
