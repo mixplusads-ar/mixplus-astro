@@ -14,7 +14,7 @@ module.exports = {
         '2xl': '1rem'
       },
       fontFamily: {
-        fa: ['Kalameh', 'Vazirmatn', 'system-ui', 'sans-serif'],
+        fa: ['KalamehFaNum', 'Kalameh', 'system-ui', 'sans-serif'],
         en: ['Montserrat', 'Inter', 'system-ui', 'sans-serif']
       }
     }
