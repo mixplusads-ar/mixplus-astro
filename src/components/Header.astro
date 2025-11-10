@@ -33,16 +33,11 @@ const t = (fa, en)=> isFa ? fa : en;
           {categories.map((cat) => (
             <div>
               <a
-                href={`/${lang}/products/${cat.slug}`}
-                class="mb-2 flex items-center justify-between font-medium hover:text-brand"
-                class:list={[isFa ? 'font-fa' : 'font-en']}
-              >
-                <span>{isFa ? cat.nameFa : cat.nameEn}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M9 6l6 6-6 6" />
-                </svg>
-              </a>
-
+               <a href={`/${lang}/products/${cat.slug}`}
+   class="mb-2 block font-bold hover:text-brand"
+   class:list={[isFa ? 'font-fa' : 'font-en']}>
+  {isFa ? cat.nameFa : cat.nameEn}
+</a>
               {cat.subs && (
                 <ul class="space-y-1 text-sm text-[var(--fg-muted)]">
                   {cat.subs.map((s) => (
