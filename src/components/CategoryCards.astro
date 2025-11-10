@@ -1,0 +1,20 @@
+---
+const { lang = 'fa' } = Astro.props;
+const isFa = lang === 'fa';
+const items = [
+  { title: isFa ? 'محصولات' : 'Products',  href: `/${lang}/#products` },
+  { title: isFa ? 'رویدادها' : 'Events',    href: `/${lang}/#events` },
+  { title: isFa ? 'خدمات'   : 'Services',   href: `/${lang}/#services` },
+  { title: isFa ? 'آموزش'   : 'Academy',    href: `/${lang}/#academy` },
+];
+---
+<section class="mx-auto max-w-[1280px] px-6 pb-10">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {items.map(i => (
+      <a href={i.href}
+         class="glass rounded-2xl h-32 md:h-40 flex items-center justify-center text-center hover:text-brand transition">
+        <span class="font-medium">{i.title}</span>
+      </a>
+    ))}
+  </div>
+</section>
