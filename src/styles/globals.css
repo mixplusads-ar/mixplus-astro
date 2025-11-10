@@ -99,6 +99,22 @@ html { background: var(--bg); color: var(--fg); }
 .reveal { opacity: 0; transform: translateY(12px); transition: all 600ms ease; }
 .reveal.in { opacity: 1; transform: none; }
 
+/* header default (visible even at top) */
+/* پیش‌فرض */
+.header{
+  backdrop-filter: saturate(180%) blur(8px);
+  background: rgba(18,24,33,0.20);
+  border-bottom: 1px solid transparent;
+  transition: background .25s ease, border-color .25s ease; /* نرم‌تر */
+}
+.light .header{ background: rgba(255,255,255,0.55); }
+
+/* پس از اسکرول */
+html.scrolled .header{
+  background: var(--card);
+  border-bottom: 1px solid var(--stroke);
+}
+
 /* sticky header style after scroll */
 html.scrolled .header { background: var(--card); border-bottom: 1px solid var(--stroke); }
 
