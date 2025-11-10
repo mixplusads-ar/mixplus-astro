@@ -2,18 +2,32 @@
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa, en)=> isFa ? fa : en;
+
+// لیست ویدیوها + پوسترها (می‌تونی اضافه/کم کنی)
+const videos = [
+  { src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
+  { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
+  { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' }
+];
 ---
 <section class="relative h-[86vh] overflow-hidden">
-  <video id="heroVideo" class="absolute inset-0 w-full h-full object-cover" src="/video/hero.mp4" poster="/video/hero.jpg" autoplay muted playsinline loop></video>
+  <!-- ویدیو: منبع در کلاینت به صورت تصادفی ست می‌شود -->
+  <video id="heroVideo"
+         class="absolute inset-0 w-full h-full object-cover"
+         autoplay muted playsinline loop
+         preload="metadata"
+         poster="/video/hero-01.jpg"></video>
+
   <div class="absolute inset-0 hero-overlay"></div>
+
   <div class="relative z-10 h-full flex items-center">
     <div class="mx-auto max-w-[1280px] px-6">
       <div class="reveal max-w-2xl">
         <h1 class="text-5xl font-semibold leading-tight mb-4" class:list={[isFa?'font-fa':'font-en']}>
-          {t('لوکس و مینیمال، الهام از طراحی ایتالیایی','Minimal. Elegant. Italian‑inspired.')}
+          {t('لوکس و مینیمال، الهام از طراحی ایتالیایی','Minimal. Elegant. Italian-inspired.')}
         </h1>
         <p class="text-lg text-[var(--fg-muted)] mb-6" class:list={[isFa?'font-fa':'font-en']}>
-          {t('بیش از ۴۰ سال تجربه در تولید لوازم خانگی: سینک، اجاق، فر توکار و هود.','40+ years crafting sinks, hobs, built‑in ovens and hoods.')}
+          {t('بیش از ۴۰ سال تجربه در تولید لوازم خانگی: سینک، اجاق، فر توکار و هود.','40+ years crafting sinks, hobs, built-in ovens and hoods.')}
         </p>
         <div class="flex gap-3">
           <a href={`/${lang}/products`} class="btn btn-primary">{t('مشاهده محصولات','Browse Products')}</a>
@@ -22,9 +36,34 @@ const t = (fa, en)=> isFa ? fa : en;
       </div>
     </div>
   </div>
+
   <script>
-    // If video fails (missing), keep poster
+    // انتخاب تصادفی ویدیو در هر بار لود صفحه
+    const list = JSON.parse(JSON.stringify(Astro.raw('videos')) || '[]'); // برای Astro 100% استاتیک، به سادگی:
+    const vids = [{ src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
+                  { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
+                  { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' }];
+
     const v = document.getElementById('heroVideo');
-    v?.addEventListener('error', ()=>{ v.style.display='none'; });
+    const pick = vids[Math.floor(Math.random() * vids.length)];
+    if (v) {
+      // iOS/Safari: اول muted/playsinline باید حاضر باشند؛ بعد src را ست کن
+      v.setAttribute('poster', pick.poster);
+      v.src = pick.src;
+
+      // تلاش برای پخش خودکار (بعضی مرورگرها Promise می‌دهند)
+      const playSafe = () => {
+        const p = v.play && v.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {
+            // اگر بازم اجازه نداد، ویدیو را پنهان نکن؛ پوستر دیده می‌شود
+          });
+        }
+      };
+      // اگر متادیتا لود شد، پخش کن
+      v.addEventListener('loadedmetadata', playSafe, { once: true });
+      // در صورت خطا، ویدیو را مخفی کن تا پوستر بماند
+      v.addEventListener('error', () => { /* v.style.display='none'; */ });
+    }
   </script>
 </section>
