@@ -6,7 +6,7 @@ const t = (fa, en)=> isFa ? fa : en;
 <section class="relative h-[86vh] overflow-hidden">
   <video id="heroVideo"
          class="absolute inset-0 w-full h-full object-cover"
-         autoplay muted playsinline loop
+         autoplay muted playsinline
          preload="metadata"
          poster="/video/hero-01.jpg">
     <source id="heroSrc" src="/video/hero-01.mp4" type="video/mp4" />
@@ -40,31 +40,55 @@ const t = (fa, en)=> isFa ? fa : en;
       { src: '/video/hero-04.mp4', poster: '/video/hero-04.jpg' },
     ];
 
+   // Fisher–Yates shuffle => ترتیب جدید در هر بار لود
+    const shuffle = (arr) => {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
     const v = document.getElementById('heroVideo');
     const s = document.getElementById('heroSrc');
+    const queue = shuffle(list);
+    let idx = 0;
 
-    if (v && s && list.length) {
-      const pick = list[Math.floor(Math.random() * list.length)];
-      v.poster = pick.poster;
-      s.src = pick.src;        // روی <source> بگذار
+    const setVideo = (item) => {
+      if (!v || !s) return;
+      v.poster = item.poster;
+      s.src = item.src;
       v.load();
+    };
 
-      const tryPlay = () => {
-        const p = v.play?.();
-        if (p?.catch) p.catch(()=>{/* اگر بلاک شد، پوستر می‌ماند */});
-      };
+    const playSafe = () => {
+      const p = v.play?.();
+      if (p && p.catch) p.catch(() => {/* اگر Autoplay بلاک شد، پوستر می‌ماند */});
+    };
 
-      if (v.readyState >= 2) tryPlay();
-      else v.addEventListener('canplay', tryPlay, { once: true });
+    // شروع
+    setVideo(queue[idx]);
+    if (v.readyState >= 2) playSafe();
+    else v.addEventListener('canplay', playSafe, { once: true });
 
-      v.addEventListener('error', () => {
-        // اگر این فایل مشکل داشت، یکی دیگر را امتحان کن
-        const others = list.filter(x => x.src !== pick.src);
-        if (others.length) {
-          const p2 = others[Math.floor(Math.random()*others.length)];
-          s.src = p2.src; v.poster = p2.poster; v.load(); tryPlay();
-        }
-      });
-    }
+    // وقتی تمام شد → بعدی
+    v.addEventListener('ended', () => {
+      idx = (idx + 1) % queue.length;
+      setVideo(queue[idx]);
+      // اگر خواستی از فریم اول پوستر جدید را ببینی:
+      // v.currentTime = 0;
+      // و دوباره پخش:
+      if (v.readyState >= 2) playSafe();
+      else v.addEventListener('canplay', playSafe, { once: true });
+    });
+
+    // اگر فایل خراب بود → رد شو و بعدی
+    v.addEventListener('error', () => {
+      idx = (idx + 1) % queue.length;
+      setVideo(queue[idx]);
+      if (v.readyState >= 2) playSafe();
+      else v.addEventListener('canplay', playSafe, { once: true });
+    });
   </script>
 </section>
