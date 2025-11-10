@@ -31,33 +31,31 @@ const t = (fa, en)=> isFa ? fa : en;
       >
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((cat) => (
-            <div>
-              <a
-               <a href={`/${lang}/products/${cat.slug}`}
-   class="mb-2 block font-bold hover:text-brand"
-   class:list={[isFa ? 'font-fa' : 'font-en']}>
-  {isFa ? cat.nameFa : cat.nameEn}
-</a>
-              {cat.subs && (
-                <ul class="space-y-1 text-sm text-[var(--fg-muted)]">
-                  {cat.subs.map((s) => (
-                    <li>
-                      <a
-                        href={`/${lang}/products/${cat.slug}/${s.slug}`}
-                        class="hover:text-brand"
-                      >
-                        {isFa ? s.nameFa : s.nameEn}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+  <div>
+    <a
+      href={`/${lang}/products/${cat.slug}`}
+      class="mb-2 block font-bold hover:text-brand"
+      class:list={[isFa ? 'font-fa' : 'font-en']}
+    >
+      {isFa ? cat.nameFa : cat.nameEn}
+    </a>
+
+    {cat.subs && (
+      <ul class="mt-1 space-y-1 text-sm text-[var(--fg-muted)]">
+        {cat.subs.map((s) => (
+          <li>
+            <a
+              href={`/${lang}/products/${cat.slug}/${s.slug}`}
+              class="hover:text-brand"
+            >
+              {isFa ? s.nameFa : s.nameEn}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
   </div>
+))}
 
   <a href={`/${lang}/about`} class="btn btn-outline">{t('درباره ما','About')}</a>
   <!-- After-Sales mini mega menu -->
