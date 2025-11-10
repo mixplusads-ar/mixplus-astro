@@ -60,7 +60,62 @@ const t = (fa, en)=> isFa ? fa : en;
   </div>
 
   <a href={`/${lang}/about`} class="btn btn-outline">{t('درباره ما','About')}</a>
-  <a href={`/${lang}/after-sales`} class="btn btn-outline">{t('خدمات پس از فروش','After-Sales')}</a>
+  <!-- After-Sales mini mega menu -->
+<div class="group relative">
+  <button class="btn btn-outline">
+    {t('خدمات پس از فروش','After-Sales')}
+    <svg width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
+  </button>
+
+  <div class={`pointer-events-none absolute mt-3 ${isFa ? 'right-0' : 'left-0'}`}>
+    <div
+      class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
+             w-[360px] max-w-[90vw] rounded-2xl glass p-4 shadow-soft border"
+      style="border-color:var(--stroke)"
+      role="menu" aria-label={t('خدمات پس از فروش','After-Sales')}
+    >
+      <ul class="space-y-2 text-sm">
+        <li>
+          <a class="flex items-center justify-between rounded-xl px-3 py-2 hover:text-brand hover:bg-[var(--card)]"
+             href={`/${lang}/after-sales/complaint-process`}>
+            <span class:list={[isFa?'font-fa':'font-en']}>
+              {t('فرآیند رسیدگی به شکایات','Complaint handling process')}
+            </span>
+            <span class="h-4 w-1 rounded-full bg-brand/80"></span>
+          </a>
+        </li>
+        <li>
+          <a class="flex items-center justify-between rounded-xl px-3 py-2 hover:text-brand hover:bg-[var(--card)]"
+             href={`/${lang}/after-sales/warranty-terms`}>
+            <span class:list={[isFa?'font-fa':'font-en']}>
+              {t('شرایط گارانتی محصولات میکس‌پلاس','Warranty terms')}
+            </span>
+            <span class="h-4 w-1 rounded-full bg-brand/80"></span>
+          </a>
+        </li>
+        <li>
+          <a class="flex items-center justify-between rounded-xl px-3 py-2 hover:text-brand hover:bg-[var(--card)]"
+             href={`/${lang}/after-sales/installation-request`}>
+            <span class:list={[isFa?'font-fa':'font-en']}>
+              {t('درخواست نصب محصول','Installation request')}
+            </span>
+            <span class="h-4 w-1 rounded-full bg-brand/80"></span>
+          </a>
+        </li>
+        <li>
+          <a class="flex items-center justify-between rounded-xl px-3 py-2 hover:text-brand hover:bg-[var(--card)]"
+             href={`/${lang}/after-sales/complaint`}>
+            <span class:list={[isFa?'font-fa':'font-en']}>
+              {t('شکایت','Complaint')}
+            </span>
+            <span class="h-4 w-1 rounded-full bg-brand/80"></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
   <a href={`/${lang}/dealers`} class="btn btn-outline">{t('نمایندگی‌ها','Dealers')}</a>
 </nav>
     <div class="flex items-center gap-3">
