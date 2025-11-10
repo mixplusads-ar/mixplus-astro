@@ -1,0 +1,36 @@
+---
+import "../styles/globals.css";
+const { lang = 'fa', title = 'MixPlus', desc = 'Italian-inspired home appliances', dir = lang === 'fa' ? 'rtl' : 'ltr' } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang={lang} class="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={desc} />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="theme-color" content="#0fa99c" />
+  </head>
+  <body class={dir === 'rtl' ? 'rtl' : 'ltr'}>
+    <script>
+      // theme: prefers-color-scheme + localStorage
+      const storedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const html = document.documentElement;
+      if(storedTheme){ html.classList.toggle('light', storedTheme==='light'); html.classList.toggle('dark', storedTheme==='dark'); }
+      else { html.classList.toggle('dark', prefersDark); html.classList.toggle('light', !prefersDark); }
+    </script>
+    <a id="top" aria-hidden="true"></a>
+    <slot />
+    <script>
+      // sticky header toggle
+      const sentry = document.getElementById('top');
+      const io = new IntersectionObserver(e => { document.documentElement.classList.toggle('scrolled', !e[0].isIntersecting) });
+      io.observe(sentry);
+      // simple reveal
+      const ro = new IntersectionObserver(entries => entries.forEach(el=> el.isIntersecting && el.target.classList.add('in')), {threshold: 0.15});
+      document.querySelectorAll('.reveal').forEach(el=> ro.observe(el));
+    </script>
+  </body>
+</html>

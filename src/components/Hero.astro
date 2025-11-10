@@ -1,0 +1,30 @@
+---
+const { lang = 'fa' } = Astro.props;
+const isFa = lang === 'fa';
+const t = (fa, en)=> isFa ? fa : en;
+---
+<section class="relative h-[86vh] overflow-hidden">
+  <video id="heroVideo" class="absolute inset-0 w-full h-full object-cover" src="/video/hero.mp4" poster="/video/hero.jpg" autoplay muted playsinline loop></video>
+  <div class="absolute inset-0 hero-overlay"></div>
+  <div class="relative z-10 h-full flex items-center">
+    <div class="mx-auto max-w-[1280px] px-6">
+      <div class="reveal max-w-2xl">
+        <h1 class="text-5xl font-semibold leading-tight mb-4" class:list={[isFa?'font-fa':'font-en']}>
+          {t('لوکس و مینیمال، الهام از طراحی ایتالیایی','Minimal. Elegant. Italian‑inspired.')}
+        </h1>
+        <p class="text-lg text-[var(--fg-muted)] mb-6" class:list={[isFa?'font-fa':'font-en']}>
+          {t('بیش از ۴۰ سال تجربه در تولید لوازم خانگی: سینک، اجاق، فر توکار و هود.','40+ years crafting sinks, hobs, built‑in ovens and hoods.')}
+        </p>
+        <div class="flex gap-3">
+          <a href={`/${lang}/products`} class="btn btn-primary">{t('مشاهده محصولات','Browse Products')}</a>
+          <a href={`/${lang}/about`} class="btn btn-outline">{t('دربارهٔ میکس‌پلاس','About MixPlus')}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // If video fails (missing), keep poster
+    const v = document.getElementById('heroVideo');
+    v?.addEventListener('error', ()=>{ v.style.display='none'; });
+  </script>
+</section>

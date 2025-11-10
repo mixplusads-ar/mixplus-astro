@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Hero from '../../components/Hero.astro';
+import SectionCards from '../../components/SectionCards.astro';
+---
+<BaseLayout lang="en" title="MixPlus — Italian‑inspired Home Appliances" desc="Sinks, hobs, hoods, built‑in ovens — products and after‑sales">
+  <Header lang="en" />
+  <main>
+    <Hero lang="en" />
+    <section class="py-20">
+      <div class="mx-auto max-w-[1280px] px-6">
+        <div class="reveal grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h2 class="text-3xl font-semibold mb-3 font-en">Large‑scale manufacturing</h2>
+            <p class="text-[var(--fg-muted)] font-en">A minimal glimpse of our factory, capacity and quality control.</p>
+          </div>
+          <div class="aspect-video rounded-2xl overflow-hidden border" style="border-color:var(--stroke)">
+            <video src="/video/hero.mp4" autoplay muted playsinline loop class="w-full h-full object-cover"></video>
+          </div>
+        </div>
+      </div>
+    </section>
+    <SectionCards lang="en" />
+  </main>
+  <footer class="border-t" style="border-color:var(--stroke)">
+    <div class="mx-auto max-w-[1280px] px-6 py-10 text-sm text-[var(--fg-muted)] font-en">
+      <div class="mb-3">© {new Date().getFullYear()} MixPlus. All rights reserved.</div>
+      <div>Contact/address info to be updated after your confirmation.</div>
+    </div>
+  </footer>
+</BaseLayout>

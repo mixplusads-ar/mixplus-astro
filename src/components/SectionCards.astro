@@ -1,0 +1,24 @@
+---
+const { lang='fa' } = Astro.props;
+const isFa = lang==='fa';
+const t = (fa, en)=> isFa?fa:en;
+const items = [
+  { slug: 'products', titleFa:'محصولات', titleEn:'Products', descFa:'کاتالوگ کامل چهار دستهٔ اصلی', descEn:'All four main categories', href:`/${lang}/products` },
+  { slug: 'events', titleFa:'رویدادها', titleEn:'Events', descFa:'شرکت در نمایشگاه‌ها و تازه‌ها', descEn:'Exhibitions & updates', href:`/${lang}/events` },
+  { slug: 'services', titleFa:'خدمات', titleEn:'Services', descFa:'گارانتی و خدمات پس از فروش', descEn:'Warranty & after‑sales', href:`/${lang}/after-sales` },
+  { slug: 'academy', titleFa:'آموزش', titleEn:'Academy', descFa:'راهنماها و آموزش‌های نصب/نگهداری', descEn:'Guides & know‑how', href:`/${lang}/academy` }
+];
+---
+<section class="py-20">
+  <div class="mx-auto max-w-[1280px] px-6">
+    <div class="grid grid-cols-4 gap-6">
+      {items.map(it=> (
+        <a href={it.href} class="reveal block rounded-2xl p-6 border shadow-soft hover:shadow-lg transition-all" style="border-color:var(--stroke); background:var(--card)">
+          <div class="mb-3 h-10 w-10 rounded-xl" style="background-image: linear-gradient(135deg,#0fa99c,#13c1b2);"></div>
+          <div class="mb-1 text-lg font-semibold" class:list={[isFa?'font-fa':'font-en']}>{isFa?it.titleFa:it.titleEn}</div>
+          <div class="text-sm text-[var(--fg-muted)]" class:list={[isFa?'font-fa':'font-en']}>{isFa?it.descFa:it.descEn}</div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
