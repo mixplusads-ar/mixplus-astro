@@ -1,18 +1,28 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
+import Hero from '@/components/Hero.astro';
+import SectionTitle from '@/components/SectionTitle.astro';
+import CategoryCards from '@/components/CategoryCards.astro';
 ---
-<BaseLayout lang="fa" title="میکس‌پلاس — لندینگ (فاز ۲)">
+<BaseLayout lang="fa" title="میکس‌پلاس — لندینگ">
   <Header lang="fa" />
 
-  <main class="mx-auto max-w-[980px] px-6 py-28">
-    <h1 class="text-3xl font-bold mb-4">هدر مینیمال اضافه شد</h1>
-    <p class="text-[var(--fg-muted)]">برای تست، روی دکمه‌ها و منوی هشتگ هاور/کلیک کن. در فاز ۳ سکشن هیرو و بخش‌های لندینگ را می‌چینیم.</p>
+  <!-- هیرو با ویدیوهای رندوم -->
+  <Hero lang="fa" />
 
-    <!-- لنگرها برای لینک‌های هدر تا 404 نگیری -->
-    <div id="products" class="mt-24"></div>
-    <div id="about" class="mt-24"></div>
-    <div id="after-sales" class="mt-24"></div>
-    <div id="dealers" class="mt-24"></div>
-  </main>
+  <!-- بلوک‌های بعد از هیرو -->
+  <SectionTitle lang="fa"
+    title="یک تایتل زیبا برای یک متن خوب"
+    subtitle="یک متن کوتاه معرفی می‌آید. این بلوک بالای گرید ۴لینکی قرار می‌گیرد." />
+  <CategoryCards lang="fa" />
+
+  <!-- لنگرها (برای لینک‌های هدر تا 404 نگیری) -->
+  <div id="products"></div>
+  <div id="about" class="mt-24"></div>
+  <div id="after-sales" class="mt-24"></div>
+  <div id="dealers" class="mt-24"></div>
+  <div id="events" class="mt-24"></div>
+  <div id="services" class="mt-24"></div>
+  <div id="academy" class="mt-24"></div>
 </BaseLayout>
