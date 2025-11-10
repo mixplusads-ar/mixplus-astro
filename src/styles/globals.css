@@ -2,11 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fonts */
+/* Kalameh (FA) */
 @font-face {
   font-family: 'Kalameh';
-  src: url('/fonts/kalameh.woff2') format('woff2');
-  font-weight: 100 900;
+  src: url('/fonts/KALAMEH-THIN.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kalameh';
+  src: url('/fonts/KALAMEH-REGULAR.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kalameh';
+  src: url('/fonts/KALAMEH-BOLD.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kalameh';
+  src: url('/fonts/KALAMEH-BLACK.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Kalameh FaNum (برای اعداد فارسی) */
+@font-face {
+  font-family: 'KalamehFaNum';
+  src: url('/fonts/KALAMEHFANUM-THIN.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KalamehFaNum';
+  src: url('/fonts/KALAMEHFANUM-REGULAR.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KalamehFaNum';
+  src: url('/fonts/KALAMEHFANUM-BOLD.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'KalamehFaNum';
+  src: url('/fonts/KALAMEHFANUM-BLACK.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
   font-display: swap;
 }
 
