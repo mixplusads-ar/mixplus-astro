@@ -7,7 +7,8 @@ const t = (fa, en)=> isFa ? fa : en;
 const videos = [
   { src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
   { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
-  { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' }
+  { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' },
+  { src: '/video/hero-03.mp4', poster: '/video/hero-04.jpg' }
 ];
 ---
 <section class="relative h-[86vh] overflow-hidden">
@@ -42,7 +43,8 @@ const videos = [
     const list = JSON.parse(JSON.stringify(Astro.raw('videos')) || '[]'); // برای Astro 100% استاتیک، به سادگی:
     const vids = [{ src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
                   { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
-                  { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' }];
+                  { src: '/video/hero-02.mp4', poster: '/video/hero-03.jpg' },
+                  { src: '/video/hero-03.mp4', poster: '/video/hero-04.jpg' }];
 
     const v = document.getElementById('heroVideo');
     const pick = vids[Math.floor(Math.random() * vids.length)];
