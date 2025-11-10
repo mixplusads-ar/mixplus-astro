@@ -6,12 +6,13 @@ const t = (fa, en)=> isFa ? fa : en;
 ---
 <header class="header fixed top-0 inset-x-0 z-50 transition-all">
   <div class="relative mx-auto max-w-[1280px] px-6 py-3 flex items-center gap-6 justify-between">
-    <a href={isFa?'/fa/':'/en/'} class="flex items-center gap-3">
-  <picture>
-    <source srcset="/img/logo.svg" media="(prefers-color-scheme: light)" />
-    <img src="/img/logo-dark.svg" alt="MixPlus" width="32" height="32" class="w-8 h-8" loading="eager" decoding="async" />
-  </picture>
-  <span class="font-semibold tracking-wide" class:list={[isFa?'font-fa':'font-en']}>MixPlus</span>
+   <a href={isFa?'/fa/':'/en/'} class="flex items-center gap-3">
+  <!-- Light theme -->
+  <img src="/img/logo.svg" alt="MixPlus" width="64" height="64"
+       class="w-16 h-16 block dark:hidden" loading="eager" decoding="async" />
+  <!-- Dark theme -->
+  <img src="/img/logo-dark.svg" alt="MixPlus" width="64" height="64"
+       class="w-16 h-16 hidden dark:block" loading="eager" decoding="async" />
 </a>
     <nav class="hidden md:flex items-center gap-5" role="navigation" aria-label="main">
   <div class="group relative">
