@@ -1,36 +1,39 @@
 ---
-import "../styles/globals.css";
-const { lang = 'fa', title = 'MixPlus', desc = 'Italian-inspired home appliances', dir = lang === 'fa' ? 'rtl' : 'ltr' } = Astro.props;
+import "@/styles/globals.css";
+const { lang = 'fa', title = 'MixPlus' } = Astro.props;
+const isFa = lang === 'fa';
 ---
-<!DOCTYPE html>
-<html lang={lang} class="light">
+<!doctype html>
+<html lang={isFa ? 'fa' : 'en'} class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta name="description" content={desc} />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="theme-color" content="#0fa99c" />
+
+    <!-- پیش‌بارگذاری فونت‌ها (بعداً فایل‌ها را می‌گذاری) -->
+    <link rel="preload" href="/fonts/KALAMEHFANUM-REGULAR.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/KALAMEH-REGULAR.woff2" as="font" type="font/woff2" crossorigin>
   </head>
-  <body class={dir === 'rtl' ? 'rtl' : 'ltr'}>
-    <script>
-      // theme: prefers-color-scheme + localStorage
-      const storedTheme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const html = document.documentElement;
-      if(storedTheme){ html.classList.toggle('light', storedTheme==='light'); html.classList.toggle('dark', storedTheme==='dark'); }
-      else { html.classList.toggle('dark', prefersDark); html.classList.toggle('light', !prefersDark); }
-    </script>
-    <a id="top" aria-hidden="true"></a>
+
+  <body class={isFa ? 'rtl font-fa' : 'ltr font-en'}>
     <slot />
+
     <script>
-      // sticky header toggle
-      const sentry = document.getElementById('top');
-      const io = new IntersectionObserver(e => { document.documentElement.classList.toggle('scrolled', !e[0].isIntersecting) });
-      io.observe(sentry);
-      // simple reveal
-      const ro = new IntersectionObserver(entries => entries.forEach(el=> el.isIntersecting && el.target.classList.add('in')), {threshold: 0.15});
-      document.querySelectorAll('.reveal').forEach(el=> ro.observe(el));
+      // تم از localStorage
+      const html = document.documentElement;
+      const pref = localStorage.getItem('mix_theme');
+      if (pref === 'light') { html.classList.add('light'); html.classList.remove('dark'); }
+      else { html.classList.add('dark'); html.classList.remove('light'); }
+
+      // وضعیت اسکرول برای هدر شفاف
+      const onScroll = () => { if (window.scrollY > 8) html.classList.add('scrolled'); else html.classList.remove('scrolled'); };
+      onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+
+      // انیمیشن سادهٔ نمایش عناصر .reveal
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+      }, { threshold: .2 });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
     </script>
   </body>
 </html>
