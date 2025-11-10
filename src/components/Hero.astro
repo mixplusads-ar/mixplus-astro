@@ -1,94 +1,99 @@
 ---
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
-const t = (fa, en)=> isFa ? fa : en;
+const t = (fa: string, en: string) => (isFa ? fa : en);
 ---
-<section class="relative h-[86vh] overflow-hidden">
-  <video id="heroVideo"
-         class="absolute inset-0 w-full h-full object-cover"
-         autoplay muted playsinline
-         preload="metadata"
-         poster="/video/hero-01.jpg">
+
+<section class="relative h-[92vh] overflow-hidden">
+  <!-- ویدیو -->
+  <video
+    id="heroVideo"
+    class="absolute inset-0 w-full h-full object-cover"
+    autoplay
+    muted
+    playsinline
+    preload="metadata"
+    poster="/video/hero-01.jpg"
+  >
     <source id="heroSrc" src="/video/hero-01.mp4" type="video/mp4" />
   </video>
 
+  <!-- اوورلی گرادیانی (رنگ با تم هماهنگ) -->
   <div class="absolute inset-0 hero-overlay"></div>
 
+  <!-- متن و CTA ها -->
   <div class="relative z-10 h-full flex items-center">
     <div class="mx-auto max-w-[1280px] px-6">
       <div class="reveal max-w-2xl">
-        <h1 class="text-5xl font-semibold leading-tight mb-4" class:list={[isFa?'font-fa':'font-en']}>
-          {t('لوکس و مینیمال، الهام از طراحی ایتالیایی','Minimal. Elegant. Italian-inspired.')}
+        <h1 class="text-5xl md:text-6xl font-bold mb-4">
+          {t('لوکس و مینیمال، الهام از طراحی ایتالیایی', 'Minimal. Elegant. Italian-inspired.')}
         </h1>
-        <p class="text-lg text-[var(--fg-muted)] mb-6" class:list={[isFa?'font-fa':'font-en']}>
-          {t('بیش از ۴۰ سال تجربه در تولید لوازم خانگی: سینک، اجاق، فر توکار و هود.','40+ years crafting sinks, hobs, built-in ovens and hoods.')}
+        <p class="text-lg text-[var(--fg-muted)] mb-6">
+          {t('بیش از ۴۰ سال تجربه در تولید لوازم خانگی: سینک، اجاق، فر توکار و هود.',
+             '40+ years crafting sinks, hobs, built-in ovens, and hoods.')}
         </p>
         <div class="flex gap-3">
-          <a href={`/${lang}/products`} class="btn btn-primary">{t('مشاهده محصولات','Browse Products')}</a>
-          <a href={`/${lang}/about`} class="btn btn-outline">{t('دربارهٔ میکس‌پلاس','About MixPlus')}</a>
+          <a href={`/${lang}/#products`} class="btn btn-primary">
+            {t('مشاهده محصولات','Browse Products')}
+          </a>
+          <a href={`/${lang}/#about`} class="btn btn-outline">
+            {t('دربارهٔ میکس‌پلاس','About MixPlus')}
+          </a>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- فلش اسکرول به پایین -->
+  <button id="downArrow"
+          class="arrow-hint absolute z-10 bottom-6 left-1/2 -translate-x-1/2 chip px-3 py-2"
+          aria-label={t('اسکرول به پایین','Scroll down')}>
+    <img src="/icons/arrow-down.svg" alt="" class="w-5 h-5" />
+  </button>
+
   <script>
-    // ویدیوها + پوسترها
+    // لیست ویدیوها (با پوسترها). فایل‌ها را در /public/video قرار بده.
     const list = [
       { src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
       { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
       { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' },
-      { src: '/video/hero-04.mp4', poster: '/video/hero-04.jpg' },
     ];
 
-   // Fisher–Yates shuffle => ترتیب جدید در هر بار لود
-    const shuffle = (arr) => {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
+    // شافل برای شروع هر رفرش → ترتیب جدید
+    const shuffle = (a) => {
+      const b = a.slice();
+      for (let i = b.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
+        [b[i], b[j]] = [b[j], b[i]];
       }
-      return a;
+      return b;
     };
 
     const v = document.getElementById('heroVideo');
     const s = document.getElementById('heroSrc');
-    const queue = shuffle(list);
+    const q = shuffle(list);
     let idx = 0;
 
-    const setVideo = (item) => {
-      if (!v || !s) return;
-      v.poster = item.poster;
-      s.src = item.src;
-      v.load();
-    };
+    const setVideo = (item) => { v.poster = item.poster; s.src = item.src; v.load(); };
+    const playSafe = () => { const p = v.play?.(); if (p?.catch) p.catch(()=>{}); };
 
-    const playSafe = () => {
-      const p = v.play?.();
-      if (p && p.catch) p.catch(() => {/* اگر Autoplay بلاک شد، پوستر می‌ماند */});
-    };
-
-    // شروع
-    setVideo(queue[idx]);
+    setVideo(q[idx]);
     if (v.readyState >= 2) playSafe();
     else v.addEventListener('canplay', playSafe, { once: true });
 
-    // وقتی تمام شد → بعدی
-    v.addEventListener('ended', () => {
-      idx = (idx + 1) % queue.length;
-      setVideo(queue[idx]);
-      // اگر خواستی از فریم اول پوستر جدید را ببینی:
-      // v.currentTime = 0;
-      // و دوباره پخش:
+    // بعد از تمام شدن، به ویدیوی بعدی برو (بدون loop همان ویدیو)
+    const next = () => {
+      idx = (idx + 1) % q.length;
+      setVideo(q[idx]);
       if (v.readyState >= 2) playSafe();
       else v.addEventListener('canplay', playSafe, { once: true });
-    });
+    };
+    v.addEventListener('ended', next);
+    v.addEventListener('error', next);
 
-    // اگر فایل خراب بود → رد شو و بعدی
-    v.addEventListener('error', () => {
-      idx = (idx + 1) % queue.length;
-      setVideo(queue[idx]);
-      if (v.readyState >= 2) playSafe();
-      else v.addEventListener('canplay', playSafe, { once: true });
+    // فلش اسکرول: یک viewport پایین‌تر
+    document.getElementById('downArrow')?.addEventListener('click', () => {
+      window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     });
   </script>
 </section>
