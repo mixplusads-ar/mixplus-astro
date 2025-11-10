@@ -2,22 +2,16 @@
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa, en)=> isFa ? fa : en;
-
-// لیست ویدیوها + پوسترها (می‌تونی اضافه/کم کنی)
-const videos = [
-  { src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
-  { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
-  { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' },
-  { src: '/video/hero-03.mp4', poster: '/video/hero-04.jpg' }
-];
 ---
+
 <section class="relative h-[86vh] overflow-hidden">
-  <!-- ویدیو: منبع در کلاینت به صورت تصادفی ست می‌شود -->
+  <!-- ویدیو بدون src؛ بعداً در کلاینت ست می‌کنیم -->
   <video id="heroVideo"
          class="absolute inset-0 w-full h-full object-cover"
          autoplay muted playsinline loop
          preload="metadata"
-         poster="/video/hero-01.jpg"></video>
+         poster="/video/hero-01.jpg">
+  </video>
 
   <div class="absolute inset-0 hero-overlay"></div>
 
@@ -39,33 +33,33 @@ const videos = [
   </div>
 
   <script>
-    // انتخاب تصادفی ویدیو در هر بار لود صفحه
-    const list = JSON.parse(JSON.stringify(Astro.raw('videos')) || '[]'); // برای Astro 100% استاتیک، به سادگی:
-    const vids = [{ src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
-                  { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
-                  { src: '/video/hero-02.mp4', poster: '/video/hero-03.jpg' },
-                  { src: '/video/hero-03.mp4', poster: '/video/hero-04.jpg' }];
-
+    // لیست ویدیوها + پوسترها (هر چند تا خواستی اضافه کن)
+    const vids = [
+      { src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
+      { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
+      { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' },
+    ];
     const v = document.getElementById('heroVideo');
-    const pick = vids[Math.floor(Math.random() * vids.length)];
-    if (v) {
-      // iOS/Safari: اول muted/playsinline باید حاضر باشند؛ بعد src را ست کن
-      v.setAttribute('poster', pick.poster);
-      v.src = pick.src;
+    if (v && vids.length) {
+      const pick = vids[Math.floor(Math.random() * vids.length)];
+      v.poster = pick.poster;
+      v.src = pick.src;         // set src بعد از اینکه mute/playsinline روی تگ هست
+      v.muted = true;
+      v.playsInline = true;
+      v.autoplay = true;
+      v.load();
 
-      // تلاش برای پخش خودکار (بعضی مرورگرها Promise می‌دهند)
-      const playSafe = () => {
-        const p = v.play && v.play();
-        if (p && typeof p.catch === 'function') {
-          p.catch(() => {
-            // اگر بازم اجازه نداد، ویدیو را پنهان نکن؛ پوستر دیده می‌شود
-          });
-        }
+      const tryPlay = () => {
+        const p = v.play?.();
+        if (p?.catch) p.catch(() => { /* اگر Autoplay بلاک شد، پوستر می‌ماند */ });
       };
-      // اگر متادیتا لود شد، پخش کن
-      v.addEventListener('loadedmetadata', playSafe, { once: true });
-      // در صورت خطا، ویدیو را مخفی کن تا پوستر بماند
-      v.addEventListener('error', () => { /* v.style.display='none'; */ });
+      if (v.readyState >= 2) tryPlay();
+      else v.addEventListener('canplay', tryPlay, { once: true });
+
+      v.addEventListener('error', () => {
+        console.warn('Video failed to load:', pick.src);
+        // اگر خواستی: v.style.display='none';
+      });
     }
   </script>
 </section>
