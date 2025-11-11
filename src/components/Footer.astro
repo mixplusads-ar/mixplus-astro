@@ -1,57 +1,71 @@
 ---
+import { site } from '@/data/site';
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa: string, en: string) => (isFa ? fa : en);
+const year = new Date().getFullYear();
 
-const linksLeft = [
+const linksPrimary = [
   { href: `/${lang}/#products`,  fa: 'محصولات',           en: 'Products' },
   { href: `/${lang}/dealers`,    fa: 'نمایندگی‌های مجاز', en: 'Authorized Dealers' },
   { href: `/${lang}/after-sales`,fa: 'خدمات پس از فروش',  en: 'After-Sales' },
   { href: `/${lang}/about`,      fa: 'درباره ما',         en: 'About' },
 ];
 
-const linksRight = [
+const linksSecondary = [
   { href: `/${lang}/#events`,   fa: 'رویدادها', en: 'Events' },
   { href: `/${lang}/#services`, fa: 'خدمات',   en: 'Services' },
   { href: `/${lang}/#academy`,  fa: 'آموزش',   en: 'Academy' },
 ];
-const year = new Date().getFullYear();
 ---
-<footer class="mt-12 border-t" style="border-color:var(--stroke);">
-  <div class="mx-auto max-w-[1280px] px-6 py-10 grid md:grid-cols-2 gap-8">
-    <div class="space-y-4">
-      <div class="flex items-center gap-3">
+<footer class="mt-12 border-t" style="border-color:var(--stroke);" aria-labelledby="footerTitle">
+  <div class="mx-auto max-w-[1280px] px-6 py-10 grid md:grid-cols-3 gap-10">
+    <!-- برند و تماس -->
+    <section aria-label={t('اطلاعات تماس','Contact')}>
+      <h2 id="footerTitle" class="sr-only">Footer</h2>
+      <div class="flex items-center gap-3 mb-4">
         <img src="/img/logo-black.svg" class="w-10 h-10 block dark:hidden" alt="MixPlus" />
         <img src="/img/logo-white.svg" class="w-10 h-10 hidden dark:block" alt="MixPlus" />
         <strong>MixPlus</strong>
       </div>
-      <ul class="space-y-2 text-sm">
-        {linksLeft.map(l => (
-          <li><a class="hover:text-brand" href={l.href}>{t(l.fa, l.en)}</a></li>
-        ))}
-      </ul>
-    </div>
-
-    <div class="space-y-4">
-      <div class="text-sm">{t('لینک‌های سریع','Quick links')}</div>
-      <ul class="space-y-2 text-sm">
-        {linksRight.map(l => (
-          <li><a class="hover:text-brand" href={l.href}>{t(l.fa, l.en)}</a></li>
-        ))}
-      </ul>
-
-      <div class="pt-4">
+      <div class="text-sm space-y-2">
+        <div><strong>{t('آدرس:','Address:')}</strong> {isFa ? site.addressFa : site.addressEn}</div>
+        <div><strong>{t('تلفن:','Phone:')}</strong> <a class="hover:text-brand" href={`tel:${site.phone}`}>{site.phone}</a></div>
+        <div><strong>Email:</strong> <a class="hover:text-brand" href={`mailto:${site.email}`}>{site.email}</a></div>
+        <div><strong>{t('ساعات:','Hours:')}</strong> {isFa ? site.hoursFa : site.hoursEn}</div>
+      </div>
+      <div class="mt-5">
         <div class="social-circles">
-          <a class="social-circle" href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-          <a class="social-circle" href="https://www.aparat.com" target="_blank" rel="noreferrer">Aparat</a>
-          <a class="social-circle" href="https://youtube.com" target="_blank" rel="noreferrer">YouTube</a>
-          <a class="social-circle" href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a class="social-circle" href={site.socials.instagram} target="_blank" rel="noreferrer">Instagram</a>
+          <a class="social-circle" href={site.socials.aparat} target="_blank" rel="noreferrer">Aparat</a>
+          <a class="social-circle" href={site.socials.youtube} target="_blank" rel="noreferrer">YouTube</a>
+          <a class="social-circle" href={site.socials.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- لینک‌ها -->
+    <nav aria-label="Site">
+      <div class="text-sm mb-3">{t('لینک‌های اصلی','Primary links')}</div>
+      <ul class="space-y-2 text-sm">
+        {linksPrimary.map(l => (<li><a class="hover:text-brand" href={l.href}>{t(l.fa, l.en)}</a></li>))}
+      </ul>
+    </nav>
+
+    <nav aria-label="Quick">
+      <div class="text-sm mb-3">{t('لینک‌های سریع','Quick links')}</div>
+      <ul class="space-y-2 text-sm">
+        {linksSecondary.map(l => (<li><a class="hover:text-brand" href={l.href}>{t(l.fa, l.en)}</a></li>))}
+      </ul>
+      <div class="mt-6 space-x-3 space-x-reverse">
+        <a class="btn btn-outline" href={isFa ? site.catalogFa : site.catalogEn} download>
+          {t('دانلود کاتالوگ','Download Catalog')}
+        </a>
+      </div>
+    </nav>
   </div>
 
   <div class="text-center text-xs py-5 text-[var(--fg-muted)]">
-    © {year} MixPlus. {t('کلیه حقوق محفوظ است.','All rights reserved.') }
+    © {year} {site.copyrightHolder}. {t('کلیه حقوق محفوظ است.','All rights reserved.') }
   </div>
 </footer>
