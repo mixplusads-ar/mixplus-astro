@@ -5,23 +5,13 @@ const t = (fa: string, en: string) => (isFa ? fa : en);
 ---
 
 <section class="relative h-[92vh] overflow-hidden">
-  <!-- ویدیو -->
-  <video
-    id="heroVideo"
-    class="absolute inset-0 w-full h-full object-cover"
-    autoplay
-    muted
-    playsinline
-    preload="metadata"
-    poster="/video/hero-01.jpg"
-  >
+  <video id="heroVideo" class="absolute inset-0 w-full h-full object-cover"
+         autoplay muted playsinline preload="metadata" poster="/video/hero-01.jpg">
     <source id="heroSrc" src="/video/hero-01.mp4" type="video/mp4" />
   </video>
 
-  <!-- اوورلی گرادیانی (رنگ با تم هماهنگ) -->
   <div class="absolute inset-0 hero-overlay"></div>
 
-  <!-- متن و CTA ها -->
   <div class="relative z-10 h-full flex items-center">
     <div class="mx-auto max-w-[1280px] px-6">
       <div class="reveal max-w-2xl">
@@ -33,67 +23,31 @@ const t = (fa: string, en: string) => (isFa ? fa : en);
              '40+ years crafting sinks, hobs, built-in ovens, and hoods.')}
         </p>
         <div class="flex gap-3">
-          <a href={`/${lang}/#products`} class="btn btn-primary">
-            {t('مشاهده محصولات','Browse Products')}
-          </a>
-          <a href={`/${lang}/#about`} class="btn btn-outline">
-            {t('دربارهٔ میکس‌پلاس','About MixPlus')}
-          </a>
+          <a href={`/${lang}/#products`} class="btn btn-primary">{t('مشاهده محصولات','Browse Products')}</a>
+          <a href={`/${lang}/#about`} class="btn btn-outline">{t('دربارهٔ میکس‌پلاس','About MixPlus')}</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- فلش اسکرول به پایین -->
-  <button id="downArrow"
-          class="arrow-hint absolute z-10 bottom-6 left-1/2 -translate-x-1/2 chip px-3 py-2"
-          aria-label={t('اسکرول به پایین','Scroll down')}>
+  <button id="downArrow" class="arrow-hint absolute z-10 bottom-6 left-1/2 -translate-x-1/2 chip px-3 py-2" aria-label="scroll down">
     <img src="/icons/arrow-down.svg" alt="" class="w-5 h-5" />
   </button>
 
   <script>
-    // لیست ویدیوها (با پوسترها). فایل‌ها را در /public/video قرار بده.
     const list = [
       { src: '/video/hero-01.mp4', poster: '/video/hero-01.jpg' },
       { src: '/video/hero-02.mp4', poster: '/video/hero-02.jpg' },
       { src: '/video/hero-03.mp4', poster: '/video/hero-03.jpg' },
+      { src: '/video/hero-04.mp4', poster: '/video/hero-04.jpg' },
     ];
-
-    // شافل برای شروع هر رفرش → ترتیب جدید
-    const shuffle = (a) => {
-      const b = a.slice();
-      for (let i = b.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [b[i], b[j]] = [b[j], b[i]];
-      }
-      return b;
-    };
-
-    const v = document.getElementById('heroVideo');
-    const s = document.getElementById('heroSrc');
-    const q = shuffle(list);
-    let idx = 0;
-
-    const setVideo = (item) => { v.poster = item.poster; s.src = item.src; v.load(); };
-    const playSafe = () => { const p = v.play?.(); if (p?.catch) p.catch(()=>{}); };
-
-    setVideo(q[idx]);
-    if (v.readyState >= 2) playSafe();
-    else v.addEventListener('canplay', playSafe, { once: true });
-
-    // بعد از تمام شدن، به ویدیوی بعدی برو (بدون loop همان ویدیو)
-    const next = () => {
-      idx = (idx + 1) % q.length;
-      setVideo(q[idx]);
-      if (v.readyState >= 2) playSafe();
-      else v.addEventListener('canplay', playSafe, { once: true });
-    };
-    v.addEventListener('ended', next);
-    v.addEventListener('error', next);
-
-    // فلش اسکرول: یک viewport پایین‌تر
-    document.getElementById('downArrow')?.addEventListener('click', () => {
-      window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
-    });
+    const shuffle = (a) => { const b = a.slice(); for (let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]];} return b; };
+    const v = document.getElementById('heroVideo'); const s = document.getElementById('heroSrc'); const q = shuffle(list); let idx = 0;
+    const setVideo = (item) => { v.poster=item.poster; s.src=item.src; v.load(); };
+    const playSafe = () => { const p=v.play?.(); if (p?.catch) p.catch(()=>{}); };
+    setVideo(q[idx]); if (v.readyState>=2) playSafe(); else v.addEventListener('canplay', playSafe, { once:true });
+    const next = () => { idx=(idx+1)%q.length; setVideo(q[idx]); if (v.readyState>=2) playSafe(); else v.addEventListener('canplay', playSafe, { once:true }); };
+    v.addEventListener('ended', next); v.addEventListener('error', next);
+    document.getElementById('downArrow')?.addEventListener('click', ()=>{ window.scrollTo({ top: window.innerHeight, behavior:'smooth' }); });
   </script>
 </section>
