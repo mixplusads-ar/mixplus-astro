@@ -3,13 +3,29 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Hero from '@/components/Hero.astro';
 import SectionTitle from '@/components/SectionTitle.astro';
-import CategoryCards from '@/components/CategoryCards.astro';
+import QuickLinksRow from '@/components/QuickLinksRow.astro';
+import FactoryFeature from '@/components/FactoryFeature.astro';
+import SocialRow from '@/components/SocialRow.astro';
+import Footer from '@/components/Footer.astro';
 ---
 <BaseLayout lang="fa" title="میکس‌پلاس — لندینگ">
   <Header lang="fa" />
+  <Hero lang="fa" />
+
+  <SectionTitle lang="fa" title="یک تایتل زیبا برای یک متن خوب"
+    subtitle="یک متن کوتاه معرفی می‌آید. این بلوک بالای ۴ لینکِ سریع قرار می‌گیرد." />
+  <QuickLinksRow lang="fa" />
 
   <!-- هیرو با ویدیوهای رندوم -->
   <Hero lang="fa" />
+
+  <!-- بنرهای فول‌بلید را بعداً برمی‌گردیم -->
+
+  <FactoryFeature lang="fa" video="/video/factory.mp4" poster="/img/placeholder-1920x900.jpg" />
+
+  <SocialRow lang="fa" />
+  <Footer lang="fa" />
+</BaseLayout>
 
   <!-- بلوک‌های بعد از هیرو -->
   <SectionTitle lang="fa"
