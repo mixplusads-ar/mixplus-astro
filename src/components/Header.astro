@@ -1,51 +1,56 @@
 ---
-/* categories را طوری ایمپورت کنیم که چه named باشد چه default، کار کند */
+/* ============== Imports & helpers ============== */
 import * as Cats from '@/data/categories';
 const categories = (Cats as any).categories ?? (Cats as any).default ?? [];
 
-/* اسکریپت UX به‌صورت آدرس فایل باندل‌شده (جای Astro.resolve) */
 import uxUrl from '@/scripts/ux.ts?url';
 
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa: string, en: string) => (isFa ? fa : en);
+const htmlLang = isFa ? 'fa' : 'en';
+const dir = isFa ? 'rtl' : 'ltr';
 const otherLang = isFa ? 'en' : 'fa';
 
-/* ✅ afterSales را همین‌جا تعریف کن تا در همه صفحات از جمله 404 در دسترس باشد */
+/** منو خدمات پس از فروش */
 const afterSales = [
-  { nameFa: 'فرآیند رسیدگی به شکایات', nameEn: 'Complaint Process', slug: 'complaint-process' },
-  { nameFa: 'شرایط گارانتی محصولات میکس‌پلاس', nameEn: 'Warranty Terms', slug: 'warranty-terms' },
-  { nameFa: 'درخواست نصب محصول', nameEn: 'Installation Request', slug: 'installation-request' },
-  { nameFa: 'شکایت', nameEn: 'Complaint', slug: 'complaint' },
+  { nameFa: 'فرآیند رسیدگی به شکایات',        nameEn: 'Complaint Process',    slug: 'complaint-process' },
+  { nameFa: 'شرایط گارانتی محصولات میکس‌پلاس', nameEn: 'Warranty Terms',       slug: 'warranty-terms' },
+  { nameFa: 'درخواست نصب محصول',               nameEn: 'Installation Request', slug: 'installation-request' },
+  { nameFa: 'شکایت',                           nameEn: 'Complaint',            slug: 'complaint' },
 ];
 
-/* اگر لینک کاتالوگ را هم نیاز داری: */
 const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
+const homeHref = `/${isFa ? 'fa' : 'en'}/`;
 ---
 
-<header class="header fixed top-0 inset-x-0 z-[60]">
+<!-- HEADER -->
+<header class="header fixed top-0 inset-x-0 z-[60] transition-all">
   <div class="relative mx-auto max-w-[1280px] px-4 md:px-6 py-3 flex items-center justify-between">
 
-    <!-- راست (FA) / چپ (EN): محصولات | نمایندگی‌ها | خدمات پس از فروش -->
-    <nav class={`nav ${isFa ? 'order-1' : 'order-3'}`} aria-label="primary">
-      <!-- محصولات -->
-      <div class="relative group inline-flex items-center">
-        <button class="navlink relative z-[61]">{t('محصولات','Products')}</button>
-        <span class="sep">|</span>
-        <!-- dropdown anchored to button -->
-        <div class={`absolute top-full ${isFa ? 'right-0' : 'left-0'} mt-2 z-[70] hidden group-hover:block`}>
-  <div class="dropdown w-[920px] max-w-[90vw]">
+    <!-- سمت راست صفحه در فارسی / چپ در انگلیسی: منوهای محصولات -->
+    <nav class={isFa ? 'order-1' : 'order-3'} aria-label="primary">
+      <div class="flex items-center gap-4 md:gap-6">
+        <!-- محصولات (مگامنو) -->
+        <div class="relative group">
+          <button class="navlink">
+            {t('محصولات', 'Products')}
+          </button>
+
+          <!-- dropdown -->
+          <div class="dropdown w-[920px] max-w-[90vw] absolute mt-2 z-[70] hidden group-hover:block"
+               style="right:0; left:auto;">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {categories.map((cat) => (
+              {categories?.length > 0 && categories.map((cat) => (
                 <div>
-                  <a href={`/${lang}/products/${cat.slug}`} class="font-bold hover:text-brand">
+                  <a href={`/${lang}/products/${cat.slug}`} class="mb-2 block font-bold hover:text-brand">
                     {isFa ? cat.nameFa : cat.nameEn}
                   </a>
-                  {cat.subs && (
-                    <ul class="mt-2 text-sm text-[var(--fg-muted)]">
+                  {cat.subs?.length > 0 && (
+                    <ul class="space-y-1 text-sm text-[var(--fg-muted)]">
                       {cat.subs.map((s) => (
                         <li>
-                          <a class="hover:text-brand" href={`/${lang}/products/${cat.slug}/${s.slug}`}>
+                          <a href={`/${lang}/products/${cat.slug}/${s.slug}`} class="hover:text-brand">
                             {isFa ? s.nameFa : s.nameEn}
                           </a>
                         </li>
@@ -57,19 +62,23 @@ const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
             </div>
           </div>
         </div>
-      </div>
 
-      <a href={`/${lang}/dealers`} class="navlink">{t('نمایندگی‌های مجاز','Authorized Dealers')}</a>
-      <span class="sep">|</span>
+        <!-- نمایندگی‌های مجاز -->
+        <a class="navlink" href={`/${lang}/dealers`}>{t('نمایندگی‌های مجاز', 'Authorized Dealers')}</a>
 
-      <!-- خدمات پس از فروش -->
-      <div class="relative group inline-flex items-center">
-        <button class="navlink relative z-[61]">{t('خدمات پس از فروش','After-Sales')}</button>
-        <div class={`absolute top-full ${isFa ? 'right-0' : 'left-0'} mt-2 z-[70] hidden group-hover:block`}>
-          <div class="dropdown w-[300px]">
-            <ul class="text-sm">
-              {afterSales.map((i) => (
-                <li><a class="hover:text-brand" href={`/${lang}/after-sales/${i.slug}`}>{isFa ? i.nameFa : i.nameEn}</a></li>
+        <!-- خدمات پس از فروش (مگامنو) -->
+        <div class="relative group">
+          <button class="navlink">{t('خدمات پس از فروش', 'After-Sales')}</button>
+          <div class="dropdown w-[520px] max-w-[90vw] absolute mt-2 z-[70] hidden group-hover:block"
+               style="right:0; left:auto;">
+            <ul class="grid grid-cols-1 gap-2 text-sm">
+              {afterSales.map((it) => (
+                <li class="flex items-start gap-2">
+                  <span class="sep"></span>
+                  <a class="hover:text-brand" href={`/${lang}/after-sales/${it.slug}`}>
+                    {isFa ? it.nameFa : it.nameEn}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>
@@ -77,71 +86,80 @@ const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
       </div>
     </nav>
 
-    <!-- لوگو وسط (سیاه برای لایت، سفید برای دارک) -->
-    <a href={isFa ? '/fa/' : '/en/'} class="order-2 absolute left-1/2 -translate-x-1/2" aria-label="MixPlus — Home">
-      <img src="/img/logo-black.svg" alt="MixPlus" class="w-16 h-16 block dark:hidden" width="64" height="64" />
-      <img src="/img/logo-white.svg" alt="MixPlus" class="w-16 h-16 hidden dark:block" width="64" height="64" />
+    <!-- لوگو وسط -->
+    <a href={homeHref} class="flex items-center gap-3 order-2" aria-label="MixPlus">
+      <!-- نسخه روشن -->
+      <img src="/img/logo.svg" alt="MixPlus" class="h-6 dark:hidden" loading="eager" decoding="async" />
+      <!-- نسخه تیره -->
+      <img src="/img/logo-dark.svg" alt="MixPlus" class="h-6 hidden dark:block" loading="eager" decoding="async" />
     </a>
 
-    <!-- چپ (FA) / راست (EN): تم | سرچ | # | درباره | کاتالوگ | زبان -->
-    <div class={`nav ${isFa ? 'order-3' : 'order-1'}`}>
-      <!-- تم -->
-      <button class="theme-toggle navlink" id="themeToggle" title={t('تغییر تم','Toggle theme')} aria-label="toggle theme">
-        <svg id="iconSun" viewBox="0 0 24 24" class="dark:hidden"><path fill="currentColor" d="M12 4a1 1 0 011 1v1a1 1 0 11-2 0V5a1 1 0 011-1zm0 13a5 5 0 100-10 5 5 0 000 10zM4 12a1 1 0 01-1 1H2a1 1 0 110-2h1a1 1 0 011 1zM21 11h1a1 1 0 110 2h-1a1 1 0 110-2z"/></svg>
-        <svg id="iconMoon" viewBox="0 0 24 24" class="hidden dark:block"><path fill="currentColor" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg>
-      </button>
-      <span class="sep">|</span>
+    <!-- سمت چپ صفحه در فارسی / راست در انگلیسی: زبان/درباره/کاتالوگ/شبکه‌ها/سرچ/تم -->
+    <div class={isFa ? 'order-3' : 'order-1'}>
+      <div class="flex items-center gap-4 md:gap-6">
 
-      <!-- سرچ -->
-      <button class="navlink" onclick="window.dispatchEvent(new CustomEvent('mix:openSearch'))" title={t('جستجو','Search')} aria-label="search">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M10 2a8 8 0 105.293 14.293l4.707 4.707-1.414 1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg>
-      </button>
-      <span class="sep">|</span>
-
-      <!-- هشتگ / شبکه‌ها -->
-      <div class="relative group inline-flex items-center">
-        <button class="navlink">#</button>
-        <div class={`absolute top-full ${isFa ? 'left-0' : 'right-0'} mt-2 z-[70] hidden group-hover:block`}>
-          <div class="dropdown w-[220px]">
+        <!-- زبان -->
+        <div class="relative group">
+          <button class="navlink">
+            <span class="align-middle">{isFa ? 'فارسی' : 'English'}</span>
+            <span class="ml-1 align-middle">▾</span>
+          </button>
+          <div class="dropdown absolute mt-2 z-[70] hidden group-hover:block"
+               style={isFa ? 'right:0; left:auto;' : 'left:0; right:auto;' }>
             <ul class="text-sm">
-              <li><a class="hover:text-brand" href="https://instagram.com" target="_blank">Instagram</a></li>
-              <li><a class="hover:text-brand" href="https://www.aparat.com" target="_blank">Aparat</a></li>
-              <li><a class="hover:text-brand" href="https://youtube.com" target="_blank">YouTube</a></li>
-              <li><a class="hover:text-brand" href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
+              <li>
+                <a class="hover:text-brand" href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a>
+              </li>
             </ul>
           </div>
         </div>
-      </div>
-      <span class="sep">|</span>
 
-      <a class="navlink" href={`/${lang}/about`}>{t('درباره ما','About')}</a>
-      <span class="sep">|</span>
+        <span class="vsep" aria-hidden="true">|</span>
 
-      <a class="navlink" href={catalogHref} download target="_blank" rel="noreferrer">
-        {t('دانلود کاتالوگ','Download Catalog')}
-      </a>
-      <span class="sep">|</span>
+        <!-- دانلود کاتالوگ -->
+        <a class="navlink" href={catalogHref} download>{t('دانلود کاتالوگ', 'Download Catalog')}</a>
 
-      <!-- زبان (نمایش زبان فعلی + رول‌اوت برای سوییچ) -->
-      <div class="relative group inline-flex items-center">
-        <button class="navlink">
-          {isFa ? 'فارسی' : 'English'}
-          <svg width="10" height="10" viewBox="0 0 24 24" style="margin-inline-start:4px"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
-        </button>
-        <div class={`absolute top-full ${isFa ? 'left-0' : 'right-0'} mt-2 z-[70] hidden group-hover:block`}>
-          <div class="dropdown">
-            <ul class="text-sm">
-              <li><a class="hover:text-brand" href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a></li>
+        <span class="vsep" aria-hidden="true">|</span>
+
+        <!-- درباره ما -->
+        <a class="navlink" href={`/${lang}/about`}>{t('درباره ما', 'About')}</a>
+
+        <span class="vsep" aria-hidden="true">|</span>
+
+        <!-- شبکه‌های اجتماعی (#) -->
+        <div class="relative group">
+          <button class="navlink">#</button>
+          <div class="dropdown absolute mt-2 z-[70] hidden group-hover:block"
+               style={isFa ? 'right:0; left:auto;' : 'left:0; right:auto;' }>
+            <ul class="text-sm space-y-1">
+              <li><a class="hover:text-brand" href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+              <li><a class="hover:text-brand" href="https://youtube.com"   target="_blank" rel="noopener">YouTube</a></li>
+              <li><a class="hover:text-brand" href="https://aparat.com"    target="_blank" rel="noopener">Aparat</a></li>
+              <li><a class="hover:text-brand" href="https://linkedin.com"  target="_blank" rel="noopener">LinkedIn</a></li>
             </ul>
           </div>
         </div>
+
+        <span class="vsep" aria-hidden="true">|</span>
+
+        <!-- جستجو -->
+        <button class="navlink" aria-label={t('جستجو', 'Search')} id="openSearch">🔍</button>
+
+        <!-- تغییر تم -->
+        <button class="navlink" id="themeToggle" aria-label={t('تغییر تم', 'Toggle theme')}>🌓</button>
       </div>
     </div>
-
   </div>
 
+  <!-- اورلی سبک برای خوانایی روی هیرو -->
+  <div class="hero-overlay pointer-events-none"></div>
+</header>
+
+<!-- اسکریپت UX (به صورت فایل) -->
+<script type="module" src={uxUrl}></script>
+
+<!-- تم: خواندن/ذخیره در localStorage -->
 <script>
-  // اسکریپت فعلی خودت (تم: ذخیره در localStorage و ... ) — همین را نگه دار
   const html = document.documentElement;
   const applyStoredTheme = () => {
     const pref = localStorage.getItem('mix_theme');
@@ -149,7 +167,7 @@ const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
       html.classList.remove('light', 'dark');
       html.classList.add(pref);
     } else {
-      if (!html.classList.contains('dark') && !html.classList.contains('light')) {
+      if (!html.classList.contains('light') && !html.classList.contains('dark')) {
         html.classList.add('light');
       }
     }
@@ -163,4 +181,3 @@ const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
     localStorage.setItem('mix_theme', next);
   });
 </script>
-</header>
