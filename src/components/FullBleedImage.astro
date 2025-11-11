@@ -1,17 +1,8 @@
 ---
-// src/components/FullBleedImage.astro
-const { src = '', alt = '' } = Astro.props;
-const hasImg = !!src;
+interface Props { src: string; alt?: string; darken?: boolean; }
+const { src, alt = '', darken = false } = Astro.props;
 ---
-
-<section class="relative w-full">
-  {hasImg ? (
-    <picture>
-      <img src={src} alt={alt}
-           class="w-full h-[56vh] md:h-[68vh] object-cover"
-           loading="lazy" decoding="async" />
-    </picture>
-  ) : (
-    <div class="w-full h-[56vh] md:h-[68vh] bg-gradient-to-br from-[rgba(15,169,156,.25)] to-[rgba(15,169,156,.05)]"></div>
-  )}
+<section class="relative w-full h-[56vh] md:h-[68vh] my-8">
+  <img src={src} alt={alt} class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+  {darken && <div class="absolute inset-0 bg-black/35 dark:bg-black/45"></div>}
 </section>
