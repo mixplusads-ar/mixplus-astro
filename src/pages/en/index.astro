@@ -3,55 +3,42 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Hero from '@/components/Hero.astro';
 import SectionTitle from '@/components/SectionTitle.astro';
+import CategoryGallery from '@/components/CategoryGallery.astro';
+import FullBleedImage from '@/components/FullBleedImage.astro';
+import VideoEmbed from '@/components/VideoEmbed.astro';
 import QuickLinksRow from '@/components/QuickLinksRow.astro';
-import FactoryFeature from '@/components/FactoryFeature.astro';
 import SocialRow from '@/components/SocialRow.astro';
 import Footer from '@/components/Footer.astro';
 
-// import FullBleedImage from '@/components/FullBleedImage.astro';
-
-const pageTitle = 'MixPlus — Landing';
-const pageDesc  = 'Luxury & minimal, inspired by Italian design. 40+ years of experience in home appliances: sinks, hobs, built-in ovens, and hoods.';
+const pageTitle = 'MixPlus — Italian-inspired Home Appliances';
+const pageDesc  = 'Luxury & minimal. 40+ years of expertise in sinks, hobs, built-in ovens, and hoods.';
 ---
 <BaseLayout lang="en" title={pageTitle} description={pageDesc} ogImage="/img/og-default.jpg">
-  <!-- Header -->
   <Header lang="en" />
-
-  <!-- Hero (random autoplay videos + posters) -->
   <Hero lang="en" />
 
-  <!-- Intro above the four quick links -->
-  <SectionTitle
-    lang="en"
-    title="A beautiful headline"
-    subtitle="Short intro copy above the four quick links."
-  />
+  <CategoryGallery lang="en" />
 
-  <!-- Four quick links -->
+  <FullBleedImage src="/img/banner-01.jpg" alt="Precision in hob engineering" darken />
+  <SectionTitle lang="en" title="Luxury & Minimal, Inspired by Italian Design"
+    subtitle="With 40+ years of expertise, MixPlus delivers a complete range of sinks, hobs, built-in ovens and hoods built to European standards." />
+  <FullBleedImage src="/img/banner-02.jpg" alt="Material quality & QC" darken />
+  <SectionTitle lang="en" title="Engineered Details, Reliable Performance"
+    subtitle="Every product is designed for durability, ease of use and a better kitchen experience." />
+  <FullBleedImage src="/img/banner-03.jpg" alt="Collections that harmonize with interiors" darken />
+  <SectionTitle lang="en" title="Full Collections in Harmony"
+    subtitle="Combine sinks, hobs, ovens and hoods in a cohesive visual language—from modern minimal to timeless classic." />
+  <FullBleedImage src="/img/banner-04.jpg" alt="European standards" darken />
+
+  <VideoEmbed lang="en" />
+
   <QuickLinksRow lang="en" />
 
-  <!-- Anchors for quick links -->
-  <div id="products"></div>
-  <div id="events"   class="mt-24"></div>
-  <div id="services" class="mt-24"></div>
-  <div id="academy"  class="mt-24"></div>
+  <SectionTitle lang="en" title="Design, Innovation & Solid Support"
+    subtitle="A trusted dealer network and after-sales service give you confidence in every MixPlus purchase." />
+  <FullBleedImage src="/img/banner-05.jpg" alt="Dealer & service network" darken />
 
-  {/*
-  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="Banner 1" />
-  <SectionTitle lang="en" title="Another headline" subtitle="Short explanatory copy." />
-  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="Banner 2" />
-  */}
-
-  <!-- Factory / video feature -->
-  <FactoryFeature
-    lang="en"
-    video="/video/factory.mp4"
-    poster="/img/placeholder-1920x900.jpg"
-  />
-
-  <!-- Social circles -->
   <SocialRow lang="en" />
 
-  <!-- Footer -->
   <Footer lang="en" />
 </BaseLayout>
