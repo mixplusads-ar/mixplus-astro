@@ -42,3 +42,15 @@ const pageDesc  = 'Luxury & minimal. 40+ years of expertise in sinks, hobs, buil
 
   <Footer lang="en" />
 </BaseLayout>
+
+---
+import VideoEmbed from '@/components/VideoEmbed.astro';
+const links = {
+  youtube: 'https://www.youtube.com/embed/XXXXXXXX', // برای EN
+  aparat:  'https://www.aparat.com/video/video/embed/videohash/XXXXXXXX/vt/frame', // برای FA
+};
+---
+<section class="section">
+  <VideoEmbed lang="fa" links={links} title="ویدیو کارخانه میکس‌پلاس" />
+</section>
+
