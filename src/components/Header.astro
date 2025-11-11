@@ -1,76 +1,226 @@
 ---
-/**
- * Header — مینیمال، لوگو وسط، دکمه‌های چیپی
- * - زبان با متن کامل (fa → English / en → فارسی)
- * - سرچ (placeholder برای آینده)
- * - هشتگ: منوی شبکه‌های اجتماعی
- * - ناوبری سمت راست: محصولات / درباره ما / خدمات پس از فروش / نمایندگی‌ها
- */
+import { categories } from '@/data/categories';
+
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa: string, en: string) => (isFa ? fa : en);
 const otherLang = isFa ? 'en' : 'fa';
+
+// داده‌های خدمات پس از فروش (۴ مورد)
+const afterSales = [
+  { nameFa: 'فرآیند رسیدگی به شکایات', nameEn: 'Complaint Process', slug: 'complaint-process' },
+  { nameFa: 'شرایط گارانتی محصولات میکس پلاس و باریستا', nameEn: 'Warranty Terms', slug: 'warranty-terms' },
+  { nameFa: 'درخواست نصب محصول', nameEn: 'Installation Request', slug: 'installation-request' },
+  { nameFa: 'شکایت', nameEn: 'Complaint', slug: 'complaint' },
+];
+
+// لینک دانلود کاتالوگ بر اساس زبان
+const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
 ---
 
 <header class="header fixed top-0 inset-x-0 z-50">
   <div class="relative mx-auto max-w-[1280px] px-4 md:px-6 py-3 flex items-center justify-between">
-    <!-- گروه چپ: زبان، سرچ، هشتگ/شبکه‌ها -->
-    <div class="flex items-center gap-2 md:gap-3">
-      <!-- سوییچر زبان با متن کامل -->
-      <a href={`/${otherLang}/`} class="chip" aria-label={isFa ? 'Switch to English' : 'تغییر زبان به فارسی'}>
-        {isFa ? 'English' : 'فارسی'}
-      </a>
+    {/*
+      طبق درخواست:
+      - سمت راست: محصولات (مگامنو) | نمایندگی‌های مجاز | خدمات پس از فروش (دراپ‌داون)
+      - وسط: لوگو
+      - سمت چپ: زبان (نمایش زبان فعلی با فلش کوچک) | دانلود کاتالوگ | درباره ما | هشتگ/شبکه‌ها | سرچ
+      - در نسخه EN این دو گروه (چپ/راست) جابه‌جا می‌شوند.
+    */}
 
-      <!-- سرچ (فعلاً placeholder) -->
-      <button class="chip" aria-label={t('جستجو','Search')}
-              onclick="window.dispatchEvent(new CustomEvent('mix:openSearch'));"
-              title={t('جستجو','Search')}>
-        <!-- آیکون ذره‌بین -->
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="currentColor" d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
-        </svg>
-      </button>
-
-      <!-- هشتگ: منوی شبکه‌های اجتماعی -->
-      <div class="relative group">
-        <button class="chip" aria-haspopup="menu" aria-expanded="false" title={t('شبکه‌های اجتماعی','Social')}>
-          <!-- آیکون هشتگ -->
-          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M10 3h2l-.7 4H15l.7-4h2l-.7 4h3v2h-3.4l-.6 4H21v2h-3.4l-.7 4h-2l.7-4H11l-.7 4H8.3l.7-4H6v-2h3.4l.6-4H6V7h3.4l.6-4zM9.7 13h4.3l.6-4h-4.3l-.6 4z"/>
-          </svg>
-        </button>
-
-        <!-- دراپ‌داون شبکه‌ها -->
-        <div class={`pointer-events-none absolute mt-2 ${isFa ? 'right-0' : 'left-0'}`}>
-          <div class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
-                      rounded-xl glass p-3 w-[220px] border"
-               style="border-color:var(--stroke)" role="menu" aria-label="Social links">
-            <ul class="space-y-2 text-sm">
-              <li><a class="hover:text-brand flex items-center gap-2" href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a></li>
-              <li><a class="hover:text-brand flex items-center gap-2" href="https://www.aparat.com" target="_blank" rel="noreferrer">Aparat</a></li>
-              <li><a class="hover:text-brand flex items-center gap-2" href="https://youtube.com" target="_blank" rel="noreferrer">YouTube</a></li>
-              <li><a class="hover:text-brand flex items-center gap-2" href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a></li>
-            </ul>
+    <!-- گروه راست/چپ بسته به زبان -->
+    {isFa ? (
+      // فارسی: گروه راست (Products | Dealers | After-Sales)
+      <nav class="flex items-center gap-2 md:gap-3 order-1" aria-label="primary">
+        <!-- محصولات (مگامنو) -->
+        <div class="relative group">
+          <button class="chip flex items-center gap-1">
+            {t('محصولات','Products')}
+            <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
+          </button>
+          <div class="pointer-events-none absolute mt-2 right-0">
+            <div class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
+                        w-[920px] max-w-[90vw] rounded-2xl glass p-6 shadow-soft border" style="border-color:var(--stroke)">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {categories.map((cat) => (
+                  <div>
+                    <a href={`/${lang}/products/${cat.slug}`}
+                       class="mb-2 block font-bold hover:text-brand">{isFa ? cat.nameFa : cat.nameEn}</a>
+                    {cat.subs && (
+                      <ul class="mt-1 space-y-1 text-sm text-[var(--fg-muted)] list-none">
+                        {cat.subs.map((s) => (
+                          <li>
+                            <a href={`/${lang}/products/${cat.slug}/${s.slug}`} class="hover:text-brand">
+                              {isFa ? s.nameFa : s.nameEn}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        <!-- نمایندگی‌های مجاز -->
+        <a href={`/${lang}/dealers`} class="chip">{t('نمایندگی‌های مجاز','Authorized Dealers')}</a>
+
+        <!-- خدمات پس از فروش (دراپ‌داون ۴ مورد) -->
+        <div class="relative group">
+          <button class="chip flex items-center gap-1">
+            {t('خدمات پس از فروش','After-Sales')}
+            <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
+          </button>
+          <div class="pointer-events-none absolute mt-2 right-0">
+            <div class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
+                        rounded-xl glass p-3 w-[300px] border" style="border-color:var(--stroke)">
+              <ul class="list-none space-y-2 text-sm">
+                {afterSales.map((i) => (
+                  <li>
+                    <a class="hover:text-brand flex items-center gap-2"
+                       href={`/${lang}/after-sales/${i.slug}`}>{isFa ? i.nameFa : i.nameEn}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+    ) : (
+      // EN: این گروه به چپ می‌رود (فقط با order تغییر مکان می‌دهیم)
+      <nav class="flex items-center gap-2 md:gap-3 order-3" aria-label="primary">
+        <div class="relative group">
+          <button class="chip flex items-center gap-1">
+            {t('محصولات','Products')}
+            <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
+          </button>
+          <div class="pointer-events-none absolute mt-2 left-0">
+            <div class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
+                        w-[920px] max-w-[90vw] rounded-2xl glass p-6 shadow-soft border" style="border-color:var(--stroke)">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {categories.map((cat) => (
+                  <div>
+                    <a href={`/${lang}/products/${cat.slug}`}
+                       class="mb-2 block font-bold hover:text-brand">{isFa ? cat.nameFa : cat.nameEn}</a>
+                    {cat.subs && (
+                      <ul class="mt-1 space-y-1 text-sm text-[var(--fg-muted)] list-none">
+                        {cat.subs.map((s) => (
+                          <li>
+                            <a href={`/${lang}/products/${cat.slug}/${s.slug}`} class="hover:text-brand">
+                              {isFa ? s.nameFa : s.nameEn}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <a href={`/${lang}/dealers`} class="chip">{t('نمایندگی‌های مجاز','Authorized Dealers')}</a>
+        <div class="relative group">
+          <button class="chip flex items-center gap-1">
+            {t('خدمات پس از فروش','After-Sales')}
+            <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
+          </button>
+          <div class="pointer-events-none absolute mt-2 left-0">
+            <div class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
+                        rounded-xl glass p-3 w-[300px] border" style="border-color:var(--stroke)">
+              <ul class="list-none space-y-2 text-sm">
+                {afterSales.map((i) => (
+                  <li>
+                    <a class="hover:text-brand flex items-center gap-2"
+                       href={`/${lang}/after-sales/${i.slug}`}>{isFa ? i.nameFa : i.nameEn}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+    )}
 
     <!-- لوگو وسط -->
-    <a href={isFa ? '/fa/' : '/en/'} class="absolute left-1/2 -translate-x-1/2" aria-label="MixPlus — Home">
-      <!-- نسخهٔ لایت -->
-      <img src="/img/logo.svg" alt="MixPlus" class="w-16 h-16 block dark:hidden" width="64" height="64" loading="eager" decoding="async" />
-      <!-- نسخهٔ دارک -->
-      <img src="/img/logo-dark.svg" alt="MixPlus" class="w-16 h-16 hidden dark:block" width="64" height="64" loading="eager" decoding="async" />
+    <a href={isFa ? '/fa/' : '/en/'} class="order-2 absolute left-1/2 -translate-x-1/2" aria-label="MixPlus — Home">
+      <img src="/img/logo.svg" alt="MixPlus" class="w-16 h-16 block dark:hidden" width="64" height="64" />
+      <img src="/img/logo-dark.svg" alt="MixPlus" class="w-16 h-16 hidden dark:block" width="64" height="64" />
     </a>
 
-    <!-- گروه راست: ناوبری مینیمال -->
-    <nav class="flex items-center gap-2 md:gap-3" aria-label="main">
-      <!-- اگر هنوز صفحات داخلی نداری، موقتاً به سکشن‌های همین صفحه لینک بده -->
-      <a href={`/${lang}/#products`} class="chip">{t('محصولات','Products')}</a>
-      <a href={`/${lang}/#about`} class="chip">{t('درباره ما','About')}</a>
-      <a href={`/${lang}/#after-sales`} class="chip">{t('خدمات پس از فروش','After-Sales')}</a>
-      <a href={`/${lang}/#dealers`} class="chip">{t('نمایندگی‌ها','Dealers')}</a>
-    </nav>
+    <!-- گروه مقابل: زبان | کاتالوگ | درباره | هشتگ | سرچ -->
+    {isFa ? (
+      <div class="flex items-center gap-2 md:gap-3 order-3">
+        <!-- زبان: نمایش «فارسی» ولی لینک به نسخه EN -->
+        <a href={`/${otherLang}/`} class="chip flex items-center gap-1" aria-label="switch language">
+          {isFa ? 'فارسی' : 'English'}
+          <svg width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
+        </a>
+
+        <!-- دانلود کاتالوگ -->
+        <a href={catalogHref} download class="chip" target="_blank" rel="noreferrer">
+          {t('دانلود کاتالوگ','Download Catalog')}
+        </a>
+
+        <!-- درباره ما -->
+        <a href={`/${lang}/about`} class="chip">{t('درباره ما','About')}</a>
+
+        <!-- هشتگ/شبکه‌ها -->
+        <div class="relative group">
+          <button class="chip" aria-haspopup="menu" aria-expanded="false">#</button>
+          <div class="pointer-events-none absolute mt-2 left-0">
+            <div class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
+                        rounded-xl glass p-3 w-[220px] border" style="border-color:var(--stroke)" role="menu">
+              <ul class="space-y-2 text-sm list-none">
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://instagram.com" target="_blank">Instagram</a></li>
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://www.aparat.com" target="_blank">Aparat</a></li>
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://youtube.com" target="_blank">YouTube</a></li>
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- سرچ -->
+        <button class="chip" aria-label={t('جستجو','Search')}
+                onclick="window.dispatchEvent(new CustomEvent('mix:openSearch'));"
+                title={t('جستجو','Search')}>
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg>
+        </button>
+      </div>
+    ) : (
+      // نسخه EN: همین گروه به راست می‌آید (order-1)، ترتیب آیتم‌ها حفظ می‌شود
+      <div class="flex items-center gap-2 md:gap-3 order-1">
+        <button class="chip" aria-label={t('جستجو','Search')}
+                onclick="window.dispatchEvent(new CustomEvent('mix:openSearch'));"
+                title={t('جستجو','Search')}>
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg>
+        </button>
+        <div class="relative group">
+          <button class="chip" aria-haspopup="menu" aria-expanded="false">#</button>
+          <div class="pointer-events-none absolute mt-2 right-0">
+            <div class="pointer-events-auto opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition
+                        rounded-xl glass p-3 w-[220px] border" style="border-color:var(--stroke)" role="menu">
+              <ul class="space-y-2 text-sm list-none">
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://instagram.com" target="_blank">Instagram</a></li>
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://www.aparat.com" target="_blank">Aparat</a></li>
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://youtube.com" target="_blank">YouTube</a></li>
+                <li><a class="hover:text-brand flex items-center gap-2" href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a href={`/${lang}/about`} class="chip">{t('درباره ما','About')}</a>
+        <a href={catalogHref} download class="chip" target="_blank" rel="noreferrer">
+          {t('دانلود کاتالوگ','Download Catalog')}
+        </a>
+        <a href={`/${otherLang}/`} class="chip flex items-center gap-1">
+          {isFa ? 'فارسی' : 'English'}
+          <svg width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5"/></svg>
+        </a>
+      </div>
+    )}
   </div>
 </header>
