@@ -7,38 +7,53 @@ import QuickLinksRow from '@/components/QuickLinksRow.astro';
 import FactoryFeature from '@/components/FactoryFeature.astro';
 import SocialRow from '@/components/SocialRow.astro';
 import Footer from '@/components/Footer.astro';
+
+// اگر بعداً بنرهای فول‌بلید را فعال کردیم:
+// import FullBleedImage from '@/components/FullBleedImage.astro';
+
+const pageTitle = 'میکس‌پلاس — لندینگ';
+const pageDesc  = 'لوکس و مینیمال؛ الهام از طراحی ایتالیایی. بیش از ۴۰ سال تجربه در تولید لوازم خانگی: سینک، اجاق، فر توکار و هود.';
 ---
-<BaseLayout lang="fa" title="میکس‌پلاس — لندینگ">
+<BaseLayout lang="fa" title={pageTitle} description={pageDesc} ogImage="/img/og-default.jpg">
+  <!-- Header -->
   <Header lang="fa" />
+
+  <!-- Hero (ویدیوهای رندوم + پوستر) -->
   <Hero lang="fa" />
 
-  <SectionTitle lang="fa" title="یک تایتل زیبا برای یک متن خوب"
-    subtitle="یک متن کوتاه معرفی می‌آید. این بلوک بالای ۴ لینکِ سریع قرار می‌گیرد." />
+  <!-- سکشن معرفی کوتاه بالای ۴ لینک -->
+  <SectionTitle
+    lang="fa"
+    title="یک تایتل زیبا برای یک متن خوب"
+    subtitle="یک متن کوتاه معرفی می‌آید. این بلوک بالای ۴ لینکِ سریع قرار می‌گیرد."
+  />
+
+  <!-- ۴ لینک سریع: محصولات / رویدادها / خدمات / آموزش -->
   <QuickLinksRow lang="fa" />
 
-  <!-- هیرو با ویدیوهای رندوم -->
-  <Hero lang="fa" />
-
-  <!-- بنرهای فول‌بلید را بعداً برمی‌گردیم -->
-
-  <FactoryFeature lang="fa" video="/video/factory.mp4" poster="/img/placeholder-1920x900.jpg" />
-
-  <SocialRow lang="fa" />
-  <Footer lang="fa" />
-</BaseLayout>
-
-  <!-- بلوک‌های بعد از هیرو -->
-  <SectionTitle lang="fa"
-    title="یک تایتل زیبا برای یک متن خوب"
-    subtitle="یک متن کوتاه معرفی می‌آید. این بلوک بالای گرید ۴لینکی قرار می‌گیرد." />
-  <CategoryCards lang="fa" />
-
-  <!-- لنگرها (برای لینک‌های هدر تا 404 نگیری) -->
+  <!-- لنگرها (هدف لینک‌های بالا) -->
   <div id="products"></div>
-  <div id="about" class="mt-24"></div>
-  <div id="after-sales" class="mt-24"></div>
-  <div id="dealers" class="mt-24"></div>
-  <div id="events" class="mt-24"></div>
+  <div id="events"   class="mt-24"></div>
   <div id="services" class="mt-24"></div>
-  <div id="academy" class="mt-24"></div>
+  <div id="academy"  class="mt-24"></div>
+
+  {/*
+  // وقتی مشکل فول‌بلید را برگرداندیم، این‌ها را آن‌کامنت کن:
+  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="بنر ۱" />
+  <SectionTitle lang="fa" title="یک تایتل دیگر" subtitle="متن کوتاه توضیحی برای سکشن بعد." />
+  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="بنر ۲" />
+  */}
+
+  <!-- سکشن کارخانه / ویدئو -->
+  <FactoryFeature
+    lang="fa"
+    video="/video/factory.mp4"
+    poster="/img/placeholder-1920x900.jpg"
+  />
+
+  <!-- شبکه‌های اجتماعی گرد -->
+  <SocialRow lang="fa" />
+
+  <!-- Footer -->
+  <Footer lang="fa" />
 </BaseLayout>
