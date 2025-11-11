@@ -76,3 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
   setupActiveAnchors();
   setupHeroParallax();
 });
+
+/** Close dropdowns on Escape */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll<HTMLElement>('.nav .group.open').forEach(g => g.classList.remove('open'));
+  }
+});
