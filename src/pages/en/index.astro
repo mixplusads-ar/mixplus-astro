@@ -4,16 +4,29 @@ import Header from '@/components/Header.astro';
 import Hero from '@/components/Hero.astro';
 import SectionTitle from '@/components/SectionTitle.astro';
 import CategoryCards from '@/components/CategoryCards.astro';
+import FullBleedImage from '@/components/FullBleedImage.astro';
+import FactoryFeature from '@/components/FactoryFeature.astro';
+import SocialRow from '@/components/SocialRow.astro';
 ---
 <BaseLayout lang="en" title="MixPlus — Landing">
   <Header lang="en" />
-
   <Hero lang="en" />
 
-  <SectionTitle lang="en"
-    title="A beautiful headline for a good copy"
-    subtitle="Short intro copy above the four quick links." />
+  <SectionTitle lang="en" title="A beautiful headline" subtitle="Short intro copy above the four quick links." />
   <CategoryCards lang="en" />
+
+  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="banner-1" />
+  <SectionTitle lang="en" title="Second section title" subtitle="Another short explanatory copy." />
+  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="banner-2" />
+
+  <FactoryFeature lang="en" video="/video/factory.mp4" poster="/img/placeholder-1920x900.jpg" />
+
+  <SectionTitle lang="en" title="Quick links" subtitle="Four quick access cards to key pages." />
+  <CategoryCards lang="en" />
+
+  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="banner-3" />
+
+  <SocialRow lang="en" />
 
   <div id="products"></div>
   <div id="about" class="mt-24"></div>
