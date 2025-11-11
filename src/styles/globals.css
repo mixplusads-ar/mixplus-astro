@@ -1,8 +1,145 @@
-/* برای هدر شفاف/سالید هنگام اسکرول */
-.header{ backdrop-filter:saturate(180%) blur(10px); background:rgba(18,24,33,0.20); border-bottom:1px solid transparent; transition:background .25s,border-color .25s; }
+/* -------------------------------------------------
+   Tailwind hooks (اگر Tailwind فعال باشد استفاده می‌شود)
+--------------------------------------------------*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------------------------------------
+   Mini Reset (چون Preflight را خاموش کرده‌ایم)
+--------------------------------------------------*/
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+img, video { max-width: 100%; display: block; height: auto; }
+ul, ol { list-style: none; margin: 0; padding: 0; }
+a { text-decoration: none; color: inherit; }
+button { background: none; border: 0; color: inherit; font: inherit; padding: 0; }
+h1,h2,h3,h4,h5,h6 { margin: 0; font-weight: 700; }
+
+/* -------------------------------------------------
+   Theme tokens
+--------------------------------------------------*/
+:root{
+  --bg:#0b0f14;
+  --fg:#e8edf2;
+  --fg-muted:#b7c1cc;
+  --card:rgba(18,24,33,0.72);
+  --stroke:rgba(255,255,255,0.10);
+  --brand:#0fa99c;
+}
+.light{
+  --bg:#ffffff;
+  --fg:#0f1720;
+  --fg-muted:#5b6470;
+  --card:rgba(255,255,255,0.85);
+  --stroke:rgba(15,23,32,0.08);
+}
+
+/* -------------------------------------------------
+   Fonts (فایل‌های woff2 را در public/fonts بگذار)
+--------------------------------------------------*/
+@font-face{
+  font-family:'Kalameh';
+  src:url('/fonts/KALAMEH-REGULAR.woff2') format('woff2');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Kalameh';
+  src:url('/fonts/KALAMEH-BOLD.woff2') format('woff2');
+  font-weight:700; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'KalamehFaNum';
+  src:url('/fonts/KALAMEHFANUM-REGULAR.woff2') format('woff2');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+
+/* کلاس‌های صریح فونت (حتی اگر Tailwind لود نشود) */
+.font-fa{ font-family:'KalamehFaNum','Kalameh',system-ui,sans-serif; }
+.font-en{ font-family:'Montserrat','Inter',system-ui,sans-serif; }
+
+/* -------------------------------------------------
+   Base colors
+--------------------------------------------------*/
+html{ background: var(--bg); color: var(--fg); }
+body{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* متن‌های ثانویه */
+.muted{ color: var(--fg-muted); }
+
+/* -------------------------------------------------
+   Buttons / Chips
+--------------------------------------------------*/
+.btn{
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.5rem 1rem; border-radius:999px; font-size:.875rem;
+  border:1px solid var(--stroke);
+  background:linear-gradient(135deg, rgba(15,169,156,.20), rgba(15,169,156,.06));
+  transition:all .25s ease;
+}
+.btn:hover{ transform:translateY(-1px); box-shadow:0 10px 30px rgba(15,169,156,.18); }
+.btn-primary{ color:#fff; background-image:linear-gradient(135deg,#0fa99c,#13c1b2); border-color:transparent; }
+.btn-outline{ background:transparent; color:var(--fg); }
+
+.chip{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.375rem .75rem; border-radius:999px; font-size:.875rem;
+  border:1px solid var(--stroke); background:var(--card);
+  transition:color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.chip:hover{ color:var(--brand); transform:translateY(-1px); }
+
+/* -------------------------------------------------
+   Glass card
+--------------------------------------------------*/
+.glass{
+  backdrop-filter:saturate(180%) blur(10px);
+  -webkit-backdrop-filter:saturate(180%) blur(10px);
+  background:var(--card);
+}
+
+/* -------------------------------------------------
+   Header (شفاف در بالا، سالید بعد از اسکرول)
+--------------------------------------------------*/
+.header{
+  backdrop-filter:saturate(180%) blur(10px);
+  -webkit-backdrop-filter:saturate(180%) blur(10px);
+  background:rgba(18,24,33,0.20);
+  border-bottom:1px solid transparent;
+  transition:background .25s ease, border-color .25s ease;
+}
 .light .header{ background:rgba(255,255,255,0.55); }
 html.scrolled .header{ background:var(--card); border-bottom:1px solid var(--stroke); }
 
-/* انیمیشن فلش */
-@keyframes bouncefade { 0%,100%{ transform:translateY(0); opacity:.8 } 50%{ transform:translateY(8px); opacity:1 } }
+/* -------------------------------------------------
+   Reveal animation (برای المان‌هایی که با اسکرول ظاهر می‌شوند)
+--------------------------------------------------*/
+.reveal{ opacity:0; transform:translateY(12px); transition:all .6s ease; }
+.reveal.in{ opacity:1; transform:none; }
+
+/* -------------------------------------------------
+   Hero overlay
+--------------------------------------------------*/
+.dark .hero-overlay{
+  background:linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.65));
+}
+.light .hero-overlay{
+  background:linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.8));
+}
+
+/* -------------------------------------------------
+   Down arrow hint
+--------------------------------------------------*/
+@keyframes bouncefade {
+  0%,100%{ transform:translateY(0); opacity:.8; }
+  50%{ transform:translateY(8px); opacity:1; }
+}
 .arrow-hint{ animation:bouncefade 1.6s infinite; }
+
+/* -------------------------------------------------
+   RTL / LTR
+--------------------------------------------------*/
+body.rtl{ direction: rtl; }
+body.ltr{ direction: ltr; }
