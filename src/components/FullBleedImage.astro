@@ -1,6 +1,14 @@
 ---
-const { src = '/img/placeholder-1920x900.jpg', alt = '' } = Astro.props;
+const { src = '', alt = '' } = Astro.props;
+const hasImg = !!src;
 ---
+
 <section class="relative">
-  <img src={src} alt={alt} class="w-full h-[56vh] md:h-[68vh] object-cover" loading="lazy" decoding="async" />
+  {hasImg ? (
+    <picture>
+      <img src={src} alt={alt} class="w-full h-[56vh] md:h-[68vh] object-cover" loading="lazy" decoding="async" />
+    </picture>
+  ) : (
+    <div class="w-full h-[56vh] md:h-[68vh] bg-gradient-to-br from-[rgba(15,169,156,.25)] to-[rgba(15,169,156,.05)]"></div>
+  )}
 </section>
