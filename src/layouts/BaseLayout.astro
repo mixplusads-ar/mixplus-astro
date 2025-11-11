@@ -94,6 +94,6 @@ const bodyFontClass = isFa ? 'font-fa rtl' : 'font-en ltr';
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
       })();
-    </script>
+    <script type="module" src={Astro.resolve('@/scripts/ux.ts')}></script>
   </body>
 </html>
