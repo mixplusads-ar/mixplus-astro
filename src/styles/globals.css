@@ -1,2 +1,8 @@
+/* برای هدر شفاف/سالید هنگام اسکرول */
+.header{ backdrop-filter:saturate(180%) blur(10px); background:rgba(18,24,33,0.20); border-bottom:1px solid transparent; transition:background .25s,border-color .25s; }
+.light .header{ background:rgba(255,255,255,0.55); }
+html.scrolled .header{ background:var(--card); border-bottom:1px solid var(--stroke); }
+
+/* انیمیشن فلش */
 @keyframes bouncefade { 0%,100%{ transform:translateY(0); opacity:.8 } 50%{ transform:translateY(8px); opacity:1 } }
 .arrow-hint{ animation:bouncefade 1.6s infinite; }
