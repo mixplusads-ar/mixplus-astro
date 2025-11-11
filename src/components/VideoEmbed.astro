@@ -1,19 +1,65 @@
 ---
-import { site } from '@/data/site';
-const { lang = 'fa', titleFa = 'نمایی از کارخانه میکس‌پلاس', titleEn = 'MixPlus factory overview' } = Astro.props;
-const isFa = lang === 'fa';
-const url = isFa ? site.factoryVideo.aparat : site.factoryVideo.youtube;
+/**
+ * Props:
+ * - lang: 'fa' | 'en'
+ * - links?: { youtube?: string; aparat?: string }
+ * - title?: string (اختیاری برای a11y)
+ * - ratio?: '16/9' | '4/3' | '1/1' (پیش‌فرض 16/9)
+ */
+const {
+  lang = 'fa',
+  links = {},
+  title = 'MixPlus Video',
+  ratio = '16/9',
+} = Astro.props as {
+  lang?: 'fa' | 'en';
+  links?: { youtube?: string; aparat?: string };
+  title?: string;
+  ratio?: '16/9' | '4/3' | '1/1';
+};
+
+const yt = links?.youtube ?? '';
+const ap = links?.aparat ?? '';
+
+/* انتخاب منبع بر اساس زبان */
+const src = lang === 'fa' ? (ap || yt) : (yt || ap);
+
+/* اگر لینک نداریم، خروجی خالی بده تا بیلد کرش نکند */
+if (!src) {
+  // می‌تونی بخوای اشاره کوچک نمایشی بگذاریم:
+  // <div class="video-empty text-center text-[var(--fg-muted)]">ویدیو در دسترس نیست</div>
+}
 ---
-<section class="mx-auto max-w-[1280px] px-6 py-10" aria-label={isFa ? titleFa : titleEn}>
-  <div class="relative aspect-video overflow-hidden rounded-2xl border" style="border-color:var(--stroke); background:var(--card);">
+
+{src && (
+  <div class="video-wrap" style={`--ratio:${ratio};`}>
     <iframe
-      class="absolute inset-0 w-full h-full"
-      src={url}
-      title={isFa ? titleFa : titleEn}
-      loading="lazy"
-      allow="accelerometer; autoplay; encrypted-media; picture-in-picture; web-share"
+      src={src}
+      title={title}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowfullscreen
-      referrerpolicy="strict-origin-when-cross-origin">
-    </iframe>
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      class="video-iframe"
+    />
   </div>
-</section>
+)}
+
+<style>
+  .video-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio: var(--ratio, 16/9);
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0002;
+  }
+  .video-iframe{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:0;
+    display:block;
+  }
+</style>
