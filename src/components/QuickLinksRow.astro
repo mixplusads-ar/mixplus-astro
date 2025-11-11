@@ -1,0 +1,27 @@
+---
+const { lang = 'fa' } = Astro.props;
+const isFa = lang === 'fa';
+const t = (fa: string, en: string) => (isFa ? fa : en);
+
+// آیکون‌ها را در public/icons بگذار (فعلاً از نام‌های پایین استفاده شده)
+const items = [
+  { key: 'products',  href: `/${lang}/#products`,   fa: 'محصولات', en: 'Products',  icon: '/icons/box.svg' },
+  { key: 'events',    href: `/${lang}/#events`,     fa: 'رویدادها', en: 'Events',    icon: '/icons/calendar.svg' },
+  { key: 'services',  href: `/${lang}/#services`,   fa: 'خدمات',   en: 'Services',  icon: '/icons/wrench.svg' },
+  { key: 'academy',   href: `/${lang}/#academy`,    fa: 'آموزش',   en: 'Academy',   icon: '/icons/academy.svg' },
+];
+---
+<section class="mx-auto max-w-[1280px] px-6 py-10">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {items.map((it) => (
+      <a href={it.href}
+        class="group rounded-2xl border"
+        style="border-color:var(--stroke); padding:18px 16px;">
+        <div class="flex items-center gap-3">
+          <img src={it.icon} alt="" width="24" height="24" class="opacity-80 group-hover:opacity-100" />
+          <span class="font-bold group-hover:text-brand">{t(it.fa, it.en)}</span>
+        </div>
+      </a>
+    ))}
+  </div>
+</section>
