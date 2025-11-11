@@ -1,39 +1,99 @@
 ---
+/**
+ * BaseLayout.astro
+ * Props:
+ *  - lang: 'fa' | 'en'
+ *  - title?: string
+ *  - description?: string
+ *  - canonical?: string
+ *  - ogImage?: string
+ */
 import "../styles/globals.css";
-const { lang = 'fa', title = 'MixPlus' } = Astro.props;
+
+const {
+  lang = 'fa',
+  title = (lang === 'fa' ? 'میکس‌پلاس' : 'MixPlus'),
+  description = (lang === 'fa'
+    ? 'میکس‌پلاس — لوازم خانگی با طراحی ایتالیایی: سینک، اجاق، فر توکار و هود.'
+    : 'MixPlus — Italian-inspired home appliances: sinks, hobs, built-in ovens, and hoods.'),
+  canonical = undefined,
+  ogImage = '/img/og-default.jpg',
+} = Astro.props;
+
 const isFa = lang === 'fa';
+const dir = isFa ? 'rtl' : 'ltr';
+const htmlLang = isFa ? 'fa' : 'en';
+const bodyFontClass = isFa ? 'font-fa rtl' : 'font-en ltr';
 ---
 <!doctype html>
-<html lang={isFa ? 'fa' : 'en'} class="dark">
+<html lang={htmlLang} dir={dir} class="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
 
-    <!-- پیش‌بارگذاری فونت‌ها (بعداً فایل‌ها را می‌گذاری) -->
-    <link rel="preload" href="/fonts/KALAMEHFANUM-REGULAR.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/KALAMEH-REGULAR.woff2" as="font" type="font/woff2" crossorigin>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    {/* OG / Twitter */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {/* Favicons (دلخواه: فایل‌ها را در public/icons بگذار) */}
+    <link rel="icon" href="/icons/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    {/* Preconnect برای فونت‌های هاست‌شده‌ی خودت لازم نیست؛ اگر CDN داشتی، این‌جا اضافه کن */}
+
+    {/* جلوگیری از فلیکر تم: قبل از پینت کلاس theme را ست کن */}
+    <script is:inline>
+      (function () {
+        try {
+          var html = document.documentElement;
+          var saved = localStorage.getItem('mix_theme');
+          if (saved === 'dark' || saved === 'light') {
+            html.classList.remove('light','dark');
+            html.classList.add(saved);
+          } else {
+            // اگر سیو نشده بود، پیش‌فرض light
+            if (!html.classList.contains('light') && !html.classList.contains('dark')) {
+              html.classList.add('light');
+            }
+          }
+        } catch(e) {}
+      })();
+    </script>
   </head>
 
-  <body class={isFa ? 'rtl font-fa' : 'ltr font-en'}>
+  <body class={bodyFontClass}>
     <slot />
 
-    <script>
-      // تم از localStorage
-      const html = document.documentElement;
-      const pref = localStorage.getItem('mix_theme');
-      if (pref === 'light') { html.classList.add('light'); html.classList.remove('dark'); }
-      else { html.classList.add('dark'); html.classList.remove('light'); }
-
-      // وضعیت اسکرول برای هدر شفاف
-      const onScroll = () => { if (window.scrollY > 8) html.classList.add('scrolled'); else html.classList.remove('scrolled'); };
-      onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
-
-      // انیمیشن سادهٔ نمایش عناصر .reveal
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
-      }, { threshold: .2 });
-      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    {/* افزودن کلاس scrolled به html برای استایل هدر هنگام اسکرول */}
+    <script is:inline>
+      (function () {
+        var ticking = false;
+        function onScroll() {
+          if (!ticking) {
+            window.requestAnimationFrame(function () {
+              var y = window.scrollY || window.pageYOffset || 0;
+              if (y > 12) document.documentElement.classList.add('scrolled');
+              else document.documentElement.classList.remove('scrolled');
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      })();
     </script>
   </body>
 </html>
