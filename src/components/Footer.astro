@@ -1,0 +1,57 @@
+---
+const { lang = 'fa' } = Astro.props;
+const isFa = lang === 'fa';
+const t = (fa: string, en: string) => (isFa ? fa : en);
+
+const linksLeft = [
+  { href: `/${lang}/#products`,  fa: 'محصولات',           en: 'Products' },
+  { href: `/${lang}/dealers`,    fa: 'نمایندگی‌های مجاز', en: 'Authorized Dealers' },
+  { href: `/${lang}/after-sales`,fa: 'خدمات پس از فروش',  en: 'After-Sales' },
+  { href: `/${lang}/about`,      fa: 'درباره ما',         en: 'About' },
+];
+
+const linksRight = [
+  { href: `/${lang}/#events`,   fa: 'رویدادها', en: 'Events' },
+  { href: `/${lang}/#services`, fa: 'خدمات',   en: 'Services' },
+  { href: `/${lang}/#academy`,  fa: 'آموزش',   en: 'Academy' },
+];
+const year = new Date().getFullYear();
+---
+<footer class="mt-12 border-t" style="border-color:var(--stroke);">
+  <div class="mx-auto max-w-[1280px] px-6 py-10 grid md:grid-cols-2 gap-8">
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <img src="/img/logo-black.svg" class="w-10 h-10 block dark:hidden" alt="MixPlus" />
+        <img src="/img/logo-white.svg" class="w-10 h-10 hidden dark:block" alt="MixPlus" />
+        <strong>MixPlus</strong>
+      </div>
+      <ul class="space-y-2 text-sm">
+        {linksLeft.map(l => (
+          <li><a class="hover:text-brand" href={l.href}>{t(l.fa, l.en)}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="space-y-4">
+      <div class="text-sm">{t('لینک‌های سریع','Quick links')}</div>
+      <ul class="space-y-2 text-sm">
+        {linksRight.map(l => (
+          <li><a class="hover:text-brand" href={l.href}>{t(l.fa, l.en)}</a></li>
+        ))}
+      </ul>
+
+      <div class="pt-4">
+        <div class="social-circles">
+          <a class="social-circle" href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+          <a class="social-circle" href="https://www.aparat.com" target="_blank" rel="noreferrer">Aparat</a>
+          <a class="social-circle" href="https://youtube.com" target="_blank" rel="noreferrer">YouTube</a>
+          <a class="social-circle" href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center text-xs py-5 text-[var(--fg-muted)]">
+    © {year} MixPlus. {t('کلیه حقوق محفوظ است.','All rights reserved.') }
+  </div>
+</footer>
