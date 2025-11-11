@@ -1,0 +1,27 @@
+---
+const {
+  lang = 'fa',
+  titleFa = 'کارخانه مدرن و ظرفیت تولید بالا',
+  titleEn = 'Modern Factory & High Capacity',
+  textFa = 'نگاهی کوتاه به مقیاس تولید و استانداردهای کنترل کیفیت ما.',
+  textEn = 'A quick look at our production scale and quality control standards.',
+  video = '/video/factory.mp4',   // اگر فعلاً نداری، یک پوستر بگذار
+  poster = '/img/placeholder-1920x900.jpg'
+} = Astro.props;
+const isFa = lang === 'fa';
+---
+<section class="mx-auto max-w-[1280px] px-6 py-16 grid md:grid-cols-2 gap-8 items-center">
+  <div class="rounded-2xl overflow-hidden aspect-video">
+    <video autoplay muted playsinline loop preload="metadata" poster={poster} class="w-full h-full object-cover">
+      <source src={video} type="video/mp4" />
+    </video>
+  </div>
+  <div>
+    <h2 class="text-2xl md:text-3xl font-bold mb-3">{isFa ? titleFa : titleEn}</h2>
+    <p class="text-[var(--fg-muted)] mb-6">{isFa ? textFa : textEn}</p>
+    <div class="flex gap-3">
+      <a href={`/${lang}/#about`} class="btn btn-primary">{isFa ? 'درباره شرکت' : 'About Company'}</a>
+      <a href={`/${lang}/#products`} class="btn btn-outline">{isFa ? 'مشاهده محصولات' : 'See Products'}</a>
+    </div>
+  </div>
+</section>
