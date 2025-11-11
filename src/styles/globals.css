@@ -228,3 +228,43 @@ body.ltr{ direction: ltr; }
 }
 
 .theme-toggle { display:inline-flex; align-items:center; padding:.25rem; }
+
+/* ===== Phase 5: polish ===== */
+
+/* smooth scroll + جبران هدر ثابت برای همه‌ی انکرها */
+html { scroll-behavior: smooth; }
+[id] { scroll-margin-top: 96px; }
+
+/* ترنزیشن‌های ملایم تم/رنگ‌ها */
+* { transition: background-color .25s ease, color .25s ease, border-color .25s ease; }
+.header, .dropdown { transition: background-color .25s ease, border-color .25s ease, opacity .16s ease, transform .16s ease; }
+
+/* reveal variants */
+.reveal      { opacity:0; transform:translateY(12px); }
+.reveal.in   { opacity:1; transform:none; }
+.reveal-up   { opacity:0; transform:translateY(18px); }
+.reveal-up.in{ opacity:1; transform:none; }
+.reveal-right{ opacity:0; transform:translateX(18px); }
+.reveal-right.in{ opacity:1; transform:none; }
+.reveal-scale{ opacity:0; transform:scale(.98); }
+.reveal-scale.in{ opacity:1; transform:scale(1); }
+
+/* nav active highlight (برای لینک‌هایی که فعالند) */
+.nav .navlink.active { color: var(--brand); text-underline-offset: 4px; text-decoration: underline; }
+
+/* منوی راحت‌تر: پل نامرئی بین دکمه و دراپ‌داون برای جلوگیری از بسته‌شدن سریع */
+.nav .group { position: relative; }
+.nav .group::after { content:""; position:absolute; left:0; right:0; top:100%; height:14px; }
+
+/* حالت باز با کلاس .open (اسکریپت فاز5 مدیریت می‌کند) */
+.group > div > .dropdown { visibility:hidden; opacity:0; transform:translateY(4px); pointer-events:none; }
+.group.open > div > .dropdown,
+.group:hover > div > .dropdown,
+.group:focus-within > div > .dropdown { visibility:visible; opacity:1; transform:translateY(0); pointer-events:auto; }
+
+/* احترام به ترجیح کاهش موشن */
+@media (prefers-reduced-motion: reduce){
+  * { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
+
