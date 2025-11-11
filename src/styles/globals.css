@@ -1,12 +1,12 @@
 /* -------------------------------------------------
-   Tailwind hooks (اگر Tailwind فعال باشد استفاده می‌شود)
+   Tailwind hooks
 --------------------------------------------------*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* -------------------------------------------------
-   Mini Reset (چون Preflight را خاموش کرده‌ایم)
+   Mini Reset (چون Tailwind Preflight خاموش است)
 --------------------------------------------------*/
 *,
 *::before,
@@ -15,7 +15,7 @@ html, body { margin: 0; padding: 0; }
 img, video { max-width: 100%; display: block; height: auto; }
 ul, ol { list-style: none; margin: 0; padding: 0; }
 a { text-decoration: none; color: inherit; }
-button { background: none; border: 0; color: inherit; font: inherit; padding: 0; }
+button { background: none; border: 0; color: inherit; font: inherit; padding: 0; cursor: pointer; }
 h1,h2,h3,h4,h5,h6 { margin: 0; font-weight: 700; }
 
 /* -------------------------------------------------
@@ -33,7 +33,7 @@ h1,h2,h3,h4,h5,h6 { margin: 0; font-weight: 700; }
   --bg:#ffffff;
   --fg:#0f1720;
   --fg-muted:#5b6470;
-  --card:rgba(255,255,255,0.85);
+  --card:rgba(255,255,255,0.55);
   --stroke:rgba(15,23,32,0.08);
 }
 
@@ -56,7 +56,7 @@ h1,h2,h3,h4,h5,h6 { margin: 0; font-weight: 700; }
   font-weight:400; font-style:normal; font-display:swap;
 }
 
-/* کلاس‌های صریح فونت (حتی اگر Tailwind لود نشود) */
+/* کلاس‌های صریح فونت */
 .font-fa{ font-family:'KalamehFaNum','Kalameh',system-ui,sans-serif; }
 .font-en{ font-family:'Montserrat','Inter',system-ui,sans-serif; }
 
@@ -70,7 +70,7 @@ body{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 .muted{ color: var(--fg-muted); }
 
 /* -------------------------------------------------
-   Buttons / Chips
+   Buttons / Chips (ممکن است بعداً کم‌کم حذف شوند)
 --------------------------------------------------*/
 .btn{
   display:inline-flex; align-items:center; gap:.5rem;
@@ -108,16 +108,43 @@ body{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   -webkit-backdrop-filter:saturate(180%) blur(10px);
   background:rgba(18,24,33,0.20);
   border-bottom:1px solid transparent;
-  transition:background .25s ease, border-color .25s ease;
+  transition:background .25s ease, border-color .25s ease, opacity .16s ease, transform .16s ease;
 }
 .light .header{ background:rgba(255,255,255,0.55); }
 html.scrolled .header{ background:var(--card); border-bottom:1px solid var(--stroke); }
 
+/* ناوبری مینیمال */
+.header .nav { display:flex; align-items:center; gap:.75rem; font-size:.95rem; line-height:1; }
+.header .nav a, .header .nav button.navlink { color:var(--fg); opacity:.95; padding:.25rem .1rem; }
+.header .nav a:hover, .header .nav button.navlink:hover { color:var(--brand); opacity:1; }
+.header .sep { opacity:.35; padding:0 .4rem; user-select:none; }
+
+/* سوییچ تم */
+.theme-toggle { display:inline-flex; align-items:center; gap:.5rem; padding:.25rem; }
+.theme-toggle svg { width:18px; height:18px; }
+
+/* دراپ‌داون‌های هدر */
+.dropdown {
+  backdrop-filter:saturate(180%) blur(10px);
+  -webkit-backdrop-filter:saturate(180%) blur(10px);
+  background:var(--card); border:1px solid var(--stroke);
+  border-radius:12px; padding:.75rem;
+  transition:opacity .16s ease, transform .16s ease, background-color .25s ease, border-color .25s ease;
+}
+.dropdown ul { list-style:none; margin:0; padding:0; }
+.dropdown a { display:flex; align-items:center; gap:.5rem; font-size:.9rem; padding:.25rem 0; }
+
 /* -------------------------------------------------
-   Reveal animation (برای المان‌هایی که با اسکرول ظاهر می‌شوند)
+   Reveal animation utility
 --------------------------------------------------*/
-.reveal{ opacity:0; transform:translateY(12px); transition:all .6s ease; }
-.reveal.in{ opacity:1; transform:none; }
+.reveal      { opacity:0; transform:translateY(12px); transition:all .6s ease; }
+.reveal.in   { opacity:1; transform:none; }
+.reveal-up   { opacity:0; transform:translateY(18px); transition:all .6s ease; }
+.reveal-up.in{ opacity:1; transform:none; }
+.reveal-right{ opacity:0; transform:translateX(18px); transition:all .6s ease; }
+.reveal-right.in{ opacity:1; transform:none; }
+.reveal-scale{ opacity:0; transform:scale(.98); transition:all .6s ease; }
+.reveal-scale.in{ opacity:1; transform:scale(1); }
 
 /* -------------------------------------------------
    Hero overlay
@@ -144,127 +171,39 @@ html.scrolled .header{ background:var(--card); border-bottom:1px solid var(--str
 body.rtl{ direction: rtl; }
 body.ltr{ direction: ltr; }
 
-/* === Header: nav text (بدون کادر) + جداکننده === */
-.header .nav {
-  display:flex; align-items:center; gap:.75rem;
-  font-size:.95rem; line-height:1;
-}
-.header .nav a, .header .nav button.navlink {
-  color:var(--fg); opacity:.95; padding:.25rem .1rem; cursor:pointer;
-}
-.header .nav a:hover, .header .nav button.navlink:hover { color:var(--brand); opacity:1; }
-.header .sep { opacity:.35; padding:0 .4rem; user-select:none; }
-
-/* دکمه سوییچ تم مینیمال (آیکون کوچک) */
-.theme-toggle { display:inline-flex; align-items:center; gap:.5rem; padding:.25rem; cursor:pointer; }
-.theme-toggle svg { width:18px; height:18px; }
-
-/* دراپ‌داون‌های هدر (شیشه‌ای) */
-/* در globals.css */
-.dropdown {
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(4px); /* کمی از بالا */
-  transition: opacity .2s ease, transform .2s ease;
-  pointer-events: none;
-}
-
-.group:hover .dropdown {
-  visibility: visible;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* میتونم اضافه کنم یک “hover zone” */
-.relative.group.inline-flex.items-center {
-  position: relative;
-}
-.relative.group.inline-flex.items-center::after {
-  content: "";
-  position: absolute;
-  top:100%;
-  left:0;
-  width:100%;
-  height:8px; /* منطقه امن اضافی برای موس */
-}
-
-/* منوی راحت‌تر: وقتی از دکمه به منو می‌روی، بسته نشود */
-.nav .group { position: relative; }
-.nav .group::after { height: 16px; } /* 10→14→16px تست کن */
-  content:""; position:absolute; left:0; right:0;
-  top:100%; height:10px;  /* پلِ نامرئی بین دکمه و منو */
-}
-.dropdown {
-  visibility: hidden; opacity: 0; transform: translateY(4px);
-  transition: opacity .16s ease, transform .16s ease;
-  pointer-events: none;
-}
-.group:hover > div > .dropdown,
-.group:focus-within > div > .dropdown {
-  visibility: visible; opacity: 1; transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* سوشیال‌های دایره‌ای پایین صفحه */
-.social-circles { display:flex; gap:28px; justify-content:center; }
-.social-circle {
-  width:72px; height:72px; border-radius:999px; border:1px solid var(--stroke);
-  display:flex; align-items:center; justify-content:center;
-  background:transparent; transition:transform .2s, box-shadow .2s, color .2s;
-}
-.social-circle:hover { color:var(--brand); transform:translateY(-2px); box-shadow:0 10px 24px rgba(15,169,156,.12); }
-
-.header .nav { display:flex; align-items:center; gap:.75rem; font-size:.95rem; line-height:1; }
-.header .nav a, .header .nav button.navlink { color:var(--fg); opacity:.95; padding:.25rem .1rem; cursor:pointer; }
-.header .nav a:hover, .header .nav button.navlink:hover { color:var(--brand); opacity:1; }
-.header .sep { opacity:.35; padding:0 .4rem; user-select:none; }
-
-.dropdown {
-  backdrop-filter:saturate(180%) blur(10px);
-  -webkit-backdrop-filter:saturate(180%) blur(10px);
-  background:var(--card); border:1px solid var(--stroke);
-  border-radius:12px; padding:.75rem;
-}
-
-.theme-toggle { display:inline-flex; align-items:center; padding:.25rem; }
-
-/* ===== Phase 5: polish ===== */
-
-/* smooth scroll + جبران هدر ثابت برای همه‌ی انکرها */
+/* -------------------------------------------------
+   Phase 5: polish
+--------------------------------------------------*/
 html { scroll-behavior: smooth; }
 [id] { scroll-margin-top: 96px; }
 
-/* ترنزیشن‌های ملایم تم/رنگ‌ها */
+/* ترنزیشن‌های ملایم کلی */
 * { transition: background-color .25s ease, color .25s ease, border-color .25s ease; }
-.header, .dropdown { transition: background-color .25s ease, border-color .25s ease, opacity .16s ease, transform .16s ease; }
 
-/* reveal variants */
-.reveal      { opacity:0; transform:translateY(12px); }
-.reveal.in   { opacity:1; transform:none; }
-.reveal-up   { opacity:0; transform:translateY(18px); }
-.reveal-up.in{ opacity:1; transform:none; }
-.reveal-right{ opacity:0; transform:translateX(18px); }
-.reveal-right.in{ opacity:1; transform:none; }
-.reveal-scale{ opacity:0; transform:scale(.98); }
-.reveal-scale.in{ opacity:1; transform:scale(1); }
-
-/* nav active highlight (برای لینک‌هایی که فعالند) */
+/* ناوبری فعال هنگام اسکرول به انکر */
 .nav .navlink.active { color: var(--brand); text-underline-offset: 4px; text-decoration: underline; }
 
-/* منوی راحت‌تر: پل نامرئی بین دکمه و دراپ‌داون برای جلوگیری از بسته‌شدن سریع */
+/* پل نامرئی بین دکمه و منو برای جلوگیری از بسته‌شدن سریع */
 .nav .group { position: relative; }
-.nav .group::after { content:""; position:absolute; left:0; right:0; top:100%; height:14px; }
+.nav .group::after {
+  content:"";
+  position:absolute;
+  left:0; right:0; top:100%;
+  height:14px; /* اگر لازم شد 16 هم می‌توانی بگذاری */
+}
 
-/* حالت باز با کلاس .open (اسکریپت فاز5 مدیریت می‌کند) */
-.group > div > .dropdown { visibility:hidden; opacity:0; transform:translateY(4px); pointer-events:none; }
+/* حالت‌های باز مگا‌منو (hover + delay توسط ux.ts) */
+.group > div > .dropdown {
+  visibility:hidden; opacity:0; transform:translateY(4px); pointer-events:none;
+}
 .group.open > div > .dropdown,
 .group:hover > div > .dropdown,
-.group:focus-within > div > .dropdown { visibility:visible; opacity:1; transform:translateY(0); pointer-events:auto; }
+.group:focus-within > div > .dropdown {
+  visibility:visible; opacity:1; transform:translateY(0); pointer-events:auto;
+}
 
-/* احترام به ترجیح کاهش موشن */
+/* احترام به prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce){
   * { transition: none !important; animation: none !important; }
   html { scroll-behavior: auto; }
 }
-
