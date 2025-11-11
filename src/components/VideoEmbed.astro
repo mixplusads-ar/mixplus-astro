@@ -1,0 +1,19 @@
+---
+import { site } from '@/data/site';
+const { lang = 'fa', titleFa = 'نمایی از کارخانه میکس‌پلاس', titleEn = 'MixPlus factory overview' } = Astro.props;
+const isFa = lang === 'fa';
+const url = isFa ? site.factoryVideo.aparat : site.factoryVideo.youtube;
+---
+<section class="mx-auto max-w-[1280px] px-6 py-10" aria-label={isFa ? titleFa : titleEn}>
+  <div class="relative aspect-video overflow-hidden rounded-2xl border" style="border-color:var(--stroke); background:var(--card);">
+    <iframe
+      class="absolute inset-0 w-full h-full"
+      src={url}
+      title={isFa ? titleFa : titleEn}
+      loading="lazy"
+      allow="accelerometer; autoplay; encrypted-media; picture-in-picture; web-share"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin">
+    </iframe>
+  </div>
+</section>
