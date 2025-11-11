@@ -3,36 +3,55 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Hero from '@/components/Hero.astro';
 import SectionTitle from '@/components/SectionTitle.astro';
-import CategoryCards from '@/components/CategoryCards.astro';
-import FullBleedImage from '@/components/FullBleedImage.astro';
+import QuickLinksRow from '@/components/QuickLinksRow.astro';
 import FactoryFeature from '@/components/FactoryFeature.astro';
 import SocialRow from '@/components/SocialRow.astro';
+import Footer from '@/components/Footer.astro';
+
+// import FullBleedImage from '@/components/FullBleedImage.astro';
+
+const pageTitle = 'MixPlus — Landing';
+const pageDesc  = 'Luxury & minimal, inspired by Italian design. 40+ years of experience in home appliances: sinks, hobs, built-in ovens, and hoods.';
 ---
-<BaseLayout lang="en" title="MixPlus — Landing">
+<BaseLayout lang="en" title={pageTitle} description={pageDesc} ogImage="/img/og-default.jpg">
+  <!-- Header -->
   <Header lang="en" />
+
+  <!-- Hero (random autoplay videos + posters) -->
   <Hero lang="en" />
 
-  <SectionTitle lang="en" title="A beautiful headline" subtitle="Short intro copy above the four quick links." />
-  <CategoryCards lang="en" />
+  <!-- Intro above the four quick links -->
+  <SectionTitle
+    lang="en"
+    title="A beautiful headline"
+    subtitle="Short intro copy above the four quick links."
+  />
 
-  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="banner-1" />
-  <SectionTitle lang="en" title="Second section title" subtitle="Another short explanatory copy." />
-  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="banner-2" />
+  <!-- Four quick links -->
+  <QuickLinksRow lang="en" />
 
-  <FactoryFeature lang="en" video="/video/factory.mp4" poster="/img/placeholder-1920x900.jpg" />
+  <!-- Anchors for quick links -->
+  <div id="products"></div>
+  <div id="events"   class="mt-24"></div>
+  <div id="services" class="mt-24"></div>
+  <div id="academy"  class="mt-24"></div>
 
-  <SectionTitle lang="en" title="Quick links" subtitle="Four quick access cards to key pages." />
-  <CategoryCards lang="en" />
+  {/*
+  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="Banner 1" />
+  <SectionTitle lang="en" title="Another headline" subtitle="Short explanatory copy." />
+  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="Banner 2" />
+  */}
 
-  <FullBleedImage src="/img/placeholder-1920x900.jpg" alt="banner-3" />
+  <!-- Factory / video feature -->
+  <FactoryFeature
+    lang="en"
+    video="/video/factory.mp4"
+    poster="/img/placeholder-1920x900.jpg"
+  />
 
+  <!-- Social circles -->
   <SocialRow lang="en" />
 
-  <div id="products"></div>
-  <div id="about" class="mt-24"></div>
-  <div id="after-sales" class="mt-24"></div>
-  <div id="dealers" class="mt-24"></div>
-  <div id="events" class="mt-24"></div>
-  <div id="services" class="mt-24"></div>
-  <div id="academy" class="mt-24"></div>
+  <!-- Footer -->
+  <Footer lang="en" />
 </BaseLayout>
