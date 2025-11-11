@@ -1,5 +1,5 @@
 ---
-import { categories } from '@/data/categories';
+import uxUrl from '@/scripts/ux.ts?url';
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa: string, en: string) => (isFa ? fa : en);
@@ -132,27 +132,27 @@ const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
 
   </div>
 
-  <script>
-    // سوییچ تم + ذخیره در localStorage
-    const html = document.documentElement;
-    const applyStoredTheme = () => {
-      const pref = localStorage.getItem('mix_theme');
-      if (pref === 'light' || pref === 'dark') {
-        html.classList.remove('light','dark');
-        html.classList.add(pref);
-      } else {
-        // پیش‌فرض: light
-        if (!html.classList.contains('dark') && !html.classList.contains('light')) {
-          html.classList.add('light');
-        }
+<script>
+  // اسکریپت فعلی خودت (تم: ذخیره در localStorage و ... ) — همین را نگه دار
+  const html = document.documentElement;
+  const applyStoredTheme = () => {
+    const pref = localStorage.getItem('mix_theme');
+    if (pref === 'light' || pref === 'dark') {
+      html.classList.remove('light', 'dark');
+      html.classList.add(pref);
+    } else {
+      if (!html.classList.contains('dark') && !html.classList.contains('light')) {
+        html.classList.add('light');
       }
-    };
-    applyStoredTheme();
+    }
+  };
+  applyStoredTheme();
 
-    document.getElementById('themeToggle')?.addEventListener('click', () => {
-      const next = html.classList.contains('light') ? 'dark' : 'light';
-      html.classList.remove('light','dark'); html.classList.add(next);
-      localStorage.setItem('mix_theme', next);
-    });
-  </script>
+  document.getElementById('themeToggle')?.addEventListener('click', () => {
+    const next = html.classList.contains('light') ? 'dark' : 'light';
+    html.classList.remove('light', 'dark');
+    html.classList.add(next);
+    localStorage.setItem('mix_theme', next);
+  });
+</script>
 </header>
