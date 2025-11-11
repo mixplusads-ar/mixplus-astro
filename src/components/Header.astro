@@ -1,0 +1,101 @@
+---
+import * as Cats from '@/data/categories';
+const categories = (Cats as any).categories ?? (Cats as any).default ?? [];
+import uxUrl from '@/scripts/ux.ts?url';
+const { lang = 'fa' } = Astro.props;
+const isFa = lang === 'fa';
+const t = (fa, en) => (isFa ? fa : en);
+const otherLang = isFa ? 'en' : 'fa';
+const afterSales = [
+  { nameFa: 'فرآیند رسیدگی به شکایات', nameEn: 'Complaint Process', slug: 'complaint-process' },
+  { nameFa: 'شرایط گارانتی محصولات میکس‌پلاس', nameEn: 'Warranty Terms', slug: 'warranty-terms' },
+  { nameFa: 'درخواست نصب محصول', nameEn: 'Installation Request', slug: 'installation-request' },
+  { nameFa: 'شکایت', nameEn: 'Complaint', slug: 'complaint' },
+];
+const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
+const homeHref = `/${isFa ? 'fa' : 'en'}/`;
+---
+<header class="header fixed top-0 inset-x-0 z-[60]">
+  <div class="container py-3" style="display:flex;align-items:center;justify-content:space-between">
+    <nav class={isFa ? 'order-1' : 'order-3'}>
+      <div style="display:flex;gap:24px;align-items:center">
+        <div class="relative group">
+          <button class="navlink">{t('محصولات','Products')}</button>
+          <div class="dropdown absolute mt-2" style="right:0;display:none;">
+            <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;min-width:720px;max-width:90vw">
+              {categories.map((cat)=> (
+                <div>
+                  <a href={`/${lang}/products/${cat.slug}`} class="mb-2" style="display:block;font-weight:700">{isFa?cat.nameFa:cat.nameEn}</a>
+                  {cat.subs?.length>0 && (
+                    <ul class="text-sm" style="margin:0;padding:0;list-style:none;color:var(--fg-muted)">
+                      {cat.subs.map((s)=>(<li><a class="hover:text-brand" href={`/${lang}/products/${cat.slug}/${s.slug}`}>{isFa?s.nameFa:s.nameEn}</a></li>))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <a class="navlink" href={`/${lang}/dealers`}>{t('نمایندگی‌های مجاز','Authorized Dealers')}</a>
+        <div class="relative group">
+          <button class="navlink">{t('خدمات پس از فروش','After-Sales')}</button>
+          <div class="dropdown absolute mt-2" style="right:0;display:none;min-width:420px">
+            <ul class="text-sm" style="margin:0;padding:0;list-style:none">
+              {afterSales.map((it)=>(
+                <li style="display:flex;gap:8px"><span style="width:2px;background:var(--brand);display:block;border-radius:2px"></span><a class="hover:text-brand" href={`/${lang}/after-sales/${it.slug}`}>{isFa?it.nameFa:it.nameEn}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <a href={homeHref} class="order-2" aria-label="MixPlus" style="display:flex;align-items:center;gap:8px">
+      <img src="/img/logo.svg" class="dark:hidden" alt="MixPlus" height="24" />
+      <img src="/img/logo-dark.svg" class="hidden dark:block" alt="MixPlus" height="24" />
+    </a>
+    <div class={isFa ? 'order-3' : 'order-1'}>
+      <div style="display:flex;gap:16px;align-items:center">
+        <div class="relative group">
+          <button class="navlink">{isFa?'فارسی':'English'} <span style="opacity:.6">▾</span></button>
+          <div class="dropdown absolute mt-2" style={isFa?'right:0;display:none;':'left:0;display:none;'}>
+            <ul class="text-sm" style="margin:0;padding:0;list-style:none">
+              <li><a class="hover:text-brand" href={`/${otherLang}/`}>{isFa?'English':'فارسی'}</a></li>
+            </ul>
+          </div>
+        </div>
+        <span class="vsep">|</span>
+        <a class="navlink" href={catalogHref} download>{t('دانلود کاتالوگ','Download Catalog')}</a>
+        <span class="vsep">|</span>
+        <a class="navlink" href={`/${lang}/about`}>{t('درباره ما','About')}</a>
+        <span class="vsep">|</span>
+        <div class="relative group">
+          <button class="navlink">#</button>
+          <div class="dropdown absolute mt-2" style={isFa?'right:0;display:none;':'left:0;display:none;'}>
+            <ul class="text-sm" style="margin:0;padding:0;list-style:none">
+              <li><a class="hover:text-brand" href="https://instagram.com" target="_blank">Instagram</a></li>
+              <li><a class="hover:text-brand" href="https://youtube.com" target="_blank">YouTube</a></li>
+              <li><a class="hover:text-brand" href="https://aparat.com" target="_blank">Aparat</a></li>
+              <li><a class="hover:text-brand" href="https://linkedin.com" target="_blank">LinkedIn</a></li>
+            </ul>
+          </div>
+        </div>
+        <span class="vsep">|</span>
+        <button class="navlink" aria-label={t('جستجو','Search')}>🔍</button>
+        <button class="navlink" id="themeToggle" aria-label={t('تغییر تم','Toggle theme')}>🌓</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-overlay"></div>
+</header>
+<script type="module" src={uxUrl}></script>
+<script>
+  const html = document.documentElement;
+  const pref = localStorage.getItem('mix_theme');
+  if(pref==='light'||pref==='dark'){ html.classList.remove('light','dark'); html.classList.add(pref); }
+  else if(!html.classList.contains('light') && !html.classList.contains('dark')){ html.classList.add('light'); }
+  document.getElementById('themeToggle')?.addEventListener('click',()=>{
+    const next = html.classList.contains('light') ? 'dark' : 'light';
+    html.classList.remove('light','dark'); html.classList.add(next);
+    localStorage.setItem('mix_theme', next);
+  });
+</script>

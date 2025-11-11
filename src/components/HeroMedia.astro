@@ -1,0 +1,24 @@
+---
+const { videos = ['/media/hero-01.mp4','/media/hero-02.mp4','/media/hero-03.mp4','/media/hero-04.mp4'], title='لوکس و مینیمال، الهام از طراحی ایتالیایی', subtitle='بیش از ۴۰ سال تجربه در تولید لوازم خانگی؛ اجاق، سینک، فر توکار و هود.', cta1 = { href:'#', label:'مشاهده محصولات' }, cta2 = { href:'#', label:'درباره میکس‌پلاس' }, arrowTarget = '#after-hero', lang='fa' } = Astro.props;
+---
+<section class="hero">
+  <video id="heroVideo" muted playsinline autoplay class="cover"></video>
+  <div class="content">
+    <h1>{title}</h1>
+    <p class="lead">{subtitle}</p>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <a class="btn" href={cta1.href}>{cta1.label}</a>
+      <a class="btn light" href={cta2.href}>{cta2.label}</a>
+    </div>
+  </div>
+  <button class="scroll-indicator" aria-label="Scroll down" onclick={`document.querySelector('${arrowTarget}')?.scrollIntoView({behavior:'smooth'});`}></button>
+</section>
+
+<script>
+  const vids = {videos: JSON.parse(decodeURIComponent(''+encodeURIComponent(JSON.stringify(videos))+''))}.videos;
+  const videoEl = document.getElementById('heroVideo');
+  let idx = Math.floor(Math.random()*vids.length);
+  function setSrc(i){ videoEl.innerHTML=''; const s=document.createElement('source'); s.src=vids[i]; s.type='video/mp4'; videoEl.appendChild(s); videoEl.load(); videoEl.play().catch(()=>{}); }
+  setSrc(idx);
+  videoEl.addEventListener('ended', ()=>{ idx = (idx+1)%vids.length; setSrc(idx); });
+</script>
