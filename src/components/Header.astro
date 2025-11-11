@@ -1,5 +1,5 @@
 ---
-/* ============== Imports & helpers ============== */
+/* Imports & helpers */
 import * as Cats from '@/data/categories';
 const categories = (Cats as any).categories ?? (Cats as any).default ?? [];
 
@@ -8,11 +8,9 @@ import uxUrl from '@/scripts/ux.ts?url';
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const t = (fa: string, en: string) => (isFa ? fa : en);
-const htmlLang = isFa ? 'fa' : 'en';
-const dir = isFa ? 'rtl' : 'ltr';
 const otherLang = isFa ? 'en' : 'fa';
 
-/** منو خدمات پس از فروش */
+/* ثابت‌های منوی خدمات پس از فروش */
 const afterSales = [
   { nameFa: 'فرآیند رسیدگی به شکایات',        nameEn: 'Complaint Process',    slug: 'complaint-process' },
   { nameFa: 'شرایط گارانتی محصولات میکس‌پلاس', nameEn: 'Warranty Terms',       slug: 'warranty-terms' },
@@ -23,6 +21,7 @@ const afterSales = [
 const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
 const homeHref = `/${isFa ? 'fa' : 'en'}/`;
 ---
+
 
 <!-- HEADER -->
 <header class="header fixed top-0 inset-x-0 z-[60] transition-all">
