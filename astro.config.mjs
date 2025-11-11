@@ -1,10 +1,10 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
-import { site as siteData } from './src/data/site.js'; // اگر TS داری از .ts به .js transpile می‌شود
+import { site } from './src/data/site.js'; // ← حتما .js
 
 export default defineConfig({
-  site: siteData.domain, // ← خیلی مهم برای ساخت صحیح URLها
+  site: site.domain,              // خیلی مهم برای sitemap و canonical
   output: 'static',
   integrations: [
     tailwind({ applyBaseStyles: false }),
