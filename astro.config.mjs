@@ -4,4 +4,7 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   output: 'static',
   integrations: [tailwind({ applyBaseStyles: false })],
+  alias: {
+    '@': './src',          // <— این خط جدید
+  },
 });
