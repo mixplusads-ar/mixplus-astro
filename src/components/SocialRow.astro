@@ -1,11 +1,33 @@
 ---
+import { site } from '@/data/site';
 const { lang = 'fa' } = Astro.props;
+const isFa = lang === 'fa';
+const t = (fa:string,en:string)=> isFa?fa:en;
+const socials = [
+  { key:'instagram', label:'Instagram' },
+  { key:'aparat',    label:'Aparat'    },
+  { key:'youtube',   label:'YouTube'   },
+  { key:'linkedin',  label:'LinkedIn'  },
+  { key:'telegram',  label:'Telegram'  },
+];
 ---
-<section class="mx-auto max-w-[980px] px-6 py-14">
-  <div class="social-circles">
-    <a class="social-circle" href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-    <a class="social-circle" href="https://www.aparat.com" target="_blank" rel="noreferrer">Aparat</a>
-    <a class="social-circle" href="https://youtube.com" target="_blank" rel="noreferrer">YouTube</a>
-    <a class="social-circle" href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+<section class="mx-auto max-w-[1280px] px-6 py-12">
+  <h2 class="text-center text-xl font-bold mb-6">{t('ما را در شبکه‌های اجتماعی دنبال کنید','Follow us on social media')}</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+    {socials.map(s => {
+      const href = (site.socials as any)[s.key] as string | undefined;
+      if(!href) return null;
+      return (
+        <a href={href} target="_blank" rel="noreferrer"
+          class="group flex flex-col items-center gap-3 rounded-2xl border p-6 hover:border-[var(--brand)] transition"
+          style="border-color:var(--stroke);">
+          <div class="w-16 h-16 rounded-full grid place-items-center border"
+               style="border-color:var(--stroke); background:var(--card);">
+            <span class="text-sm opacity-80 group-hover:text-[var(--brand)]">{s.label}</span>
+          </div>
+          <span class="text-sm opacity-80">{s.label}</span>
+        </a>
+      );
+    })}
   </div>
 </section>
