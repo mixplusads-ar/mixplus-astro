@@ -2,17 +2,8 @@
 import "../styles/globals.css";
 import SearchOverlay from '@/components/SearchOverlay.astro';
 import { site } from '@/data/site';
-
-const {
-  lang = 'fa',
-  title = (lang === 'fa' ? 'میکس‌پلاس' : 'MixPlus'),
-  description = (lang === 'fa'
-    ? 'میکس‌پلاس — لوازم خانگی با طراحی ایتالیایی: سینک، اجاق، فر توکار و هود.'
-    : 'MixPlus — Italian-inspired home appliances: sinks, hobs, built-in ovens, and hoods.'),
-  canonical = undefined,
-  ogImage = '/img/og-default.jpg',
-} = Astro.props;
-
+import uxUrl from '@/scripts/ux.ts?url';  // ✅
+const { lang = 'fa', title = '...', description = '...', canonical = undefined, ogImage = '/img/og-default.jpg' } = Astro.props;
 const isFa = lang === 'fa';
 const dir = isFa ? 'rtl' : 'ltr';
 const htmlLang = isFa ? 'fa' : 'en';
@@ -121,6 +112,6 @@ const otherLang = isFa ? 'en' : 'fa';
     </script>
 
     <!-- UX Phase 5 -->
-    <script type="module" src={Astro.resolve('@/scripts/ux.ts')}></script>
+    <script type="module" src={uxUrl}></script>
   </body>
 </html>
