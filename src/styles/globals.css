@@ -189,6 +189,23 @@ body.ltr{ direction: ltr; }
   height:8px; /* منطقه امن اضافی برای موس */
 }
 
+/* منوی راحت‌تر: وقتی از دکمه به منو می‌روی، بسته نشود */
+.nav .group { position: relative; }
+.nav .group::after {
+  content:""; position:absolute; left:0; right:0;
+  top:100%; height:10px;  /* پلِ نامرئی بین دکمه و منو */
+}
+.dropdown {
+  visibility: hidden; opacity: 0; transform: translateY(4px);
+  transition: opacity .16s ease, transform .16s ease;
+  pointer-events: none;
+}
+.group:hover > div > .dropdown,
+.group:focus-within > div > .dropdown {
+  visibility: visible; opacity: 1; transform: translateY(0);
+  pointer-events: auto;
+}
+
 /* سوشیال‌های دایره‌ای پایین صفحه */
 .social-circles { display:flex; gap:28px; justify-content:center; }
 .social-circle {
