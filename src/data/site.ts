@@ -1,11 +1,9 @@
 // src/data/site.ts
 export const site = {
   brand: 'MixPlus',
-  domain: 'https://mixplus.co', // وقتی دامنه اصلی وصل شد، همین بمونه
-  localeDefault: 'fa',
-  locales: ['fa','en'] as const,
+  domain: 'https://mixplus.co', // موقت؛ بعداً دامنه نهایی را بگذار
 
-  // Contact (TODO: مقادیر واقعی را وارد کن)
+  // ارتباط
   addressFa: 'تهران، ... (آدرس کامل را وارد کنید)',
   addressEn: 'Tehran, ... (enter full address)',
   phone: '+98-21-xxxxxxx',
@@ -13,19 +11,25 @@ export const site = {
   hoursFa: 'شنبه تا چهارشنبه ۹–۱۷',
   hoursEn: 'Sat–Wed 9:00–17:00',
 
-  // Socials (اگر لینک واقعی داری جایگزین کن)
+  // ویدئو کارخانه (Embed URL — نه لینک معمولی Play)
+  factoryVideo: {
+    aparat: 'https://www.aparat.com/video/video/embed/videohash/XXXXXXXX/vt/frame',
+    youtube: 'https://www.youtube.com/embed/XXXXXXXX?rel=0&modestbranding=1&playsinline=1'
+  },
+
+  // شبکه‌های اجتماعی
   socials: {
     instagram: 'https://instagram.com/yourpage',
     aparat: 'https://www.aparat.com/yourpage',
     youtube: 'https://youtube.com/@yourpage',
     linkedin: 'https://www.linkedin.com/company/yourpage',
+    telegram: 'https://t.me/yourpage' // پنجمین شبکه
   },
 
-  // Catalogs
+  // کاتالوگ‌ها
   catalogFa: '/docs/catalog-fa.pdf',
   catalogEn: '/docs/catalog-en.pdf',
-
-  // Legal
+  
   copyrightHolder: 'MixPlus',
 };
-export type Locale = typeof site.locales[number];
+export type Locale = 'fa' | 'en';
