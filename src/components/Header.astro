@@ -1,9 +1,9 @@
 ---
-/* ⬇️ جایگزین import قبلی کن */
+/* categories را طوری ایمپورت کنیم که چه named باشد چه default، کار کند */
 import * as Cats from '@/data/categories';
 const categories = (Cats as any).categories ?? (Cats as any).default ?? [];
 
-/* بقیه‌ی importها و ثابت‌های خودت */
+/* اسکریپت UX به‌صورت آدرس فایل باندل‌شده (جای Astro.resolve) */
 import uxUrl from '@/scripts/ux.ts?url';
 
 const { lang = 'fa' } = Astro.props;
@@ -11,9 +11,17 @@ const isFa = lang === 'fa';
 const t = (fa: string, en: string) => (isFa ? fa : en);
 const otherLang = isFa ? 'en' : 'fa';
 
-/* ... سایر آرایه‌ها و کانفیگ‌های هدر ... */
----
+/* ✅ afterSales را همین‌جا تعریف کن تا در همه صفحات از جمله 404 در دسترس باشد */
+const afterSales = [
+  { nameFa: 'فرآیند رسیدگی به شکایات', nameEn: 'Complaint Process', slug: 'complaint-process' },
+  { nameFa: 'شرایط گارانتی محصولات میکس‌پلاس', nameEn: 'Warranty Terms', slug: 'warranty-terms' },
+  { nameFa: 'درخواست نصب محصول', nameEn: 'Installation Request', slug: 'installation-request' },
+  { nameFa: 'شکایت', nameEn: 'Complaint', slug: 'complaint' },
+];
 
+/* اگر لینک کاتالوگ را هم نیاز داری: */
+const catalogHref = isFa ? '/docs/catalog-fa.pdf' : '/docs/catalog-en.pdf';
+---
 
 <header class="header fixed top-0 inset-x-0 z-[60]">
   <div class="relative mx-auto max-w-[1280px] px-4 md:px-6 py-3 flex items-center justify-between">
