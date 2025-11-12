@@ -25,7 +25,7 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
     </nav>
 
     <a href={`/${lang}/`} aria-label="MixPlus">
-      <img src="/logos/logo.svg" alt="MixPlus logo" height="28" />
+      <brand-logo width="112" height="28"></brand-logo>
     </a>
 
     <nav class="nav">
@@ -49,6 +49,7 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 </header>
 
 <script>
+/* Theme switcher */
 const KEY = 'mix_theme';
 const html = document.documentElement;
 function applyTheme(v){ html.classList.toggle('is-light', v === 'light'); }
@@ -62,6 +63,35 @@ customElements.define('theme-switch', class extends HTMLElement{
       localStorage.setItem(KEY, now);
       applyTheme(now);
     });
+  }
+});
+
+/* Brand logo that reacts to theme (light -> logo-dark.svg, dark -> logo.svg) */
+customElements.define('brand-logo', class extends HTMLElement{
+  static get observedAttributes(){ return ['width','height']; }
+  connectedCallback(){
+    this.img = document.createElement('img');
+    this.img.alt = 'MixPlus logo';
+    this.style.display = 'inline-block';
+    this.appendChild(this.img);
+    this._applySize();
+    this.updateSrc();
+
+    // Watch for theme class changes
+    const mo = new MutationObserver(()=>this.updateSrc());
+    mo.observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
+    this._mo = mo;
+  }
+  disconnectedCallback(){ this._mo?.disconnect?.(); }
+  attributeChangedCallback(){ this._applySize(); }
+  _applySize(){
+    const w = this.getAttribute('width') || '112';
+    const h = this.getAttribute('height') || '28';
+    this.img.width = +w; this.img.height = +h;
+  }
+  updateSrc(){
+    const isLight = document.documentElement.classList.contains('is-light');
+    this.img.src = isLight ? '/logos/logo-dark.svg' : '/logos/logo.svg';
   }
 });
 </script>
