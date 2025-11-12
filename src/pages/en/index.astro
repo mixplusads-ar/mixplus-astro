@@ -7,21 +7,32 @@ import Banner from '@/components/FullBleedBanner.astro';
 import VideoEmbed from '@/components/VideoEmbed.astro';
 import SocialStrip from '@/components/SocialStrip.astro';
 import { site } from '@/data/site.ts';
+
 const lang = 'en';
 const t = site[lang];
 ---
 <Base lang={lang} title={t.title} description={t.description}>
   <Hero lang={lang} />
 
+  <!-- Intro & Categories -->
   <section class="section container">
     <SectionTitle title={t.sections.introTitle} text={t.sections.introText} />
     <div style="height:12px"></div>
     <Categories lang={lang} />
   </section>
 
+  <!-- Banner-01 -->
   <Banner img="/media/banners/fullbleed-01.jpg" title="Durability & Build" text="Engineered standards and rigorous QA." />
+
+  <!-- Gap + Factory video (YouTube) between Banner-01 and Banner-02 -->
+  <section class="section container">
+    <VideoEmbed src={t.factoryEmbed} title="Factory video" cover="/media/factory/placeholder.jpg" />
+  </section>
+
+  <!-- Banner-02 -->
   <Banner img="/media/banners/fullbleed-02.jpg" title="Minimal Design" text="Clarity and brand signature." />
 
+  <!-- Quick access -->
   <section class="section container">
     <SectionTitle title="Quick access" />
     <div class="grid">
@@ -32,10 +43,14 @@ const t = site[lang];
     </div>
   </section>
 
+  <!-- Banner-03 -->
   <Banner img="/media/banners/fullbleed-03.jpg" title="Italian Inspiration" text="Beauty meets performance." />
-  <Banner img="/media/banners/fullbleed-04.jpg" title="Warranty & Support" text="Nationwide authorized dealers." />
 
+  <!-- Gap + 5 social icons between Banner-03 and Banner-04 -->
   <section class="section">
     <SocialStrip />
   </section>
+
+  <!-- Banner-04 -->
+  <Banner img="/media/banners/fullbleed-04.jpg" title="Warranty & Support" text="Nationwide authorized dealers." />
 </Base>
