@@ -3,12 +3,13 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   output: 'static',
   server: { port: 4321 },
-  build: {
-    format: 'file'
-  },
+  build: { format: 'file' },
   vite: {
-    build: {
-      target: 'esnext'
+    build: { target: 'esnext' },
+    resolve: {
+      alias: {
+        '@': new URL('./src', import.meta.url).pathname
+      }
     }
   }
 });
