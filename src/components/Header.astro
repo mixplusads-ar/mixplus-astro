@@ -5,197 +5,224 @@ import { social } from '../data/social.ts';
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
-
-const txt = (fa: string, en: string) => (isFa ? fa : en);
+const t = (fa: string, en: string) => (isFa ? fa : en);
 const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
----
 
+/** ریشه‌ها برای مگامنو محصولات */
+const roots = [
+  { slug: 'hob',  fa: 'اجاق گاز',       en: 'Hob'  },
+  { slug: 'sink', fa: 'سینک ظرف‌شویی',  en: 'Sink' },
+  { slug: 'hood', fa: 'هود',            en: 'Hood' },
+  { slug: 'oven', fa: 'فر',             en: 'Oven' },
+];
+---
 <header class="header" dir={isFa ? 'rtl' : 'ltr'}>
   <div class="container header-inner">
-    {/*
-      ترتیب قابل‌کنترل با slot-ها:
-      - در EN: primary باید Slot-1 باشد (چپ)، secondary در Slot-3 (راست)
-      - در FA: برعکس
-    */}
-    <nav class={`nav slot-${isFa ? '3' : '1'}`} aria-label="primary">
-      <!-- Products -->
-      <div class="mega products" data-key="products" tabindex="0" aria-haspopup="true">
-        <span class="link like-button">{txt('محصولات','Products')}</span>
-        <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel products">
-          <div class="columns">
-            <ul class="roots" id="prod-roots">
-              <li><a class="root" href={`/${lang}/products/hob/`}  data-slug="hob">{txt('اجاق گاز','Hob')}</a></li>
-              <li><a class="root" href={`/${lang}/products/sink/`} data-slug="sink">{txt('سینک ظرف‌شویی','Sink')}</a></li>
-              <li><a class="root" href={`/${lang}/products/hood/`} data-slug="hood">{txt('هود','Hood')}</a></li>
-              <li><a class="root" href={`/${lang}/products/oven/`} data-slug="oven">{txt('فر','Oven')}</a></li>
-            </ul>
 
-            <div class="subs-wrap" id="prod-subs">
-              {['hob','sink','hood','oven'].map(slug => {
-                const cat = categories.find(c => c.slug === slug);
-                const subs = (cat?.subs && cat.subs.length) ? cat.subs : [{ slug:'built-in', nameFa:'فر توکار', nameEn:'Built-in' }];
-                return (
-                  <ul class="subs" data-for={slug}>
-                    {subs.map(s => (
-                      <li><a href={`/${lang}/products/${slug}/${s.slug}/`}>{isFa ? s.nameFa : s.nameEn}</a></li>
-                    ))}
-                  </ul>
-                );
-              })}
+    <!-- گروه سمت راست در FA / سمت چپ در EN (مطابق تصویر مرجع) -->
+    <nav class={`nav ${isFa ? 'slot-3' : 'slot-1'}`} aria-label="primary">
+      {isFa ? (
+        <>
+          <a class="link" href={`/${lang}/products/`}>{t('محصولات','Products')}</a>
+          <span class="pipe">|</span>
+          <a class="link" href={`/${lang}/dealers/`}>{t('نمایندگی‌های مجاز','Dealers')}</a>
+          <span class="pipe">|</span>
+          <div class="mega" tabindex="0" aria-haspopup="true">
+            <span class="link">{t('خدماتِ پس از فروش','After-Sales')}</span>
+            <div class="hover-bridge" aria-hidden="true"></div>
+            <div class="mega-panel">
+              <div class="mega-list">
+                <a href={`/${lang}/after-sales/complaint-process/`}>{t('فرآیند رسیدگی به شکایات','Complaint process')}</a>
+                <a href={`/${lang}/after-sales/warranty-terms/`}>{t('شرایط گارانتی محصولات میکس‌پلاس','Warranty terms')}</a>
+                <a href={`/${lang}/after-sales/installation-request/`}>{t('درخواست نصب محصول','Installation request')}</a>
+                <a href={`/${lang}/after-sales/complaint/`}>{t('شکایت','Complaint')}</a>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <span class="pipe">|</span>
-      <a class="link like-button" href={`/${lang}/dealers/`}>{txt('نمایندگی‌های مجاز','Dealers')}</a>
-      <span class="pipe">|</span>
-
-      <div class="mega aftersales" data-key="aftersales" tabindex="0" aria-haspopup="true">
-        <span class="link like-button">{txt('خدماتِ پس از فروش','After-Sales')}</span>
-        <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel">
-          <div class="mega-list">
-            <a href={`/${lang}/after-sales/complaint-process/`}>{txt('فرآیند رسیدگی به شکایات','Complaint process')}</a>
-            <a href={`/${lang}/after-sales/warranty-terms/`}>{txt('شرایط گارانتی محصولات میکس‌پلاس','Warranty terms')}</a>
-            <a href={`/${lang}/after-sales/installation-request/`}>{txt('درخواست نصب محصول','Installation request')}</a>
-            <a href={`/${lang}/after-sales/complaint/`}>{txt('شکایت','Complaint')}</a>
+        </>
+      ) : (
+        <>
+          <div class="mega products" tabindex="0" aria-haspopup="true">
+            <span class="link">{t('محصولات','Products')}</span>
+            <div class="hover-bridge" aria-hidden="true"></div>
+            <div class="mega-panel products">
+              <div class="columns">
+                <ul class="roots" id="prod-roots">
+                  {roots.map(r => (
+                    <li><a class="root" data-slug={r.slug} href={`/${lang}/products/${r.slug}/`}>{isFa ? r.fa : r.en}</a></li>
+                  ))}
+                </ul>
+                <div class="subs-wrap" id="prod-subs">
+                  {roots.map(r => {
+                    const cat = categories.find(c => c.slug === r.slug);
+                    const subs = (cat?.subs && cat.subs.length) ? cat.subs : [{ slug:'built-in', nameFa:'فر توکار', nameEn:'Built-in' }];
+                    return (
+                      <ul class="subs" data-for={r.slug}>
+                        {subs.map(s => (
+                          <li><a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{isFa ? s.nameFa : s.nameEn}</a></li>
+                        ))}
+                      </ul>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <span class="pipe">|</span>
-      <a class="link like-button" href={`/${lang}/about/`}>{txt('درباره ما','About-Us')}</a>
+          <span class="pipe">|</span>
+          <a class="link" href={`/${lang}/dealers/`}>Dealers</a>
+          <span class="pipe">|</span>
+          <div class="mega" tabindex="0" aria-haspopup="true">
+            <span class="link">After-Sales</span>
+            <div class="hover-bridge" aria-hidden="true"></div>
+            <div class="mega-panel">
+              <div class="mega-list">
+                <a href={`/${lang}/after-sales/complaint-process/`}>Complaint process</a>
+                <a href={`/${lang}/after-sales/warranty-terms/`}>Warranty terms</a>
+                <a href={`/${lang}/after-sales/installation-request/`}>Installation request</a>
+                <a href={`/${lang}/after-sales/complaint/`}>Complaint</a>
+              </div>
+            </div>
+          </div>
+          <span class="pipe">|</span>
+          <a class="link" href={`/${lang}/about/`}>About-Us</a>
+        </>
+      )}
     </nav>
 
-    <!-- LOGO -->
+    <!-- لوگو وسط -->
     <a class="brand slot-2" href={`/${lang}/`} aria-label="MixPlus">
       <brand-logo width="120" height="30"></brand-logo>
     </a>
 
-    <!-- Secondary -->
-    <nav class={`nav slot-${isFa ? '1' : '3'}`} aria-label="secondary">
-      <!-- Search icon -->
-      <button class="link like-button icon" aria-label={txt('جستجو','Search')} title={txt('جستجو','Search')} disabled>
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
-          <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-        </svg>
-      </button>
-
-      <span class="pipe">|</span>
-
-      <!-- Social (#) -->
-      <div class="mega social" data-key="social" tabindex="0" aria-haspopup="true">
-        <span class="link like-button">#</span>
-        <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel tiny">
-          <div class="mega-list tight">
-            <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
-            <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
-            <a href={social.youtube}  target="_blank" rel="noopener">YouTube</a>
-            <a href={social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-            <a href={social.telegram} target="_blank" rel="noopener">Telegram</a>
+    <!-- گروه مقابل: سمت چپ در FA / سمت راست در EN (مطابق تصویر مرجع) -->
+    <nav class={`nav ${isFa ? 'slot-1' : 'slot-3'}`} aria-label="secondary">
+      {isFa ? (
+        <>
+          <theme-switch class="link" title={t('تغییر تم','Toggle theme')}></theme-switch>
+          <span class="pipe">|</span>
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <span class="link">{t('فارسی','English')} ▼</span>
+            <div class="hover-bridge"></div>
+            <div class="mega-panel tiny">
+              <div class="mega-list tight"><a href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a></div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <span class="pipe">|</span>
-      <a class="link like-button" href={downloadHref} download>{txt('دانلود کاتالوگ','Download Catalog')}</a>
-
-      <span class="pipe">|</span>
-      <div class="mega lang" tabindex="0" aria-haspopup="true">
-        <span class="link like-button lang-switch">
-          {isFa ? 'فارسی' : 'English'}
-          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-        </span>
-        <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel tiny">
-          <div class="mega-list tight">
-            <a href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a>
+          <span class="pipe">|</span>
+          <a class="link" href={downloadHref} download>{t('دانلود کاتالوگ','Download Catalog')}</a>
+          <span class="pipe">|</span>
+          <a class="link" href={`/${lang}/about/`}>{t('درباره ما','About')}</a>
+          <span class="pipe">|</span>
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <span class="link">#</span>
+            <div class="hover-bridge"></div>
+            <div class="mega-panel tiny">
+              <div class="mega-list tight">
+                <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
+                <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
+                <a href={social.youtube}  target="_blank" rel="noopener">YouTube</a>
+                <a href={social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+                <a href={social.telegram} target="_blank" rel="noopener">Telegram</a>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <span class="pipe">|</span>
-      <theme-switch class="link like-button" title={txt('تغییر تم','Toggle theme')}></theme-switch>
+          <span class="pipe">|</span>
+          <button class="link icon" aria-label={t('جستجو','Search')} title={t('جستجو','Search')} disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+          </button>
+        </>
+      ) : (
+        <>
+          <button class="link icon" aria-label="Search" title="Search" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+          </button>
+          <span class="pipe">|</span>
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <span class="link">#</span>
+            <div class="hover-bridge"></div>
+            <div class="mega-panel tiny">
+              <div class="mega-list tight">
+                <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
+                <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
+                <a href={social.youtube}  target="_blank" rel="noopener">YouTube</a>
+                <a href={social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+                <a href={social.telegram} target="_blank" rel="noopener">Telegram</a>
+              </div>
+            </div>
+          </div>
+          <span class="pipe">|</span>
+          <a class="link" href={downloadHref} download>Download Catalog</a>
+          <span class="pipe">|</span>
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <span class="link">English ▼</span>
+            <div class="hover-bridge"></div>
+            <div class="mega-panel tiny">
+              <div class="mega-list tight"><a href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a></div>
+            </div>
+          </div>
+          <span class="pipe">|</span>
+          <theme-switch class="link" title="Toggle theme"></theme-switch>
+        </>
+      )}
     </nav>
   </div>
 </header>
 
 <style>
-/* Header: فقط ترنسلوسنت + blur؛ رنگ پنل‌ها دست‌نخورده */
-.header{
-  position:sticky; top:0; z-index:60; border-bottom:1px solid transparent;
-  background:rgba(255,255,255,.48); backdrop-filter:blur(10px);
-}
-html:not(.is-light) .header{ background:rgba(16,20,26,.28); }
-html.scrolled .header{ background:var(--card); border-bottom-color:var(--stroke); backdrop-filter:none; }
+/* فقط پس‌زمینه‌ی هدر شفاف + بلور */
+.header{position:sticky;top:0;z-index:60;border-bottom:1px solid transparent;
+  background:rgba(255,255,255,.48);backdrop-filter:blur(10px)}
+html:not(.is-light) .header{background:rgba(16,20,26,.28)}
+html.scrolled .header{background:var(--card);border-bottom-color:var(--stroke);backdrop-filter:none}
 
-/* فواصل و چیدمان */
 .header-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
 .nav{display:flex;align-items:center;gap:16px;white-space:nowrap}
 .brand{display:inline-flex;align-items:center;justify-content:center;height:68px}
 
-/* اسلات‌ها برای کنترل ترتیب */
+/* ترتیب سه ستون */
 .slot-1{order:1}.slot-2{order:2}.slot-3{order:3}
 
-.link.like-button{all:unset;cursor:pointer;font-weight:600;padding:6px 0}
-.link[disabled]{opacity:.45;cursor:not-allowed}
-.link.icon svg{display:block;opacity:.9}
-.pipe{opacity:.5;user-select:none}
+.link{all:unset;cursor:pointer;font-weight:700}
+.icon svg{display:block;opacity:.9}
+.pipe{opacity:.5}
 
-/* پلِ hover بین تریگر و پنل */
-.hover-bridge{position:absolute;left:0;right:0;top:100%;height:12px;pointer-events:auto;background:transparent}
+/* پل بین تریگر و پنل */
+.hover-bridge{position:absolute;left:0;right:0;top:100%;height:12px}
 
-/* پنل‌ها: رنگ قبلی (var(--card)) */
+/* پنل مگامنو (رنگ قبلی — تغییری نداده‌ام) */
 .mega{position:relative}
-.mega-panel{
-  position:absolute; top:calc(100% + 6px); inset-inline-start:0;
-  background:var(--card); border:1px solid var(--stroke); border-radius:14px;
-  box-shadow:0 12px 32px rgba(0,0,0,.18);
-  padding:12px; opacity:0; transform:translateY(6px); pointer-events:none;
-  transition:opacity .18s ease, transform .18s ease;
-}
-.mega.open .mega-panel, .mega:focus-within .mega-panel, .mega:hover .mega-panel{opacity:1;transform:translateY(0);pointer-events:auto}
-.mega-panel.tiny{min-width:140px}
+.mega-panel{position:absolute;top:calc(100% + 6px);inset-inline-start:0;background:var(--card);border:1px solid var(--stroke);
+  border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:12px;opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease}
+.mega.open .mega-panel,.mega:hover .mega-panel,.mega:focus-within .mega-panel{opacity:1;transform:translateY(0);pointer-events:auto}
+.mega.tiny .mega-panel{min-width:140px}
 .mega-list{display:flex;flex-direction:column;gap:10px;min-width:280px}
 .mega-list.tight{min-width:auto;gap:8px}
 
-/* محصولات: فقط آیتم هاور سبز شود (هیچ حالت دائمی) */
+/* محصولات: فقط هاور سبز شود */
 .mega-panel.products{padding:10px}
 .columns{display:flex;gap:12px;align-items:flex-start}
 .roots{list-style:none;margin:0;padding:6px;border-inline-end:1px solid var(--stroke);width:var(--rootw,260px)}
 .roots .root{display:block;padding:10px 12px;border-radius:10px;font-weight:800;color:inherit}
-.roots .root:hover{color:var(--brand); background:transparent}
+.roots .root:hover{color:var(--brand);background:transparent}
 .subs-wrap{padding:6px;width:var(--subw,260px)}
 .subs{display:none;list-style:none;margin:0;padding:6px}
 .subs.is-active{display:block}
-.subs li a{display:block;padding:8px 12px;border-radius:10px;color:inherit}
-.subs li a:hover{color:var(--brand); background:transparent}
-
-.lang-switch svg{margin-inline-start:4px;vertical-align:-2px;opacity:.75}
-
-@media (max-width:980px){
-  .mega-panel{min-width:260px}
-  .mega-panel.products .columns{flex-direction:column}
-  .roots{border:none}
-}
+.subs a{display:block;padding:8px 12px;border-radius:10px;color:inherit}
+.subs a:hover{color:var(--brand);background:transparent}
 </style>
 
 <script>
-/* Theme */
+/* تم */
 const KEY='mix_theme', html=document.documentElement;
 function applyTheme(v){ html.classList.toggle('is-light', v==='light'); }
 applyTheme(localStorage.getItem(KEY)||'light');
 customElements.define('theme-switch', class extends HTMLElement{
-  connectedCallback(){ this.setAttribute('role','button'); this.setAttribute('aria-label','Toggle theme'); this.style.userSelect='none'; this.render();
+  connectedCallback(){ this.setAttribute('role','button'); this.style.userSelect='none'; this.render();
     this.addEventListener('click', ()=>{ const now=html.classList.contains('is-light')?'dark':'light'; localStorage.setItem(KEY,now); applyTheme(now); this.render(); }); }
   render(){ this.textContent = html.classList.contains('is-light') ? '☾' : '☀︎'; }
 });
 
-/* Logo auto theme */
+/* لوگو با تم */
 customElements.define('brand-logo', class extends HTMLElement{
   static get observedAttributes(){ return ['width','height']; }
   connectedCallback(){ this.img=document.createElement('img'); this.img.alt='MixPlus logo'; this.appendChild(this.img);
@@ -211,9 +238,9 @@ customElements.define('brand-logo', class extends HTMLElement{
 const onScroll=()=>document.documentElement.classList.toggle('scrolled', window.scrollY>6);
 onScroll(); window.addEventListener('scroll', onScroll);
 
-/* Hover intent + بازماندن منو هنگام حرکت موس */
+/* Hover-intent ساده */
 document.querySelectorAll('.mega').forEach((el)=>{
-  let hideTimer=null; const HIDE_DELAY=650;
+  let hideTimer=null; const HIDE_DELAY=600;
   const open=()=>el.classList.add('open');
   const close=()=>el.classList.remove('open');
   const delayClose=()=>{ hideTimer=setTimeout(close,HIDE_DELAY); };
@@ -228,21 +255,13 @@ document.querySelectorAll('.mega').forEach((el)=>{
   });
 });
 
-/* محصولات: نمایش ساب‌ها هنگام هاور رو ریشه‌ها (بدون رنگ دائمی) */
+/* محصولات: نمایش ساب‌ها به‌محض هاور روی ریشه‌ها (بدون رنگ دائمی) */
 const rootsEl=document.getElementById('prod-roots');
 const subsWrap=document.getElementById('prod-subs');
 if(rootsEl&&subsWrap){
-  function activate(slug){
-    subsWrap.querySelectorAll('.subs').forEach(ul=>ul.classList.toggle('is-active', ul.getAttribute('data-for')===slug));
-  }
-  // پیش‌فرض اولین ریشه
+  function activate(slug){ subsWrap.querySelectorAll('.subs').forEach(ul=>ul.classList.toggle('is-active', ul.getAttribute('data-for')===slug)); }
   activate('hob');
-
-  rootsEl.addEventListener('mouseenter',e=>{
-    const a=(e.target as HTMLElement).closest('.root'); if(a) activate(a.getAttribute('data-slug')!);
-  },true);
-  rootsEl.addEventListener('focusin',e=>{
-    const a=(e.target as HTMLElement).closest('.root'); if(a) activate(a.getAttribute('data-slug')!);
-  });
+  rootsEl.addEventListener('mouseenter',e=>{ const a=(e.target).closest('.root'); if(a) activate(a.getAttribute('data-slug')); }, true);
+  rootsEl.addEventListener('focusin',e=>{ const a=(e.target).closest('.root'); if(a) activate(a.getAttribute('data-slug')); });
 }
 </script>
