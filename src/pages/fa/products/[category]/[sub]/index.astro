@@ -1,11 +1,27 @@
 ---
 import Base from '@/layouts/BaseLayout.astro';
+import { categories } from '@/data/categories.ts';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const c of categories) {
+    if (c.subs && c.subs.length) {
+      for (const s of c.subs) {
+        paths.push({ params: { category: c.slug, sub: s.slug } });
+      }
+    }
+  }
+  return paths;
+}
+
 const { params } = Astro;
 const lang = 'fa';
+const cat = categories.find(c => c.slug === params.category);
+const sub = cat?.subs?.find(s => s.slug === params.sub);
 ---
-<Base lang={lang} title="MixPlus">
+<Base lang={lang} title={`محصولات - ${cat?.nameFa ?? ''} / ${sub?.nameFa ?? ''}`}>
   <section class="section container">
-    <h2 style="font-weight:800">{params?.sub ?? 'زیردسته'}</h2>
+    <h2 style="font-weight:800">{sub?.nameFa ?? 'زیردسته'}</h2>
     <p style="color:var(--muted)">این صفحه موقتی است و بعداً تکمیل می‌شود.</p>
   </section>
 </Base>
