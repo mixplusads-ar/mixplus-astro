@@ -1,15 +1,27 @@
 ---
 import Base from '@/layouts/BaseLayout.astro';
 import { categories } from '@/data/categories.ts';
+
+export function getStaticPaths() {
+  return categories.map(c => ({ params: { category: c.slug } }));
+}
+
+const { params } = Astro;
 const lang = 'fa';
+const cat = categories.find(c => c.slug === params.category);
+const subs = cat?.subs ?? [];
 ---
-<Base lang={lang} title="محصولات | MixPlus">
+<Base lang={lang} title={`محصولات${cat ? ' - ' + cat.nameFa : ''}`}>
   <section class="section container">
-    <h2 style="font-weight:800">محصولات</h2>
-    <ul style="list-style:none; padding:0; margin:16px 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px">
-      {categories.map(c => (
-        <li><a class="btn ghost" href={`/fa/products/${c.slug}/`}>{c.nameFa}</a></li>
-      ))}
-    </ul>
+    <h2 style="font-weight:800">{cat ? cat.nameFa : 'محصولات'}</h2>
+    {subs.length > 0 ? (
+      <ul style="list-style:none; padding:0; margin:16px 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px">
+        {subs.map(s => (
+          <li><a class="btn ghost" href={`/fa/products/${params.category}/${s.slug}/`}>{s.nameFa}</a></li>
+        ))}
+      </ul>
+    ) : (
+      <p style="color:var(--muted)">زیردسته‌ای ثبت نشده است. این صفحه موقتی است.</p>
+    )}
   </section>
 </Base>
