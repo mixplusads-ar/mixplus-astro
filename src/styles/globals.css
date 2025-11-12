@@ -18,7 +18,7 @@
   --stroke:rgba(0,0,0,.08);
 }
 
-/* فونت‌ها – فایل‌های واقعی‌ات را در public/fonts گذاشتی */
+/* فونت‌ها */
 @font-face{font-family:'Kalameh';src:url('/fonts/KALAMEH-REGULAR.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'Kalameh';src:url('/fonts/KALAMEH-BOLD.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
 @font-face{font-family:'Kalameh Fanum';src:url('/fonts/KALAMEHFANUM-REGULAR.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
@@ -34,9 +34,9 @@ a{color:var(--brand);text-decoration:none}
 a:hover{text-decoration:underline}
 .container{max-width:1180px;margin:0 auto;padding:0 16px}
 
-/* Header – شفاف با بلور در بالای صفحه، بعد از اسکرول سالید */
-.header{position:sticky;top:0;z-index:60;border-bottom:1px solid transparent;background:rgba(255,255,255,.50);backdrop-filter:blur(10px)}
-html:not(.is-light) .header{background:rgba(18,24,33,.20)}
+/* Header – شفاف‌تر + بلور، بعد از اسکرول سالید */
+.header{position:sticky;top:0;z-index:60;border-bottom:1px solid transparent;background:rgba(255,255,255,.35);backdrop-filter:blur(12px)}
+html:not(.is-light) .header{background:rgba(18,24,33,.18)}
 html.scrolled .header{background:var(--card);border-bottom-color:var(--stroke);backdrop-filter:none}
 .header-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
 .nav{display:flex;gap:16px;align-items:center}
