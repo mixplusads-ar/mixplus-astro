@@ -1,5 +1,4 @@
 ---
-import { site } from '../data/site.ts';
 import { categories } from '../data/categories.ts';
 import { social } from '../data/social.ts';
 
@@ -8,45 +7,50 @@ const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
 
 const roots = [
-  { slug: 'hob',   nameFa: 'اجاق گاز',        nameEn: 'Hob'   },
+  { slug: 'hob',   nameFa: 'اجاق گاز',        nameEn: 'Products / Hob'   },
   { slug: 'sink',  nameFa: 'سینک ظرف‌شویی',   nameEn: 'Sink'  },
   { slug: 'hood',  nameFa: 'هود',             nameEn: 'Hood'  },
   { slug: 'oven',  nameFa: 'فر توکار',         nameEn: 'Oven'  },
 ];
-const txt = (fa: string, en: string) => isFa ? fa : en;
+const txt = (fa: string, en: string) => (isFa ? fa : en);
 const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 ---
 
 <header class="header" dir={isFa ? 'rtl' : 'ltr'}>
   <div class="container header-inner">
 
-    <!-- گروه راست/چپ -->
+    <!-- گروه سمت راست در FA / سمت چپ در EN -->
     <nav class={`nav ${isFa ? 'nav-right' : 'nav-left'}`} aria-label="primary">
       <!-- محصولات -->
       <div class="mega products" data-key="products" tabindex="0" aria-haspopup="true">
         <span class="link like-button">{txt('محصولات','Products')}</span>
         <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel products glass">
+        <div class="mega-panel products">
           <div class="columns">
             <ul class="roots" id="prod-roots">
-              {roots.map(r => (
+              {[
+                { slug:'hob',   fa:'اجاق گاز',        en:'Hob' },
+                { slug:'sink',  fa:'سینک ظرف‌شویی',   en:'Sink' },
+                { slug:'hood',  fa:'هود',             en:'Hood' },
+                { slug:'oven',  fa:'فر',               en:'Oven' },
+              ].map(r => (
                 <li>
                   <a class="root" href={`/${lang}/products/${r.slug}/`} data-slug={r.slug}>
-                    {isFa ? r.nameFa : r.nameEn}
+                    {isFa ? r.fa : r.en}
                   </a>
                 </li>
               ))}
             </ul>
 
             <div class="subs-wrap" id="prod-subs">
-              {roots.map(r => {
-                const cat = categories.find(c => c.slug === r.slug);
-                // اگر زیردسته نداشت (فر)، یک fallback با «فر توکار»
+              {['hob','sink','hood','oven'].map(slug => {
+                const cat = categories.find(c => c.slug === slug);
+                // اگر فر زیردسته ندارد → «فر توکار» را نشان بده
                 const subs = (cat?.subs && cat.subs.length) ? cat.subs : [{ slug:'built-in', nameFa:'فر توکار', nameEn:'Built-in' }];
                 return (
-                  <ul class="subs" data-for={r.slug}>
+                  <ul class="subs" data-for={slug}>
                     {subs.map(s => (
-                      <li><a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{isFa ? s.nameFa : s.nameEn}</a></li>
+                      <li><a href={`/${lang}/products/${slug}/${s.slug}/`}>{isFa ? s.nameFa : s.nameEn}</a></li>
                     ))}
                   </ul>
                 );
@@ -62,11 +66,10 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
       <span class="pipe">|</span>
 
-      <!-- خدمات پس از فروش -->
       <div class="mega aftersales" data-key="aftersales" tabindex="0" aria-haspopup="true">
-        <span class="link like-button">{txt('خدماتِ پس از فروش','After-sales')}</span>
+        <span class="link like-button">{txt('خدماتِ پس از فروش','After-Sales')}</span>
         <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel glass">
+        <div class="mega-panel">
           <div class="mega-list">
             <a href={`/${lang}/after-sales/complaint-process/`}>{txt('فرآیند رسیدگی به شکایات','Complaint process')}</a>
             <a href={`/${lang}/after-sales/warranty-terms/`}>{txt('شرایط گارانتی محصولات میکس‌پلاس','Warranty terms')}</a>
@@ -75,14 +78,18 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
           </div>
         </div>
       </div>
+
+      <span class="pipe">|</span>
+
+      <a class="link like-button" href={`/${lang}/about/`}>{txt('درباره ما','About-Us')}</a>
     </nav>
 
     <!-- لوگو وسط -->
     <a class="brand" href={`/${lang}/`} aria-label="MixPlus"><brand-logo width="120" height="30"></brand-logo></a>
 
-    <!-- گروه مقابل -->
+    <!-- گروه مقابل: در FA چپ / در EN راست -->
     <nav class={`nav ${isFa ? 'nav-left' : 'nav-right'}`} aria-label="secondary">
-      <!-- آیکون سرچ مینیمال -->
+      <!-- سرچ مینیمال -->
       <button class="link like-button icon" aria-label={txt('جستجو','Search')} title={txt('جستجو','Search')} disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -96,7 +103,7 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
       <div class="mega social" data-key="social" tabindex="0" aria-haspopup="true">
         <span class="link like-button">#</span>
         <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel glass tiny-wide">
+        <div class="mega-panel tiny">
           <div class="mega-list tight">
             <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
             <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
@@ -109,22 +116,18 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
       <span class="pipe">|</span>
 
-      <a class="link like-button" href={`/${lang}/about/`}>{txt('درباره ما','About')}</a>
+      <a class="link like-button" href={downloadHref} download>{txt('دانلود کاتالوگ','Download Catalog')}</a>
 
       <span class="pipe">|</span>
 
-      <a class="link like-button" href={downloadHref} download>{txt('دانلود کاتالوگ','Download catalog')}</a>
-
-      <span class="pipe">|</span>
-
-      <!-- تغییر زبان با پنل کوچک‌تر -->
+      <!-- زبان: پنل کوچک -->
       <div class="mega lang" tabindex="0" aria-haspopup="true">
         <span class="link like-button lang-switch">
           {isFa ? 'فارسی' : 'English'}
           <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </span>
         <div class="hover-bridge" aria-hidden="true"></div>
-        <div class="mega-panel glass tiny">
+        <div class="mega-panel tiny">
           <div class="mega-list tight">
             <a href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a>
           </div>
@@ -139,11 +142,13 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 </header>
 
 <style>
-/* === Header container: translucent + blur (بیشتر شفاف) === */
-.header{position:sticky;top:0;z-index:60;border-bottom:1px solid transparent;
-  background:rgba(255,255,255,.22);backdrop-filter:blur(14px)}
-html:not(.is-light) .header{background:rgba(15,18,24,.22)}
-html.scrolled .header{background:var(--card);border-bottom-color:var(--stroke);backdrop-filter:none}
+/* فقط کادر «هدر» شفاف + بلور؛ رنگ مگامنوها دست‌نخورده */
+.header{
+  position:sticky; top:0; z-index:60; border-bottom:1px solid transparent;
+  background:rgba(255,255,255,.48); backdrop-filter:blur(10px);
+}
+html:not(.is-light) .header{ background:rgba(16,20,26,.28); }
+html.scrolled .header{ background:var(--card); border-bottom-color:var(--stroke); backdrop-filter:none; }
 
 .header-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
 .brand{display:inline-flex;align-items:center;justify-content:center;height:68px}
@@ -152,34 +157,27 @@ html.scrolled .header{background:var(--card);border-bottom-color:var(--stroke);b
 
 .link.like-button{all:unset;cursor:pointer;font-weight:600;padding:6px 0}
 .link[disabled]{opacity:.45;cursor:not-allowed}
-.link.icon svg{display:block;opacity:.85}
+.link.icon svg{display:block;opacity:.9}
 .pipe{opacity:.5;user-select:none}
 
 /* پل نامرئی برای عبور موس */
-.hover-bridge{position:absolute;left:0;right:0;top:100%;height:14px;pointer-events:auto;background:transparent}
+.hover-bridge{position:absolute;left:0;right:0;top:100%;height:12px;pointer-events:auto;background:transparent}
 
-/* === Mega panel: شیشه‌ای، کم‌شفاف + blur === */
+/* مگامنوها: همان رنگ‌های قبلی (var(--card)) */
 .mega{position:relative}
 .mega-panel{
-  position:absolute;top:calc(100% + 6px);inset-inline-start:0;
-  border:1px solid var(--stroke);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);
-  padding:12px;opacity:0;transform:translateY(6px);pointer-events:none;
-  transition:opacity .18s ease,transform .18s ease;
+  position:absolute; top:calc(100% + 6px); inset-inline-start:0;
+  background:var(--card); border:1px solid var(--stroke); border-radius:14px;
+  box-shadow:0 12px 32px rgba(0,0,0,.18); padding:12px;
+  opacity:0; transform:translateY(6px); pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
 }
-.mega-panel.glass{background:rgba(20,24,30,.58);backdrop-filter:blur(12px)}
-:root.is-light .mega-panel.glass{background:rgba(255,255,255,.68)}
-.mega.open .mega-panel,.mega:focus-within .mega-panel,.mega:hover .mega-panel{opacity:1;transform:translateY(0);pointer-events:auto}
-
-/* اندازه‌های کنترل‌شده (برای جلوگیری از بزرگ‌شدن تدریجی) */
-.mega-panel[data-sized="1"]{--rootw:var(--rootw);--subw:var(--subw)}
+.mega.open .mega-panel, .mega:focus-within .mega-panel, .mega:hover .mega-panel{opacity:1;transform:translateY(0);pointer-events:auto}
 .mega-panel.tiny{min-width:140px}
-.mega-panel.tiny-wide{min-width:200px}
+.mega-panel .mega-list{display:flex;flex-direction:column;gap:10px;min-width:280px}
+.mega-panel .mega-list.tight{min-width:auto;gap:8px}
 
-/* لیست عمومی */
-.mega-list{display:flex;flex-direction:column;gap:10px;min-width:280px}
-.mega-list.tight{min-width:auto;gap:8px}
-
-/* محصولات: ستون ریشه + ستون ساب‌ها با عرض ثابت */
+/* محصولات: ستون‌ها با عرض ثابت و بدون رشد تدریجی */
 .mega-panel.products{padding:10px}
 .columns{display:flex;gap:12px;align-items:flex-start}
 .roots{list-style:none;margin:0;padding:6px;border-inline-end:1px solid var(--stroke);width:var(--rootw,260px)}
@@ -191,7 +189,6 @@ html.scrolled .header{background:var(--card);border-bottom-color:var(--stroke);b
 .subs li a{display:block;padding:8px 12px;border-radius:10px}
 .subs li a:hover,.roots .root:hover{background:var(--stroke)}
 
-/* زبان: متن و فلش کوچک‌تر */
 .lang-switch{font-weight:600}
 .lang-switch svg{margin-inline-start:4px;vertical-align:-2px;opacity:.75}
 
@@ -203,38 +200,39 @@ html.scrolled .header{background:var(--card);border-bottom-color:var(--stroke);b
 </style>
 
 <script>
-/* === Theme switch === */
-const KEY='mix_theme',html=document.documentElement;
-function applyTheme(v){html.classList.toggle('is-light',v==='light')}
+/* تم */
+const KEY='mix_theme', html=document.documentElement;
+function applyTheme(v){ html.classList.toggle('is-light', v==='light'); }
 applyTheme(localStorage.getItem(KEY)||'light');
-customElements.define('theme-switch',class extends HTMLElement{
-  connectedCallback(){this.setAttribute('role','button');this.setAttribute('aria-label','Toggle theme');this.style.userSelect='none';this.render();
-    this.addEventListener('click',()=>{const now=html.classList.contains('is-light')?'dark':'light';localStorage.setItem(KEY,now);applyTheme(now);this.render();});}
-  render(){this.textContent=html.classList.contains('is-light')?'☾':'☀︎';}
+customElements.define('theme-switch', class extends HTMLElement{
+  connectedCallback(){ this.setAttribute('role','button'); this.setAttribute('aria-label','Toggle theme'); this.style.userSelect='none'; this.render();
+    this.addEventListener('click', ()=>{ const now=html.classList.contains('is-light')?'dark':'light'; localStorage.setItem(KEY,now); applyTheme(now); this.render(); }); }
+  render(){ this.textContent = html.classList.contains('is-light') ? '☾' : '☀︎'; }
 });
 
-/* === Brand logo auto theme === */
-customElements.define('brand-logo',class extends HTMLElement{
-  static get observedAttributes(){return['width','height']}
-  connectedCallback(){this.img=document.createElement('img');this.img.alt='MixPlus logo';this.appendChild(this.img);this._applySize();this.updateSrc();
-    const mo=new MutationObserver(()=>this.updateSrc());mo.observe(document.documentElement,{attributes:true,attributeFilter:['class']});this._mo=mo;}
-  disconnectedCallback(){this._mo?.disconnect?.()}
-  attributeChangedCallback(){this._applySize()}
-  _applySize(){const w=this.getAttribute('width')||'120',h=this.getAttribute('height')||'30';this.img.width=+w;this.img.height=+h;}
-  updateSrc(){const isLight=document.documentElement.classList.contains('is-light');this.img.src=isLight?'/logos/logo-dark.svg':'/logos/logo.svg';}
+/* لوگو مطابق تم */
+customElements.define('brand-logo', class extends HTMLElement{
+  static get observedAttributes(){ return ['width','height']; }
+  connectedCallback(){ this.img=document.createElement('img'); this.img.alt='MixPlus logo'; this.appendChild(this.img);
+    this._applySize(); this.updateSrc();
+    const mo=new MutationObserver(()=>this.updateSrc()); mo.observe(document.documentElement,{attributes:true,attributeFilter:['class']}); this._mo=mo; }
+  disconnectedCallback(){ this._mo?.disconnect?.(); }
+  attributeChangedCallback(){ this._applySize(); }
+  _applySize(){ const w=this.getAttribute('width')||'120', h=this.getAttribute('height')||'30'; this.img.width=+w; this.img.height=+h; }
+  updateSrc(){ const isLight=document.documentElement.classList.contains('is-light'); this.img.src=isLight?'/logos/logo-dark.svg':'/logos/logo.svg'; }
 });
 
-/* سالید کردن هدر در اسکرول */
-const onScroll=()=>document.documentElement.classList.toggle('scrolled',window.scrollY>6);
-onScroll();window.addEventListener('scroll',onScroll);
+/* سالید شدن هدر در اسکرول */
+const onScroll=()=>document.documentElement.classList.toggle('scrolled', window.scrollY>6);
+onScroll(); window.addEventListener('scroll', onScroll);
 
-/* Hover intent + جلوگیری از بزرگ‌شدن تدریجی عرض پنل‌ها */
+/* Hover intent + جلوگیری از رشد عرض پنل‌ها */
 document.querySelectorAll('.mega').forEach((el)=>{
-  let hideTimer=null;const HIDE_DELAY=650;
-  const open=()=>{el.classList.add('open');};
-  const close=()=>{el.classList.remove('open');};
-  const delayClose=()=>{hideTimer=setTimeout(close,HIDE_DELAY);};
-  const cancelClose=()=>{if(hideTimer){clearTimeout(hideTimer);hideTimer=null;}};
+  let hideTimer=null; const HIDE_DELAY=650;
+  const open=()=>el.classList.add('open');
+  const close=()=>el.classList.remove('open');
+  const delayClose=()=>{ hideTimer=setTimeout(close,HIDE_DELAY); };
+  const cancelClose=()=>{ if(hideTimer){clearTimeout(hideTimer);hideTimer=null;} };
 
   el.addEventListener('mouseenter',()=>{cancelClose();open();});
   el.addEventListener('mouseleave',delayClose);
@@ -246,36 +244,31 @@ document.querySelectorAll('.mega').forEach((el)=>{
   });
 });
 
-/* محصولات: فعال‌سازی ساب‌ها + فیت یکباره ستون‌ها بدون رشد تدریجی */
+/* محصولات: اکتیو + «یک‌بار» Fit عرض ستون‌ها */
 const rootsEl=document.getElementById('prod-roots');
 const subsWrap=document.getElementById('prod-subs');
 if(rootsEl&&subsWrap){
   function activate(slug){
-    rootsEl.querySelectorAll('.root').forEach(a=>a.setAttribute('aria-current',a.getAttribute('data-slug')===slug?'true':'false'));
-    subsWrap.querySelectorAll('.subs').forEach(ul=>ul.classList.toggle('is-active',ul.getAttribute('data-for')===slug));
+    rootsEl.querySelectorAll('.root').forEach(a=>a.setAttribute('aria-current', a.getAttribute('data-slug')===slug?'true':'false'));
+    subsWrap.querySelectorAll('.subs').forEach(ul=>ul.classList.toggle('is-active', ul.getAttribute('data-for')===slug));
   }
-  const first=rootsEl.querySelector('.root');activate(first?.getAttribute('data-slug')||'hob');
+  activate(rootsEl.querySelector('.root')?.getAttribute('data-slug')||'hob');
 
-  // محاسبه عرض‌ها فقط «یک‌بار» در اولین بازشدن
   const prodMega=document.querySelector('.mega.products');
   const panel=prodMega?.querySelector('.mega-panel.products');
   let sized=false;
   function fitOnce(){
     if(sized||!panel) return;
-    // قبل از اندازه‌گیری، متغیرها را پاک کن تا از مقدار قبلی تاثیر نگیرد
     panel.style.removeProperty('--rootw'); panel.style.removeProperty('--subw');
-    // اندازه طبیعی متن‌ها
     let rw=0; rootsEl.querySelectorAll('.root').forEach(a=>rw=Math.max(rw,a.scrollWidth));
     let sw=0; subsWrap.querySelectorAll('.subs').forEach(ul=>ul.querySelectorAll('a').forEach(a=>sw=Math.max(sw,a.scrollWidth)));
-    panel.style.setProperty('--rootw', Math.ceil(rw+24)+'px'); // padding compensation (ثابت)
+    panel.style.setProperty('--rootw', Math.ceil(rw+24)+'px');
     panel.style.setProperty('--subw',  Math.ceil(sw+24)+'px');
-    panel.setAttribute('data-sized','1'); sized=true;
+    sized=true;
   }
-  // وقتی پنل باز شد، یکبار اندازه بگیر
   prodMega?.addEventListener('mouseenter',fitOnce,{once:true});
   prodMega?.addEventListener('focusin',fitOnce,{once:true});
 
-  // تعویض ساب‌ها با هاور
   rootsEl.addEventListener('mouseenter',e=>{
     const a=(e.target as HTMLElement).closest('.root'); if(a) activate(a.getAttribute('data-slug')!);
   },true);
