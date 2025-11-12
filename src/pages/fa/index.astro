@@ -7,21 +7,32 @@ import Banner from '@/components/FullBleedBanner.astro';
 import VideoEmbed from '@/components/VideoEmbed.astro';
 import SocialStrip from '@/components/SocialStrip.astro';
 import { site } from '@/data/site.ts';
+
 const lang = 'fa';
 const t = site[lang];
 ---
 <Base lang={lang} title={t.title} description={t.description}>
   <Hero lang={lang} />
 
+  <!-- معرفی و گرید دسته‌ها -->
   <section class="section container">
     <SectionTitle title={t.sections.introTitle} text={t.sections.introText} />
     <div style="height:12px"></div>
     <Categories lang={lang} />
   </section>
 
+  <!-- Banner-01 -->
   <Banner img="/media/banners/fullbleed-01.jpg" title="دوام و کیفیت ساخت" text="استانداردهای مهندسی و تست کیفی دقیق." />
+
+  <!-- فاصله + ویدیو کارخانه (Aparat) بین Banner-01 و Banner-02 -->
+  <section class="section container">
+    <VideoEmbed src={t.factoryEmbed} title="ویدیو کارخانه" cover="/media/factory/placeholder.jpg" />
+  </section>
+
+  <!-- Banner-02 -->
   <Banner img="/media/banners/fullbleed-02.jpg" title="طراحی مینیمال" text="ساده، خوانا و امضادار." />
 
+  <!-- میانبرها -->
   <section class="section container">
     <SectionTitle title="میانبرها" />
     <div class="grid">
@@ -32,10 +43,14 @@ const t = site[lang];
     </div>
   </section>
 
+  <!-- Banner-03 -->
   <Banner img="/media/banners/fullbleed-03.jpg" title="الهام ایتالیایی" text="زیبایی و عملکرد هم‌زمان." />
-  <Banner img="/media/banners/fullbleed-04.jpg" title="گارانتی و پشتیبانی" text="در سراسر کشور با شبکه نمایندگی‌های معتبر." />
 
+  <!-- فاصله + ۵ آیکون شبکه‌های اجتماعی بین Banner-03 و Banner-04 -->
   <section class="section">
     <SocialStrip />
   </section>
+
+  <!-- Banner-04 -->
+  <Banner img="/media/banners/fullbleed-04.jpg" title="گارانتی و پشتیبانی" text="در سراسر کشور با شبکه نمایندگی‌های معتبر." />
 </Base>
