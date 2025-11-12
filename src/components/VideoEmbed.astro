@@ -1,52 +1,64 @@
 ---
 /**
- * می‌پذیرد:
- *  1) کد خام HTML (script/iframe)
- *  2) فقط URL
- *
- * مثال مصرف در صفحات: <VideoEmbed src={t.factoryEmbed} />
+ * ورودی:
+ *  - src: می‌تواند یکی از این‌ها باشد:
+ *      1) URL ساده (YouTube/Aparat/…)
+ *      2) iframe خام (مثلاً یوتیوب)  ← از داخلش src استخراج می‌کنیم
+ *      3) script خام آپارات           ← همان را رندر می‌کنیم
+ *  - title?: string
+ *  - cover?: string
  */
 const { src, title = 'Factory Video', cover = '/media/factory/placeholder.jpg' } = Astro.props;
 
 const raw = (src || '').trim();
 const isHtml = raw.startsWith('<');
-const isScript = isHtml && /<script[\s>]/i.test(raw);   // اسکریپت آپارات
-const isIframe = isHtml && /<iframe[\s>]/i.test(raw);   // iframe یوتیوب/سایر
+const isScript = isHtml && /<script\b/i.test(raw);
+const isIframe = isHtml && /<iframe\b/i.test(raw);
+
+// اگر iframe خام است، آدرس را جدا کن
+let extractedSrc = '';
+if (isIframe) {
+  const m = raw.match(/src=["']([^"']+)["']/i);
+  extractedSrc = m ? m[1] : '';
+}
+
+// اگر URL یوتیوب است، پارامترهای مناسب را اضافه کنیم (playsinline, rel=0, modestbranding)
+function enhanceYouTube(u) {
+  try {
+    const url = new URL(u, 'https://dummy.invalid');
+    if (!/youtube\.com|youtu\.be/.test(url.href)) return u;
+    const embed = url.href.includes('/embed/') ? new URL(url.href) : new URL(`https://www.youtube.com/embed/${url.searchParams.get('v') || ''}`);
+    const p = embed.searchParams;
+    if (!p.has('playsinline'))     p.set('playsinline', '1');
+    if (!p.has('rel'))             p.set('rel', '0');
+    if (!p.has('modestbranding'))  p.set('modestbranding', '1');
+    return embed.toString();
+  } catch { return u; }
+}
+
+// تعیین src نهایی iframe (برای حالت URL یا iframe خام)
+const finalIframeSrc = !isHtml
+  ? enhanceYouTube(raw)
+  : (isIframe ? enhanceYouTube(extractedSrc) : '');
 ---
-{!isHtml ? (
-  /* حالت URL ساده */
+{isScript ? (
+  /* اسکریپت آپارات: خودش ریسپانسیو می‌سازد */
+  <div class="video-embed aparat">
+    <div class="holder" set:html={raw}></div>
+    <noscript><img src={cover} alt={title} /></noscript>
+  </div>
+) : (
+  /* URL یا iframe یوتیوب (یا هر سرویس دیگری) → داخل ظرف 16:9 */
   <div class="video-embed">
     <div class="ratio">
       <iframe
-        src={raw}
+        src={finalIframeSrc || raw}
         title={title}
-        allow="autoplay; encrypted-media; picture-in-picture"
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
         allowfullscreen
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
       ></iframe>
-    </div>
-    <noscript><img src={cover} alt={title} /></noscript>
-  </div>
-) : isScript ? (
-  /* اسکریپت آپارات (خودش ریسپانسیو تولید می‌کند) */
-  <div class="video-embed raw-aparat">
-    <div class="holder" set:html={raw}></div>
-    <noscript><img src={cover} alt={title} /></noscript>
-  </div>
-) : isIframe ? (
-  /* iframe خام (مثلاً YouTube) → می‌بریم داخل ظرف 16:9 و اجبار 100% */
-  <div class="video-embed">
-    <div class="ratio">
-      <div class="raw-iframe" set:html={raw}></div>
-    </div>
-    <noscript><img src={cover} alt={title} /></noscript>
-  </div>
-) : (
-  /* هر چیز HTML دیگری */
-  <div class="video-embed">
-    <div class="ratio">
-      <div class="raw-iframe" set:html={raw}></div>
     </div>
     <noscript><img src={cover} alt={title} /></noscript>
   </div>
@@ -58,20 +70,16 @@ const isIframe = isHtml && /<iframe[\s>]/i.test(raw);   // iframe یوتیوب/�
   background:#000; border-radius:16px; overflow:hidden;
   border:1px solid var(--stroke);
 }
-
-/* حالت URL و حالت iframe خام: iframe باید کل ظرف را پر کند */
+/* iframe همیشه کل ظرف را پر کند */
 .video-embed iframe{
-  position:absolute; inset:0; width:100% !important; height:100% !important; border:0; display:block;
+  position:absolute; inset:0; width:100%; height:100%; border:0; display:block;
 }
-
-/* وقتی iframe خام را با set:html گذاشته‌ایم */
-.raw-iframe,
-.raw-iframe *{ width:100% !important; height:100% !important; }
-
-/* اسکریپت آپارات: تا لود شدن اسکریپت، فضا نگه داشته شود */
-.raw-aparat .holder{
+/* اسکریپت آپارات: تا لود، فضا نگه داشته شود و گوشه‌ها گرد بماند */
+.video-embed.aparat .holder{
   min-height: 240px;
-  border-radius:16px; overflow:hidden; border:1px solid var(--stroke);
   background:#000;
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  overflow:hidden;
 }
 </style>
