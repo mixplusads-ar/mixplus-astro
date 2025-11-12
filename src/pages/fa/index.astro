@@ -1,12 +1,12 @@
 ---
-import Base from '../../layouts/BaseLayout.astro';
-import Hero from '../../components/Hero.astro';
-import SectionTitle from '../../components/SectionTitle.astro';
-import Categories from '../../components/CategoriesGrid.astro';
-import Banner from '../../components/FullBleedBanner.astro';
-import VideoEmbed from '../../components/VideoEmbed.astro';
-import SocialStrip from '../../components/SocialStrip.astro';
-import { site } from '../../data/site.ts';
+import Base from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import SectionTitle from '@/components/SectionTitle.astro';
+import Categories from '@/components/CategoriesGrid.astro';
+import Banner from '@/components/FullBleedBanner.astro';
+import VideoEmbed from '@/components/VideoEmbed.astro';
+import SocialStrip from '@/components/SocialStrip.astro';
+import { site } from '@/data/site.ts';
 const lang = 'fa';
 const t = site[lang];
 ---
@@ -23,16 +23,16 @@ const t = site[lang];
   <Banner img="/media/banners/fullbleed-02.jpg" title="طراحی مینیمال" text="ساده، خوانا و امضادار." />
 
   <section class="section">
-    <VideoEmbed src={lang==='fa'? t.factoryEmbed : t.factoryEmbed} cover="/media/factory/placeholder.jpg" title="Factory" />
+    <VideoEmbed src={t.factoryEmbed} cover="/media/factory/placeholder.jpg" title="Factory" />
   </section>
 
   <section class="section container">
-    <SectionTitle title="میانبرها" text="" />
+    <SectionTitle title="میانبرها" />
     <div class="grid">
-      <a class="card" href={`/${lang}/products/`}><img src="/media/grid-cards/card-01.jpg"/><div class="body">{lang==='fa'?'محصولات':'Products'}</div></a>
-      <a class="card" href={`/${lang}/events/`}><img src="/media/grid-cards/card-02.jpg"/><div class="body">{lang==='fa'?'رویدادها':'Events'}</div></a>
-      <a class="card" href={`/${lang}/after-sales/`}><img src="/media/grid-cards/card-03.jpg"/><div class="body">{lang==='fa'?'خدمات':'Services'}</div></a>
-      <a class="card" href={`/${lang}/academy/`}><img src="/media/grid-cards/card-04.jpg"/><div class="body">{lang==='fa'?'آموزش':'Academy'}</div></a>
+      <a class="card" href={`/fa/products/`}><img src="/media/grid-cards/card-01.jpg"/><div class="body">محصولات</div></a>
+      <a class="card" href={`/fa/events/`}><img src="/media/grid-cards/card-02.jpg"/><div class="body">رویدادها</div></a>
+      <a class="card" href={`/fa/after-sales/`}><img src="/media/grid-cards/card-03.jpg"/><div class="body">خدمات</div></a>
+      <a class="card" href={`/fa/academy/`}><img src="/media/grid-cards/card-04.jpg"/><div class="body">آموزش</div></a>
     </div>
   </section>
 
