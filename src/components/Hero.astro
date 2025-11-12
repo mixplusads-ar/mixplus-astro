@@ -31,59 +31,81 @@ const t = site[lang];
 
 <script>
 /**
- * Hero video playlist (random order, no loop, go to next on end).
- * IMPORTANT: Looks into /media/hero/video/ (singular) because that's where you uploaded.
- * Files must be named: video-01.mp4 ... video-04.mp4
+ * MixPlus Hero Player
+ * - Reads videos from /media/hero/videos/video-01.mp4 ... video-04.mp4
+ * - Random order, auto-advance, infinite loop (reshuffle after finishing all)
+ * - Autoplay-safe (muted/inline + start when visible). If blocked/error -> skip to next.
+ * - On theme toggle (html class change) -> restart from a new random video.
  */
-const base = '/media/hero/video/';
-const pool = [1,2,3,4].map(n => `${base}video-0${n}.mp4`);
-const sources = pool.sort(() => Math.random() - 0.5);
 
-let idx = 0;
+const PATH = '/media/hero/videos/';
+const FILES = [1,2,3,4].map(n => `video-0${n}.mp4`);
+
 const v = document.getElementById('heroVideo');
 const fallback = document.getElementById('heroFallback');
 
-v.muted = true;            // required for autoplay
-v.playsInline = true;      // iOS inline playback
+v.muted = true;         // must be true for autoplay policies
+v.playsInline = true;   // iOS inline playback
 v.autoplay = true;
 
+let queue = [];
+let idx = 0;
+let started = false;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildQueue(){
+  queue = shuffle(FILES).map(f => PATH + f);
+  idx = 0;
+}
+
+function setSource(src){
+  // Reset <source> for Safari to re-evaluate pipeline
+  v.innerHTML = `<source src="${src}" type="video/mp4">`;
+  v.load();
+}
+
 function showFallback(){
-  try { v.pause(); } catch(e){}
+  try{ v.pause(); }catch(_){}
   v.removeAttribute('src');
   v.innerHTML = '';
   v.style.display = 'none';
   fallback.style.display = 'block';
 }
 
-function setSource(src){
-  // reset sources for Safari to re-evaluate type
-  v.innerHTML = `<source src="${src}" type="video/mp4">`;
-  v.load();
-}
-
 async function safePlay(){
-  try {
+  try{
     const p = v.play();
     if (p && typeof p.then === 'function') await p;
-  } catch (err) {
-    // If autoplay is blocked or file not decodable -> fallback
-    showFallback();
+  }catch(e){
+    // autoplay blocked or decode error -> skip
+    playNext();
   }
 }
 
-function playNext(){
-  if (idx >= sources.length) { showFallback(); return; }
-  const src = sources[idx++];
+function playCurrent(){
+  if (!queue.length) buildQueue();
+  const src = queue[idx];
   setSource(src);
 
-  // Wait until video is actually ready, then try play
+  // try play after canplay (reliable across WebKit/Chromium)
   const onCanPlay = () => {
     v.removeEventListener('canplay', onCanPlay);
+    // ensure video element is visible (fallback hidden)
+    v.style.display = 'block';
+    fallback.style.display = 'none';
     safePlay();
   };
   v.addEventListener('canplay', onCanPlay, { once: true });
 
-  // If error decoding or 404 -> try next one
+  // if file errors (404/codec), skip to next one
   const onError = () => {
     v.removeEventListener('error', onError);
     playNext();
@@ -91,24 +113,62 @@ function playNext(){
   v.addEventListener('error', onError, { once: true });
 }
 
-// Start when hero becomes visible (helps iOS policies)
-const startWhenVisible = () => {
-  const io = new IntersectionObserver(entries => {
-    for (const e of entries) {
-      if (e.isIntersecting) {
-        playNext();
-        io.disconnect();
-        break;
-      }
-    }
-  }, { threshold: .2 });
-  io.observe(document.querySelector('.hero'));
-};
+function playNext(){
+  if (!queue.length) buildQueue();
+  idx++;
+  if (idx >= queue.length){
+    // Finished all 4 -> reshuffle for infinite random loop
+    buildQueue();
+  }
+  playCurrent();
+}
 
+// start only when hero becomes visible (improves autoplay success rate)
+function startWhenVisible(){
+  if (started) return;
+  started = true;
+  buildQueue();
+  playCurrent();
+}
+const io = new IntersectionObserver((entries)=>{
+  for (const e of entries){
+    if (e.isIntersecting){
+      startWhenVisible();
+      io.disconnect();
+      break;
+    }
+  }
+},{ threshold: .15 });
+io.observe(document.querySelector('.hero'));
+
+// go to next file on natural end
 v.addEventListener('ended', playNext);
 
-// Kick off
-document.readyState === 'complete' || document.readyState === 'interactive'
-  ? startWhenVisible()
-  : document.addEventListener('DOMContentLoaded', startWhenVisible);
+// restart from a new random video when theme toggles (class change on <html>)
+const html = document.documentElement;
+const mo = new MutationObserver(muts=>{
+  for (const m of muts){
+    if (m.type === 'attributes' && m.attributeName === 'class'){
+      // restart with a fresh random queue
+      started = false;
+      v.pause();
+      buildQueue();
+      startWhenVisible();
+      break;
+    }
+  }
+});
+mo.observe(html, { attributes: true });
+
+// safety: start even if hero already visible after hydration
+if (document.readyState === 'complete' || document.readyState === 'interactive'){
+  // if hero is already on screen, start immediately
+  const rect = document.querySelector('.hero')?.getBoundingClientRect();
+  if (rect && rect.top < window.innerHeight && rect.bottom > 0) startWhenVisible();
+} else {
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const rect = document.querySelector('.hero')?.getBoundingClientRect();
+    if (rect && rect.top < window.innerHeight && rect.bottom > 0) startWhenVisible();
+  });
+}
 </script>
