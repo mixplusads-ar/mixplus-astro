@@ -11,6 +11,7 @@ const t = site[lang];
     autoplay
     disablepictureinpicture
     controlslist="nodownload noplaybackrate"
+    poster="/media/hero/images/hero-01.jpg"
   ></video>
 
   <img id="heroFallback" src="/media/hero/images/hero-01.jpg" alt="Hero" style="display:none" loading="eager"/>
@@ -30,62 +31,84 @@ const t = site[lang];
 
 <script>
 /**
- * Robust autoplay:
- * - muted + playsinline set BEFORE loading sources (iOS requirement)
- * - start only when visible (IntersectionObserver)
- * - on rejection -> fallback to image
- * - after each "ended" -> next video from a random queue (no loop)
+ * Hero video playlist (random order, no loop, go to next on end).
+ * IMPORTANT: Looks into /media/hero/video/ (singular) because that's where you uploaded.
+ * Files must be named: video-01.mp4 ... video-04.mp4
  */
-const sources = [1,2,3,4].sort(()=>Math.random()-0.5).map(n=>`/media/hero/videos/video-0${n}.mp4`);
-let idx = 0;
+const base = '/media/hero/video/';
+const pool = [1,2,3,4].map(n => `${base}video-0${n}.mp4`);
+const sources = pool.sort(() => Math.random() - 0.5);
 
+let idx = 0;
 const v = document.getElementById('heroVideo');
 const fallback = document.getElementById('heroFallback');
 
-v.muted = true;
-v.playsInline = true;
+v.muted = true;            // required for autoplay
+v.playsInline = true;      // iOS inline playback
 v.autoplay = true;
 
+function showFallback(){
+  try { v.pause(); } catch(e){}
+  v.removeAttribute('src');
+  v.innerHTML = '';
+  v.style.display = 'none';
+  fallback.style.display = 'block';
+}
+
 function setSource(src){
+  // reset sources for Safari to re-evaluate type
   v.innerHTML = `<source src="${src}" type="video/mp4">`;
   v.load();
 }
 
-function showFallback(){
-  v.pause();
-  v.removeAttribute('src');
-  v.innerHTML = '';
-  v.style.display='none';
-  fallback.style.display='block';
-}
-
-async function tryPlay(){
-  try{
+async function safePlay(){
+  try {
     const p = v.play();
     if (p && typeof p.then === 'function') await p;
-  }catch(e){
-    // Autoplay blocked or video error
+  } catch (err) {
+    // If autoplay is blocked or file not decodable -> fallback
     showFallback();
   }
 }
 
 function playNext(){
-  if(idx >= sources.length){ showFallback(); return; }
-  setSource(sources[idx++]);
-  tryPlay();
+  if (idx >= sources.length) { showFallback(); return; }
+  const src = sources[idx++];
+  setSource(src);
+
+  // Wait until video is actually ready, then try play
+  const onCanPlay = () => {
+    v.removeEventListener('canplay', onCanPlay);
+    safePlay();
+  };
+  v.addEventListener('canplay', onCanPlay, { once: true });
+
+  // If error decoding or 404 -> try next one
+  const onError = () => {
+    v.removeEventListener('error', onError);
+    playNext();
+  };
+  v.addEventListener('error', onError, { once: true });
 }
 
-// start only when hero is visible (helps iOS autoplay policies)
-const io = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      playNext();
-      io.disconnect();
+// Start when hero becomes visible (helps iOS policies)
+const startWhenVisible = () => {
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        playNext();
+        io.disconnect();
+        break;
+      }
     }
-  });
-},{threshold:.2});
-io.observe(document.querySelector('.hero'));
+  }, { threshold: .2 });
+  io.observe(document.querySelector('.hero'));
+};
 
 v.addEventListener('ended', playNext);
-v.addEventListener('error', showFallback);
+
+// Kick off
+document.readyState === 'complete' || document.readyState === 'interactive'
+  ? startWhenVisible()
+  : document.addEventListener('DOMContentLoaded', startWhenVisible);
 </script>
