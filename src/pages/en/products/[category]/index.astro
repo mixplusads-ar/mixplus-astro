@@ -1,11 +1,15 @@
 ---
 import Base from '@/layouts/BaseLayout.astro';
-const { params } = Astro;
+import { categories } from '@/data/categories.ts';
 const lang = 'en';
 ---
-<Base lang={lang} title="MixPlus">
+<Base lang={lang} title="Products | MixPlus">
   <section class="section container">
-    <h2 style="font-weight:800">{params?.category ?? 'Products'}</h2>
-    <p style="color:var(--muted)">This page is a placeholder and will be completed later.</p>
+    <h2 style="font-weight:800">Products</h2>
+    <ul style="list-style:none; padding:0; margin:16px 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px">
+      {categories.map(c => (
+        <li><a class="btn ghost" href={`/en/products/${c.slug}/`}>{c.nameEn}</a></li>
+      ))}
+    </ul>
   </section>
 </Base>
