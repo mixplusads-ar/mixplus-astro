@@ -1,55 +1,199 @@
 ---
 import { site } from '../data/site.ts';
+import { categories } from '../data/categories.ts';
+
 const { lang = 'fa' } = Astro.props;
 const t = site[lang];
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
+
+// دسته‌های ریشه برای مگامنو محصولات (چهار ستون)
+const roots = [
+  { slug: 'hob',   nameFa: 'اجاق گاز',        nameEn: 'Hob'   },
+  { slug: 'sink',  nameFa: 'سینک ظرف‌شویی',   nameEn: 'Sink'  },
+  { slug: 'hood',  nameFa: 'هود',             nameEn: 'Hood'  },
+  { slug: 'oven',  nameFa: 'فر',               nameEn: 'Oven'  },
+];
+
+const txt = (fa: string, en: string) => isFa ? fa : en;
 const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 ---
-<header class="header" data-lang={lang}>
-  <div class="container header-inner" style={`direction:${isFa?'rtl':'ltr'}`}>
-    <nav class="nav" aria-label="primary">
-      <a href={`/${lang}/products/`}>{t.nav.products}</a>
-      <a href={`/${lang}/dealers/`}>{t.nav.dealers}</a>
-      <div class="nav">
-        <details>
-          <summary style="cursor:pointer">{t.aftersales ?? t.nav.aftersales}</summary>
-          <div class="nav" style="padding:10px 0">
-            <a href={`/${lang}/after-sales/complaint-process/`}>فرآیند رسیدگی به شکایات</a>
-            <a href={`/${lang}/after-sales/warranty-terms/`}>شرایط گارانتی</a>
-            <a href={`/${lang}/after-sales/installation-request/`}>درخواست نصب</a>
-            <a href={`/${lang}/after-sales/complaint/`}>شکایت</a>
+
+<header class={`header`} dir={isFa ? 'rtl' : 'ltr'}>
+  <div class="container header-inner">
+
+    <!-- گروه راست/چپ بسته به زبان -->
+    <nav class={`nav ${isFa ? 'nav-right' : 'nav-left'}`} aria-label="primary">
+      <!-- محصولات (مگامنو) -->
+      <div class="mega" data-key="products" tabindex="0" aria-haspopup="true">
+        <span class="link like-button">{txt('محصولات','Products')}</span>
+        <div class="mega-panel">
+          <div class="mega-grid">
+            {roots.map(r => {
+              const cat = categories.find(c => c.slug === r.slug);
+              const hasSubs = !!cat?.subs?.length;
+              return (
+                <div class="mega-col">
+                  <a class="root" href={`/${lang}/products/${r.slug}/`}>{isFa ? r.nameFa : r.nameEn}</a>
+                  {hasSubs && (
+                    <ul class="subs">
+                      {cat!.subs!.map(s => (
+                        <li><a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{isFa ? s.nameFa : s.nameEn}</a></li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        </details>
+        </div>
+      </div>
+
+      <span class="pipe">|</span>
+
+      <!-- نمایندگی‌ها -->
+      <a class="link like-button" href={`/${lang}/dealers/`}>{txt('نمایندگی‌های مجاز','Dealers')}</a>
+
+      <span class="pipe">|</span>
+
+      <!-- خدمات پس از فروش (مگامنو) -->
+      <div class="mega" data-key="aftersales" tabindex="0" aria-haspopup="true">
+        <span class="link like-button">{txt('خدماتِ پس از فروش','After-sales')}</span>
+        <div class="mega-panel">
+          <div class="mega-list">
+            <a href={`/${lang}/after-sales/complaint-process/`}>{txt('فرآیند رسیدگی به شکایات','Complaint process')}</a>
+            <a href={`/${lang}/after-sales/warranty-terms/`}>{txt('شرایط گارانتی محصولات میکس‌پلاس','Warranty terms')}</a>
+            <a href={`/${lang}/after-sales/installation-request/`}>{txt('درخواست نصب محصول','Installation request')}</a>
+            <a href={`/${lang}/after-sales/complaint/`}>{txt('شکایت','Complaint')}</a>
+          </div>
+        </div>
       </div>
     </nav>
 
-    <a href={`/${lang}/`} aria-label="MixPlus">
-      <brand-logo width="112" height="28"></brand-logo>
+    <!-- لوگو وسط (سوییچ خودکار تم) -->
+    <a class="brand" href={`/${lang}/`} aria-label="MixPlus">
+      <brand-logo width="120" height="30"></brand-logo>
     </a>
 
-    <nav class="nav">
-      <a href={`/${otherLang}/`} aria-label="Switch language">{isFa ? 'English' : 'فارسی'}</a>
-      <a href={downloadHref} download>{t.nav.download}</a>
-      <a href={`/${lang}/about/`}>{t.nav.about}</a>
-      <details>
-        <summary style="cursor:pointer">#</summary>
-        <div class="nav" style="padding:10px 0">
-          <a href="/#" aria-label="Instagram" rel="noopener">IG</a>
-          <a href="/#" aria-label="Aparat" rel="noopener">Ap</a>
-          <a href="/#" aria-label="YouTube" rel="noopener">YT</a>
-          <a href="/#" aria-label="LinkedIn" rel="noopener">IN</a>
-          <a href="/#" aria-label="Telegram" rel="noopener">TG</a>
+    <!-- گروه مقابل -->
+    <nav class={`nav ${isFa ? 'nav-left' : 'nav-right'}`} aria-label="secondary">
+
+      <!-- جستجو (استاب) -->
+      <button class="link like-button" aria-label={txt('جستجو','Search')} title={txt('جستجو','Search')} disabled>🔍</button>
+
+      <span class="pipe">|</span>
+
+      <!-- شبکه‌ها (#) -->
+      <div class="mega" data-key="social" tabindex="0" aria-haspopup="true">
+        <span class="link like-button">#</span>
+        <div class="mega-panel">
+          <div class="mega-list socials">
+            <a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
+            <a href={site.social.aparat}   target="_blank" rel="noopener">Aparat</a>
+            <a href={site.social.youtube}  target="_blank" rel="noopener">YouTube</a>
+            <a href={site.social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+            <a href={site.social.telegram} target="_blank" rel="noopener">Telegram</a>
+          </div>
         </div>
-      </details>
-      <button aria-label={t.nav.search} style="all:unset; cursor:not-allowed; opacity:.5">🔍</button>
-      <theme-switch></theme-switch>
+      </div>
+
+      <span class="pipe">|</span>
+
+      <!-- درباره ما -->
+      <a class="link like-button" href={`/${lang}/about/`}>{txt('درباره ما','About')}</a>
+
+      <span class="pipe">|</span>
+
+      <!-- دانلود کاتالوگ -->
+      <a class="link like-button" href={downloadHref} download>{txt('دانلود کاتالوگ','Download catalog')}</a>
+
+      <span class="pipe">|</span>
+
+      <!-- تغییر زبان (با فلش کوچک) -->
+      <a class="link like-button lang-switch" href={`/${otherLang}/`} aria-label="Switch language">
+        {isFa ? 'فارسی' : 'English'}
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </a>
+
+      <span class="pipe">|</span>
+
+      <!-- سوییچر تم (ماه/خورشید مینیمال) -->
+      <theme-switch class="link like-button" title={txt('تغییر تم','Toggle theme')}></theme-switch>
     </nav>
   </div>
 </header>
 
+<style>
+/* ساختار و فاصله‌ها */
+.header { position: sticky; top: 0; z-index: 60; border-bottom: 1px solid transparent; }
+.header-inner { display:flex; align-items:center; justify-content:space-between; height:68px; }
+.brand { display:inline-flex; align-items:center; justify-content:center; height:68px; }
+
+.nav { display:flex; align-items:center; gap: 16px; white-space:nowrap; }
+.nav-right { order: 1; }
+.brand     { order: 2; }
+.nav-left  { order: 3; }
+
+.link.like-button { all: unset; cursor: pointer; font-weight: 600; padding: 6px 0; }
+.link[disabled] { opacity:.45; cursor:not-allowed; }
+.pipe { opacity:.5; user-select:none; }
+
+/* پس‌زمینه هدر: بالای صفحه نیمه‌شفاف + بلور / بعد از اسکرول: سالید */
+.header {
+  background: rgba(255,255,255,.50);
+  backdrop-filter: blur(10px);
+}
+html:not(.is-light) .header { background: rgba(18,24,33,.20); }
+
+html.scrolled .header {
+  background: var(--card);
+  border-bottom-color: var(--stroke);
+  backdrop-filter: none; /* بدون بلور */
+}
+
+/* لوگو همیشه وسط و عموداً سنتر */
+.brand img { display:block; }
+
+/* مگامنو */
+.mega { position: relative; }
+.mega-panel {
+  position: absolute; top: calc(100% + 14px);
+  inset-inline-start: 0; /* در RTL/LTR به صورت خودکار آینه می‌شود */
+  background: var(--card);
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.18);
+  padding: 14px;
+  min-width: 340px;
+  opacity: 0; transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.mega:focus-within .mega-panel,
+.mega:hover .mega-panel { opacity:1; transform: translateY(0); pointer-events: auto; }
+
+.mega-grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+.mega-col .root { display:block; font-weight:800; margin-bottom:8px; }
+.mega-col .subs { list-style: none; padding: 0; margin: 0; }
+.mega-col .subs li { margin: 6px 0; }
+.mega-col .subs a { opacity:.9; }
+
+.mega-list { display:flex; flex-direction: column; gap: 10px; min-width: 280px; }
+.mega-list.socials a::before { content:'#'; opacity:.6; margin-inline-end:6px; }
+
+/* زبان: فلش ریز */
+.lang-switch svg{ margin-inline-start:6px; vertical-align:-2px; opacity:.75 }
+
+/* ریسپانسیو ساده */
+@media (max-width: 980px){
+  .header-inner { gap: 8px; }
+  .mega-panel { min-width: 260px; }
+  .mega-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+</style>
+
 <script>
-/* Theme switcher */
+/* سوییچر تم */
 const KEY = 'mix_theme';
 const html = document.documentElement;
 function applyTheme(v){ html.classList.toggle('is-light', v === 'light'); }
@@ -57,27 +201,33 @@ applyTheme(localStorage.getItem(KEY) || 'light');
 
 customElements.define('theme-switch', class extends HTMLElement{
   connectedCallback(){
-    this.innerHTML = '<button class="btn ghost" style="padding:6px 10px">☀︎/☾</button>';
-    this.querySelector('button').addEventListener('click', () => {
+    this.setAttribute('role','button');
+    this.setAttribute('aria-label','Toggle theme');
+    this.style.userSelect='none';
+    this.render();
+    this.addEventListener('click', () => {
       const now = html.classList.contains('is-light') ? 'dark' : 'light';
       localStorage.setItem(KEY, now);
       applyTheme(now);
+      this.render();
     });
+  }
+  render(){
+    const isLight = html.classList.contains('is-light');
+    // مینیمال: ماه/خورشید
+    this.textContent = isLight ? '☾' : '☀︎';
   }
 });
 
-/* Brand logo that reacts to theme (light -> logo-dark.svg, dark -> logo.svg) */
+/* لوگوی واکنش‌گرا به تم */
 customElements.define('brand-logo', class extends HTMLElement{
   static get observedAttributes(){ return ['width','height']; }
   connectedCallback(){
     this.img = document.createElement('img');
     this.img.alt = 'MixPlus logo';
-    this.style.display = 'inline-block';
     this.appendChild(this.img);
     this._applySize();
     this.updateSrc();
-
-    // Watch for theme class changes
     const mo = new MutationObserver(()=>this.updateSrc());
     mo.observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
     this._mo = mo;
@@ -85,13 +235,30 @@ customElements.define('brand-logo', class extends HTMLElement{
   disconnectedCallback(){ this._mo?.disconnect?.(); }
   attributeChangedCallback(){ this._applySize(); }
   _applySize(){
-    const w = this.getAttribute('width') || '112';
-    const h = this.getAttribute('height') || '28';
+    const w = this.getAttribute('width') || '120';
+    const h = this.getAttribute('height') || '30';
     this.img.width = +w; this.img.height = +h;
   }
   updateSrc(){
     const isLight = document.documentElement.classList.contains('is-light');
     this.img.src = isLight ? '/logos/logo-dark.svg' : '/logos/logo.svg';
   }
+});
+
+/* افزودن/حذف کلاس اسکرول برای سالید شدن هدر */
+const onScroll = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 6);
+onScroll(); window.addEventListener('scroll', onScroll);
+
+/* hover-intent خیلی سبک برای بستن آرام مگامنوها */
+document.querySelectorAll('.mega').forEach((el) => {
+  let hideTimer = null;
+  el.addEventListener('mouseleave', () => {
+    hideTimer = setTimeout(() => {
+      (el as HTMLElement).blur();
+    }, 220);
+  });
+  el.addEventListener('mouseenter', () => {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+  });
 });
 </script>
