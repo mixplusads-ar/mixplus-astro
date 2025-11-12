@@ -4,8 +4,17 @@ const { lang='fa' } = Astro.props;
 const t = site[lang];
 ---
 <section class="hero" aria-label="Hero">
-  <video id="heroVideo" autoplay muted playsinline></video>
+  <video id="heroVideo"
+    preload="auto"
+    playsinline
+    muted
+    autoplay
+    disablepictureinpicture
+    controlslist="nodownload noplaybackrate"
+  ></video>
+
   <img id="heroFallback" src="/media/hero/images/hero-01.jpg" alt="Hero" style="display:none" loading="eager"/>
+
   <div class="overlay"></div>
   <div class="content">
     <div>
@@ -20,23 +29,63 @@ const t = site[lang];
 </section>
 
 <script>
-const videos = [1,2,3,4].sort(()=>Math.random()-0.5).map(n=>`/media/hero/videos/video-0${n}.mp4`);
+/**
+ * Robust autoplay:
+ * - muted + playsinline set BEFORE loading sources (iOS requirement)
+ * - start only when visible (IntersectionObserver)
+ * - on rejection -> fallback to image
+ * - after each "ended" -> next video from a random queue (no loop)
+ */
+const sources = [1,2,3,4].sort(()=>Math.random()-0.5).map(n=>`/media/hero/videos/video-0${n}.mp4`);
 let idx = 0;
+
 const v = document.getElementById('heroVideo');
 const fallback = document.getElementById('heroFallback');
 
-function playNext(){
-  if(idx >= videos.length){ v.removeAttribute('src'); return; }
-  v.src = videos[idx++];
-  const p = v.play();
-  if(p) p.catch(()=>{ showFallback(); });
+v.muted = true;
+v.playsInline = true;
+v.autoplay = true;
+
+function setSource(src){
+  v.innerHTML = `<source src="${src}" type="video/mp4">`;
+  v.load();
 }
 
 function showFallback(){
+  v.pause();
+  v.removeAttribute('src');
+  v.innerHTML = '';
   v.style.display='none';
   fallback.style.display='block';
 }
 
+async function tryPlay(){
+  try{
+    const p = v.play();
+    if (p && typeof p.then === 'function') await p;
+  }catch(e){
+    // Autoplay blocked or video error
+    showFallback();
+  }
+}
+
+function playNext(){
+  if(idx >= sources.length){ showFallback(); return; }
+  setSource(sources[idx++]);
+  tryPlay();
+}
+
+// start only when hero is visible (helps iOS autoplay policies)
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      playNext();
+      io.disconnect();
+    }
+  });
+},{threshold:.2});
+io.observe(document.querySelector('.hero'));
+
 v.addEventListener('ended', playNext);
-document.addEventListener('DOMContentLoaded', playNext);
+v.addEventListener('error', showFallback);
 </script>
