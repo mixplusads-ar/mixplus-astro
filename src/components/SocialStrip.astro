@@ -1,18 +1,10 @@
 ---
-import { social } from '../data/social.ts'; // مطمئن باش فایل social.ts لینک‌ها را export می‌کند
-
-const icons = [
-  { key: 'linkedin',  label: 'LinkedIn',  href: social.linkedin,  src: '/icons/linkedin.svg'  },
-  { key: 'instagram', label: 'Instagram', href: social.instagram, src: '/icons/instagram.svg' },
-  { key: 'youtube',   label: 'YouTube',   href: social.youtube,   src: '/icons/youtube.svg'   },
-  { key: 'aparat',    label: 'Aparat',    href: social.aparat,    src: '/icons/aparat.svg'    },
-  { key: 'telegram',  label: 'Telegram',  href: social.telegram,  src: '/icons/telegram.svg'  },
-];
+import { socialList } from '../data/social.ts';
 ---
 <div class="social-strip" aria-label="Social links">
-  {icons.map(i => (
+  {socialList.map(i => (
     <a href={i.href} target="_blank" rel="noopener" aria-label={i.label}>
-      <img src={i.src} alt="" loading="lazy" />
+      <img src={i.icon} alt="" loading="lazy" />
     </a>
   ))}
 </div>
