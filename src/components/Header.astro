@@ -7,7 +7,6 @@ const t = site[lang];
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
 
-// چهار ریشۀ اصلی محصولات
 const roots = [
   { slug: 'hob',   nameFa: 'اجاق گاز',        nameEn: 'Hob'   },
   { slug: 'sink',  nameFa: 'سینک ظرف‌شویی',   nameEn: 'Sink'  },
@@ -20,11 +19,12 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
 <header class="header" dir={isFa ? 'rtl' : 'ltr'}>
   <div class="container header-inner">
-    <!-- گروه راست/چپ -->
     <nav class={`nav ${isFa ? 'nav-right' : 'nav-left'}`} aria-label="primary">
-      <!-- محصولات: لیست عمودی ریشه‌ها + پنل ساب‌کتگوری که با هاور ریشه ظاهر می‌شود -->
+      <!-- محصولات: ریشه‌ها + ساب‌ها -->
       <div class="mega products" data-key="products" tabindex="0" aria-haspopup="true">
         <span class="link like-button">{txt('محصولات','Products')}</span>
+        <!-- پل نامرئی برای عبور موس -->
+        <div class="hover-bridge" aria-hidden="true"></div>
         <div class="mega-panel products">
           <div class="columns">
             <ul class="roots" id="prod-roots">
@@ -65,6 +65,7 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
       <div class="mega aftersales" data-key="aftersales" tabindex="0" aria-haspopup="true">
         <span class="link like-button">{txt('خدماتِ پس از فروش','After-sales')}</span>
+        <div class="hover-bridge" aria-hidden="true"></div>
         <div class="mega-panel">
           <div class="mega-list">
             <a href={`/${lang}/after-sales/complaint-process/`}>{txt('فرآیند رسیدگی به شکایات','Complaint process')}</a>
@@ -76,21 +77,18 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
       </div>
     </nav>
 
-    <!-- لوگو وسط -->
     <a class="brand" href={`/${lang}/`} aria-label="MixPlus">
       <brand-logo width="120" height="30"></brand-logo>
     </a>
 
-    <!-- گروه مقابل -->
     <nav class={`nav ${isFa ? 'nav-left' : 'nav-right'}`} aria-label="secondary">
-      <!-- جستجو (استاب) -->
       <button class="link like-button" aria-label={txt('جستجو','Search')} title={txt('جستجو','Search')} disabled>🔍</button>
 
       <span class="pipe">|</span>
 
-      <!-- شبکه‌ها (#) -->
       <div class="mega" data-key="social" tabindex="0" aria-haspopup="true">
         <span class="link like-button">#</span>
+        <div class="hover-bridge" aria-hidden="true"></div>
         <div class="mega-panel">
           <div class="mega-list socials">
             <a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
@@ -112,12 +110,12 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
       <span class="pipe">|</span>
 
-      <!-- تغییر زبان با دراپ‌داون تک‌آیتمی -->
       <div class="mega lang" tabindex="0" aria-haspopup="true">
         <span class="link like-button lang-switch">
           {isFa ? 'فارسی' : 'English'}
           <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </span>
+        <div class="hover-bridge" aria-hidden="true"></div>
         <div class="mega-panel tiny">
           <div class="mega-list">
             <a href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a>
@@ -127,7 +125,6 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
       <span class="pipe">|</span>
 
-      <!-- سوییچر تم -->
       <theme-switch class="link like-button" title={txt('تغییر تم','Toggle theme')}></theme-switch>
     </nav>
   </div>
@@ -137,7 +134,6 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 .header { position: sticky; top: 0; z-index: 60; border-bottom: 1px solid transparent; }
 .header-inner { display:flex; align-items:center; justify-content:space-between; height:68px; }
 .brand { display:inline-flex; align-items:center; justify-content:center; height:68px; }
-
 .nav { display:flex; align-items:center; gap: 16px; white-space:nowrap; }
 .nav-right { order: 1; }
 .brand     { order: 2; }
@@ -147,10 +143,17 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 .link[disabled]{ opacity:.45; cursor:not-allowed; }
 .pipe { opacity:.5; user-select:none; }
 
-/* پنل‌های مگامنو */
+/* پل نامرئی: فضای بین تریگر و پنل را پر می‌کند تا منو نبندد */
+.hover-bridge{
+  position:absolute; left:0; right:0; top:100%; height:12px;
+  pointer-events:auto; /* باعث می‌شود :hover حفظ شود */
+  background: transparent;
+}
+
+/* مگامنو */
 .mega { position: relative; }
 .mega-panel{
-  position:absolute; top: calc(100% + 14px);
+  position:absolute; top: calc(100% + 6px); /* فاصله کمتر از قبل */
   inset-inline-start: 0;
   background: var(--card);
   border: 1px solid var(--stroke);
@@ -161,6 +164,7 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
   pointer-events: none;
   transition: opacity .18s ease, transform .18s ease;
 }
+.mega.open .mega-panel,
 .mega:focus-within .mega-panel,
 .mega:hover .mega-panel { opacity:1; transform:translateY(0); pointer-events:auto; }
 .mega-panel.tiny{ min-width: 160px; }
@@ -168,9 +172,9 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 .mega-list{ display:flex; flex-direction:column; gap:10px; min-width: 280px; }
 .mega-list.socials a::before{ content:'#'; opacity:.6; margin-inline-end:6px; }
 
-/* محصولات: لیست ریشه + پنل ساب */
+/* محصولات: ستون ریشه + ستون ساب‌ها */
 .mega-panel.products{ padding: 10px; }
-.columns{ display:flex; gap:12px; }
+.columns{ display:flex; gap:12px; align-items:flex-start; }
 .roots{ list-style:none; margin:0; padding:6px; border-inline-end:1px solid var(--stroke); width: var(--rootw, max-content); }
 .roots .root{ display:block; padding:10px 12px; border-radius:10px; font-weight:800; position:relative; }
 .roots .root[aria-current="true"]{ color: var(--brand); }
@@ -181,10 +185,8 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 .subs li a:hover,.roots .root:hover{ background: var(--stroke); }
 .subs .empty{ opacity:.6; padding:8px 12px; }
 
-/* زبان: فلش ریز */
 .lang-switch svg{ margin-inline-start:6px; vertical-align:-2px; opacity:.75 }
 
-/* ریسپانسیو */
 @media (max-width: 980px){
   .header-inner{ gap:8px; }
   .mega-panel{ min-width: 260px; }
@@ -194,7 +196,6 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 </style>
 
 <script>
-/* سوییچر تم */
 const KEY = 'mix_theme';
 const html = document.documentElement;
 function applyTheme(v){ html.classList.toggle('is-light', v === 'light'); }
@@ -212,7 +213,6 @@ customElements.define('theme-switch', class extends HTMLElement{
   render(){ this.textContent = html.classList.contains('is-light') ? '☾' : '☀︎'; }
 });
 
-/* لوگوی واکنش‌گرا به تم */
 customElements.define('brand-logo', class extends HTMLElement{
   static get observedAttributes(){ return ['width','height']; }
   connectedCallback(){
@@ -227,30 +227,37 @@ customElements.define('brand-logo', class extends HTMLElement{
   updateSrc(){ const isLight = document.documentElement.classList.contains('is-light'); this.img.src = isLight ? '/logos/logo-dark.svg' : '/logos/logo.svg'; }
 });
 
-/* کلاس اسکرول برای سالید شدن هدر */
 const onScroll = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 6);
 onScroll(); window.addEventListener('scroll', onScroll);
 
-/* --- Hover Intent و منطق محصولات --- */
-// تاخیر برای بسته‌شدن، تا کاربر فرصت حرکت به پنل را داشته باشد
+/* Hover intent بهبود یافته */
 document.querySelectorAll('.mega').forEach((el) => {
   let hideTimer = null;
+  const HIDE_DELAY = 650; // ← تاخیر بیشتر
+
   const open = ()=>{ el.classList.add('open'); };
   const close = ()=>{ el.classList.remove('open'); };
-  const delayClose = ()=>{ hideTimer = setTimeout(close, 280); };
-  const cancelClose = ()=>{ if(hideTimer){clearTimeout(hideTimer);hideTimer=null;} };
 
-  el.addEventListener('mouseenter', cancelClose);
+  const delayClose = ()=>{ hideTimer = setTimeout(close, HIDE_DELAY); };
+  const cancelClose = ()=>{ if(hideTimer){ clearTimeout(hideTimer); hideTimer=null; } };
+
+  // روی خود مگا
+  el.addEventListener('mouseenter', () => { cancelClose(); open(); });
   el.addEventListener('mouseleave', delayClose);
-  el.addEventListener('focusin', cancelClose);
+  el.addEventListener('focusin', () => { cancelClose(); open(); });
   el.addEventListener('focusout', delayClose);
+
+  // روی پل نامرئی هم باز بماند
+  el.querySelectorAll('.hover-bridge, .mega-panel').forEach(n => {
+    n.addEventListener('mouseenter', cancelClose);
+    n.addEventListener('mouseleave', delayClose);
+  });
 });
 
-// محصولات: لیست ریشه‌ها و پنل ساب
+/* محصولات: اکتیو ساب‌ها و فیت عرض ستون‌ها */
 const rootsEl = document.getElementById('prod-roots');
 const subsWrap = document.getElementById('prod-subs');
 if (rootsEl && subsWrap){
-  // اکتیو پیش‌فرض: اولین ریشه
   let activeSlug = rootsEl.querySelector('.root')?.getAttribute('data-slug') || 'hob';
   function activate(slug){
     activeSlug = slug;
@@ -264,25 +271,17 @@ if (rootsEl && subsWrap){
     const a = e.target.closest('.root'); if(a) activate(a.getAttribute('data-slug'));
   });
 
-  // اندازه ستون‌ها = بیشترین عرض محتوا (fit در سطح هر ستون)
   function fitColumns(){
-    // ریشه‌ها
-    let rw = 0;
-    rootsEl.querySelectorAll('.root').forEach(a => rw = Math.max(rw, a.offsetWidth));
-    // بزرگ‌ترین ساب در همه گروه‌ها
-    let sw = 0;
-    subsWrap.querySelectorAll('.subs').forEach(ul => ul.querySelectorAll('a').forEach(a => sw = Math.max(sw, a.offsetWidth)));
+    let rw = 0; rootsEl.querySelectorAll('.root').forEach(a => rw = Math.max(rw, a.offsetWidth));
+    let sw = 0; subsWrap.querySelectorAll('.subs').forEach(ul => ul.querySelectorAll('a').forEach(a => sw = Math.max(sw, a.offsetWidth)));
     const panel = rootsEl.closest('.mega-panel');
-    panel?.style.setProperty('--rootw', (rw + 16) + 'px'); // padding compensation
+    panel?.style.setProperty('--rootw', (rw + 16) + 'px');
     panel?.style.setProperty('--subw', (sw + 16) + 'px');
   }
-
-  // وقتی پنل باز شد، اندازه‌گیری کن
   const prodMega = document.querySelector('.mega.products');
   const obs = new MutationObserver(()=> fitColumns());
   obs.observe(prodMega, { attributes:true, attributeFilter:['class'] });
 
-  // بار اول
   activate(activeSlug);
   setTimeout(fitColumns, 0);
 }
