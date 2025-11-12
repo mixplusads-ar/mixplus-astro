@@ -1,0 +1,6 @@
+---
+import { social } from '../data/social.ts';
+---
+<div class="social-strip">
+  {social.map(s => <a href={s.href} aria-label={s.label} target="_blank" rel="noopener">{s.label[0]}</a>)}
+</div>

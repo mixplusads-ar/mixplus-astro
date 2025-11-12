@@ -1,0 +1,67 @@
+---
+import { site } from '../data/site.ts';
+const { lang = 'fa' } = Astro.props;
+const t = site[lang];
+const isFa = lang === 'fa';
+const otherLang = isFa ? 'en' : 'fa';
+const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
+---
+<header class="header" data-lang={lang}>
+  <div class="container header-inner" style={`direction:${isFa?'rtl':'ltr'}`}>
+    <nav class="nav" aria-label="primary">
+      <a href={`/${lang}/products/`}>{t.nav.products}</a>
+      <a href={`/${lang}/dealers/`}>{t.nav.dealers}</a>
+      <div class="nav">
+        <details>
+          <summary style="cursor:pointer">{t.aftersales ?? t.nav.aftersales}</summary>
+          <div class="nav" style="padding:10px 0">
+            <a href={`/${lang}/after-sales/complaint-process/`}>فرآیند رسیدگی به شکایات</a>
+            <a href={`/${lang}/after-sales/warranty-terms/`}>شرایط گارانتی</a>
+            <a href={`/${lang}/after-sales/installation-request/`}>درخواست نصب</a>
+            <a href={`/${lang}/after-sales/complaint/`}>شکایت</a>
+          </div>
+        </details>
+      </div>
+    </nav>
+    <a href={`/${lang}/`} aria-label="MixPlus">
+      <img src="/logos/logo.svg" alt="MixPlus logo" height="28" />
+    </a>
+    <nav class="nav">
+      <a href={`/${otherLang}/`} aria-label="Switch language">{isFa ? 'English' : 'فارسی'}</a>
+      <a href={downloadHref} download>{t.nav.download}</a>
+      <a href={`/${lang}/about/`}>{t.nav.about}</a>
+      <details>
+        <summary style="cursor:pointer">#</summary>
+        <div class="nav" style="padding:10px 0">
+          <a href="/#" aria-label="Instagram" rel="noopener">IG</a>
+          <a href="/#" aria-label="Aparat" rel="noopener">Ap</a>
+          <a href="/#" aria-label="YouTube" rel="noopener">YT</a>
+          <a href="/#" aria-label="LinkedIn" rel="noopener">IN</a>
+          <a href="/#" aria-label="Telegram" rel="noopener">TG</a>
+        </div>
+      </details>
+      <button aria-label={t.nav.search} style="all:unset; cursor:not-allowed; opacity:.5">🔍</button>
+      <ThemeSwitch />
+    </nav>
+  </div>
+</header>
+
+<script>
+// Theme switcher
+const KEY = 'mix_theme';
+const html = document.documentElement;
+function applyTheme(v){ html.classList.toggle('is-light', v === 'light'); }
+applyTheme(localStorage.getItem(KEY) || 'light');
+customElements.define('theme-switch', class extends HTMLElement{
+  connectedCallback(){
+    this.innerHTML = '<button class="btn ghost" style="padding:6px 10px">☀︎/☾</button>';
+    this.querySelector('button').addEventListener('click', () => {
+      const now = html.classList.contains('is-light') ? 'dark' : 'light';
+      localStorage.setItem(KEY, now);
+      applyTheme(now);
+    });
+  }
+});
+</script>
+
+<theme-switch id="ThemeSwitch"></theme-switch>

@@ -1,0 +1,13 @@
+---
+import { categories } from '../data/categories.ts';
+const { lang='fa' } = Astro.props;
+const isFa = lang === 'fa';
+---
+<div class="grid" dir={isFa ? 'rtl' : 'ltr'}>
+  {categories.slice(0,4).map((c, i) => (
+    <a class="card" href={`/${lang}/products/${c.slug}/`}>
+      <img src={`/media/grid-cards/card-0${i+1}.jpg`} alt={isFa?c.nameFa:c.nameEn} loading="lazy" />
+      <div class="body">{isFa?c.nameFa:c.nameEn}</div>
+    </a>
+  ))}
+</div>

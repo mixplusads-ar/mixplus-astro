@@ -1,0 +1,42 @@
+---
+import { site } from '../data/site.ts';
+const { lang='fa' } = Astro.props;
+const t = site[lang];
+---
+<section class="hero" aria-label="Hero">
+  <video id="heroVideo" autoplay muted playsinline></video>
+  <img id="heroFallback" src="/media/hero/images/hero-01.jpg" alt="Hero" style="display:none" loading="eager"/>
+  <div class="overlay"></div>
+  <div class="content">
+    <div>
+      <h1>{t.heroTitle}</h1>
+      <p>{t.heroText}</p>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
+        <a class="btn" href={`/${lang}/products/`}>{t.ctaProducts}</a>
+        <a class="btn ghost" href={`/${lang}/about/`}>{t.ctaAbout}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const videos = [1,2,3,4].sort(()=>Math.random()-0.5).map(n=>`/media/hero/videos/video-0${n}.mp4`);
+let idx = 0;
+const v = document.getElementById('heroVideo');
+const fallback = document.getElementById('heroFallback');
+
+function playNext(){
+  if(idx >= videos.length){ v.removeAttribute('src'); return; }
+  v.src = videos[idx++];
+  const p = v.play();
+  if(p) p.catch(()=>{ showFallback(); });
+}
+
+function showFallback(){
+  v.style.display='none';
+  fallback.style.display='block';
+}
+
+v.addEventListener('ended', playNext);
+document.addEventListener('DOMContentLoaded', playNext);
+</script>
