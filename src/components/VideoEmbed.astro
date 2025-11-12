@@ -1,13 +1,34 @@
 ---
-const { src, cover, title='Factory video' } = Astro.props;
+/** Props:
+ *  - src: string (required) → آدرس embed آپارات/یوتیوب
+ *  - title?: string
+ *  - cover?: string (اختیاری؛ اگر iframe لود نشد)
+ */
+const { src, title = 'Factory Video', cover = '/media/factory/placeholder.jpg' } = Astro.props;
 ---
-<div class="container" style="max-width: 960px">
-  {src ? (
-    <div style="position:relative; padding-top:56.25%">
-      <iframe src={src} title={title} allowfullscreen loading="lazy"
-        style="position:absolute; inset:0; width:100%; height:100%; border:0;"></iframe>
-    </div>
-  ) : (
-    <img src={cover} alt={title} style="width:100%; border-radius:16px; border:1px solid var(--stroke)"/>
-  )}
+<div class="video-embed">
+  <div class="ratio">
+    <iframe
+      src={src}
+      title={title}
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </div>
+  <noscript>
+    <img src={cover} alt={title} />
+  </noscript>
 </div>
+
+<style>
+.video-embed .ratio{
+  position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:16px; overflow:hidden;
+  border:1px solid var(--stroke);
+}
+.video-embed iframe{
+  position:absolute; inset:0; width:100%; height:100%; border:0; display:block;
+}
+.video-embed img{ width:100%; display:block; border-radius:16px; }
+</style>
