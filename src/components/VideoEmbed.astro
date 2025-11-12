@@ -1,34 +1,56 @@
 ---
-/** Props:
- *  - src: string (required) → آدرس embed آپارات/یوتیوب
- *  - title?: string
- *  - cover?: string (اختیاری؛ اگر iframe لود نشد)
+/**
+ * قبول می‌کند:
+ *  1) کد خام HTML (script/iframe) — مثلاً اسکریپت آپارات یا iframe یوتیوب
+ *  2) فقط URL — در این صورت خودش یک iframe می‌سازد
+ *
+ * طریقه مصرف فعلی صفحات: <VideoEmbed src={t.factoryEmbed} />
+ * مقدار t.factoryEmbed می‌تواند HTML کامل یا فقط URL باشد.
  */
 const { src, title = 'Factory Video', cover = '/media/factory/placeholder.jpg' } = Astro.props;
+const raw = (src || '').trim();
+const isHtml = raw.startsWith('<'); // اگر با < شروع شود یعنی کد HTML کامل است
 ---
-<div class="video-embed">
-  <div class="ratio">
-    <iframe
-      src={src}
-      title={title}
-      allow="autoplay; encrypted-media; picture-in-picture"
-      allowfullscreen
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
-    ></iframe>
+{isHtml ? (
+  /* حالت HTML خام (Aparat script یا iframe آماده) */
+  <div class="video-embed raw-embed">
+    <div class="holder" set:html={raw}></div>
+    <noscript><img src={cover} alt={title} /></noscript>
   </div>
-  <noscript>
-    <img src={cover} alt={title} />
-  </noscript>
-</div>
+) : (
+  /* حالت URL ساده */
+  <div class="video-embed">
+    <div class="ratio">
+      <iframe
+        src={raw}
+        title={title}
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </div>
+    <noscript><img src={cover} alt={title} /></noscript>
+  </div>
+)}
 
 <style>
+/* استایل عمومی */
 .video-embed .ratio{
-  position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:16px; overflow:hidden;
+  position:relative; width:100%; aspect-ratio:16/9;
+  background:#000; border-radius:16px; overflow:hidden;
   border:1px solid var(--stroke);
 }
 .video-embed iframe{
   position:absolute; inset:0; width:100%; height:100%; border:0; display:block;
 }
 .video-embed img{ width:100%; display:block; border-radius:16px; }
+
+/* وقتی HTML خام می‌دهیم (اسکریپت آپارات خودش ریسپانسیو تولید می‌کند) */
+.raw-embed .holder{
+  /* حداقل ارتفاع که تا لود اسکریپت فضای ویدیو حفظ شود */
+  min-height: 240px;
+  border-radius:16px; overflow:hidden; border:1px solid var(--stroke);
+  background:#000;
+}
 </style>
