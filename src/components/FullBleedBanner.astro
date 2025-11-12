@@ -1,15 +1,21 @@
 ---
-import SectionTitle from './SectionTitle.astro';
-const { img, title, text } = Astro.props;
+/** Props:
+ * - img: string (required)
+ * - title?: string
+ * - text?: string
+ */
+const { img, title = '', text = '' } = Astro.props;
 ---
 <section class="banner">
-  <img src={img} alt="" loading="lazy" />
-  <div class="inset">
-    <div class="wrap">
-      <div class="section-title">
-        <h2>{title}</h2>
-        {text && <p>{text}</p>}
+  <img src={img} alt={title || 'Banner'} loading="lazy" />
+  {(title || text) && (
+    <div class="inset">
+      <div class="wrap">
+        <div class="section-title">
+          {title && <h2>{title}</h2>}
+          {text  && <p>{text}</p>}
+        </div>
       </div>
     </div>
-  </div>
+  )}
 </section>
