@@ -7,57 +7,63 @@ const t = site[lang];
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
 
-// دسته‌های ریشه برای مگامنو محصولات (چهار ستون)
+// چهار ریشۀ اصلی محصولات
 const roots = [
   { slug: 'hob',   nameFa: 'اجاق گاز',        nameEn: 'Hob'   },
   { slug: 'sink',  nameFa: 'سینک ظرف‌شویی',   nameEn: 'Sink'  },
   { slug: 'hood',  nameFa: 'هود',             nameEn: 'Hood'  },
-  { slug: 'oven',  nameFa: 'فر',               nameEn: 'Oven'  },
+  { slug: 'oven',  nameFa: 'فر توکار',         nameEn: 'Oven'  },
 ];
-
 const txt = (fa: string, en: string) => isFa ? fa : en;
 const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 ---
 
-<header class={`header`} dir={isFa ? 'rtl' : 'ltr'}>
+<header class="header" dir={isFa ? 'rtl' : 'ltr'}>
   <div class="container header-inner">
-
-    <!-- گروه راست/چپ بسته به زبان -->
+    <!-- گروه راست/چپ -->
     <nav class={`nav ${isFa ? 'nav-right' : 'nav-left'}`} aria-label="primary">
-      <!-- محصولات (مگامنو) -->
-      <div class="mega" data-key="products" tabindex="0" aria-haspopup="true">
+      <!-- محصولات: لیست عمودی ریشه‌ها + پنل ساب‌کتگوری که با هاور ریشه ظاهر می‌شود -->
+      <div class="mega products" data-key="products" tabindex="0" aria-haspopup="true">
         <span class="link like-button">{txt('محصولات','Products')}</span>
-        <div class="mega-panel">
-          <div class="mega-grid">
-            {roots.map(r => {
-              const cat = categories.find(c => c.slug === r.slug);
-              const hasSubs = !!cat?.subs?.length;
-              return (
-                <div class="mega-col">
-                  <a class="root" href={`/${lang}/products/${r.slug}/`}>{isFa ? r.nameFa : r.nameEn}</a>
-                  {hasSubs && (
-                    <ul class="subs">
-                      {cat!.subs!.map(s => (
-                        <li><a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{isFa ? s.nameFa : s.nameEn}</a></li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              );
-            })}
+        <div class="mega-panel products">
+          <div class="columns">
+            <ul class="roots" id="prod-roots">
+              {roots.map(r => (
+                <li>
+                  <a class="root" href={`/${lang}/products/${r.slug}/`} data-slug={r.slug}>
+                    {isFa ? r.nameFa : r.nameEn}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="subs-wrap" id="prod-subs">
+              {roots.map(r => {
+                const cat = categories.find(c => c.slug === r.slug);
+                const subs = cat?.subs ?? [];
+                return (
+                  <ul class="subs" data-for={r.slug}>
+                    {subs.length
+                      ? subs.map(s => (
+                          <li><a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{isFa ? s.nameFa : s.nameEn}</a></li>
+                        ))
+                      : <li class="empty">{txt('بدون زیر‌دسته','No subcategories')}</li>
+                    }
+                  </ul>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
       <span class="pipe">|</span>
 
-      <!-- نمایندگی‌ها -->
       <a class="link like-button" href={`/${lang}/dealers/`}>{txt('نمایندگی‌های مجاز','Dealers')}</a>
 
       <span class="pipe">|</span>
 
-      <!-- خدمات پس از فروش (مگامنو) -->
-      <div class="mega" data-key="aftersales" tabindex="0" aria-haspopup="true">
+      <div class="mega aftersales" data-key="aftersales" tabindex="0" aria-haspopup="true">
         <span class="link like-button">{txt('خدماتِ پس از فروش','After-sales')}</span>
         <div class="mega-panel">
           <div class="mega-list">
@@ -70,14 +76,13 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
       </div>
     </nav>
 
-    <!-- لوگو وسط (سوییچ خودکار تم) -->
+    <!-- لوگو وسط -->
     <a class="brand" href={`/${lang}/`} aria-label="MixPlus">
       <brand-logo width="120" height="30"></brand-logo>
     </a>
 
     <!-- گروه مقابل -->
     <nav class={`nav ${isFa ? 'nav-left' : 'nav-right'}`} aria-label="secondary">
-
       <!-- جستجو (استاب) -->
       <button class="link like-button" aria-label={txt('جستجو','Search')} title={txt('جستجو','Search')} disabled>🔍</button>
 
@@ -99,32 +104,36 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
       <span class="pipe">|</span>
 
-      <!-- درباره ما -->
       <a class="link like-button" href={`/${lang}/about/`}>{txt('درباره ما','About')}</a>
 
       <span class="pipe">|</span>
 
-      <!-- دانلود کاتالوگ -->
       <a class="link like-button" href={downloadHref} download>{txt('دانلود کاتالوگ','Download catalog')}</a>
 
       <span class="pipe">|</span>
 
-      <!-- تغییر زبان (با فلش کوچک) -->
-      <a class="link like-button lang-switch" href={`/${otherLang}/`} aria-label="Switch language">
-        {isFa ? 'فارسی' : 'English'}
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-      </a>
+      <!-- تغییر زبان با دراپ‌داون تک‌آیتمی -->
+      <div class="mega lang" tabindex="0" aria-haspopup="true">
+        <span class="link like-button lang-switch">
+          {isFa ? 'فارسی' : 'English'}
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </span>
+        <div class="mega-panel tiny">
+          <div class="mega-list">
+            <a href={`/${otherLang}/`}>{isFa ? 'English' : 'فارسی'}</a>
+          </div>
+        </div>
+      </div>
 
       <span class="pipe">|</span>
 
-      <!-- سوییچر تم (ماه/خورشید مینیمال) -->
+      <!-- سوییچر تم -->
       <theme-switch class="link like-button" title={txt('تغییر تم','Toggle theme')}></theme-switch>
     </nav>
   </div>
 </header>
 
 <style>
-/* ساختار و فاصله‌ها */
 .header { position: sticky; top: 0; z-index: 60; border-bottom: 1px solid transparent; }
 .header-inner { display:flex; align-items:center; justify-content:space-between; height:68px; }
 .brand { display:inline-flex; align-items:center; justify-content:center; height:68px; }
@@ -134,61 +143,53 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 .brand     { order: 2; }
 .nav-left  { order: 3; }
 
-.link.like-button { all: unset; cursor: pointer; font-weight: 600; padding: 6px 0; }
-.link[disabled] { opacity:.45; cursor:not-allowed; }
+.link.like-button { all: unset; cursor:pointer; font-weight:600; padding:6px 0; }
+.link[disabled]{ opacity:.45; cursor:not-allowed; }
 .pipe { opacity:.5; user-select:none; }
 
-/* پس‌زمینه هدر: بالای صفحه نیمه‌شفاف + بلور / بعد از اسکرول: سالید */
-.header {
-  background: rgba(255,255,255,.50);
-  backdrop-filter: blur(10px);
-}
-html:not(.is-light) .header { background: rgba(18,24,33,.20); }
-
-html.scrolled .header {
-  background: var(--card);
-  border-bottom-color: var(--stroke);
-  backdrop-filter: none; /* بدون بلور */
-}
-
-/* لوگو همیشه وسط و عموداً سنتر */
-.brand img { display:block; }
-
-/* مگامنو */
+/* پنل‌های مگامنو */
 .mega { position: relative; }
-.mega-panel {
-  position: absolute; top: calc(100% + 14px);
-  inset-inline-start: 0; /* در RTL/LTR به صورت خودکار آینه می‌شود */
+.mega-panel{
+  position:absolute; top: calc(100% + 14px);
+  inset-inline-start: 0;
   background: var(--card);
   border: 1px solid var(--stroke);
   border-radius: 14px;
   box-shadow: 0 12px 32px rgba(0,0,0,.18);
-  padding: 14px;
-  min-width: 340px;
+  padding: 12px;
   opacity: 0; transform: translateY(6px);
   pointer-events: none;
   transition: opacity .18s ease, transform .18s ease;
 }
 .mega:focus-within .mega-panel,
-.mega:hover .mega-panel { opacity:1; transform: translateY(0); pointer-events: auto; }
+.mega:hover .mega-panel { opacity:1; transform:translateY(0); pointer-events:auto; }
+.mega-panel.tiny{ min-width: 160px; }
 
-.mega-grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
-.mega-col .root { display:block; font-weight:800; margin-bottom:8px; }
-.mega-col .subs { list-style: none; padding: 0; margin: 0; }
-.mega-col .subs li { margin: 6px 0; }
-.mega-col .subs a { opacity:.9; }
+.mega-list{ display:flex; flex-direction:column; gap:10px; min-width: 280px; }
+.mega-list.socials a::before{ content:'#'; opacity:.6; margin-inline-end:6px; }
 
-.mega-list { display:flex; flex-direction: column; gap: 10px; min-width: 280px; }
-.mega-list.socials a::before { content:'#'; opacity:.6; margin-inline-end:6px; }
+/* محصولات: لیست ریشه + پنل ساب */
+.mega-panel.products{ padding: 10px; }
+.columns{ display:flex; gap:12px; }
+.roots{ list-style:none; margin:0; padding:6px; border-inline-end:1px solid var(--stroke); width: var(--rootw, max-content); }
+.roots .root{ display:block; padding:10px 12px; border-radius:10px; font-weight:800; position:relative; }
+.roots .root[aria-current="true"]{ color: var(--brand); }
+.subs-wrap{ padding:6px; width: var(--subw, max-content); }
+.subs{ display:none; list-style:none; margin:0; padding:6px; min-width: max-content; }
+.subs.is-active{ display:block; }
+.subs li a{ display:block; padding:8px 12px; border-radius:10px; }
+.subs li a:hover,.roots .root:hover{ background: var(--stroke); }
+.subs .empty{ opacity:.6; padding:8px 12px; }
 
 /* زبان: فلش ریز */
 .lang-switch svg{ margin-inline-start:6px; vertical-align:-2px; opacity:.75 }
 
-/* ریسپانسیو ساده */
+/* ریسپانسیو */
 @media (max-width: 980px){
-  .header-inner { gap: 8px; }
-  .mega-panel { min-width: 260px; }
-  .mega-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .header-inner{ gap:8px; }
+  .mega-panel{ min-width: 260px; }
+  .mega-panel.products .columns{ flex-direction: column; }
+  .roots{ border:none; }
 }
 </style>
 
@@ -201,64 +202,88 @@ applyTheme(localStorage.getItem(KEY) || 'light');
 
 customElements.define('theme-switch', class extends HTMLElement{
   connectedCallback(){
-    this.setAttribute('role','button');
-    this.setAttribute('aria-label','Toggle theme');
-    this.style.userSelect='none';
-    this.render();
+    this.setAttribute('role','button'); this.setAttribute('aria-label','Toggle theme');
+    this.style.userSelect='none'; this.render();
     this.addEventListener('click', () => {
       const now = html.classList.contains('is-light') ? 'dark' : 'light';
-      localStorage.setItem(KEY, now);
-      applyTheme(now);
-      this.render();
+      localStorage.setItem(KEY, now); applyTheme(now); this.render();
     });
   }
-  render(){
-    const isLight = html.classList.contains('is-light');
-    // مینیمال: ماه/خورشید
-    this.textContent = isLight ? '☾' : '☀︎';
-  }
+  render(){ this.textContent = html.classList.contains('is-light') ? '☾' : '☀︎'; }
 });
 
 /* لوگوی واکنش‌گرا به تم */
 customElements.define('brand-logo', class extends HTMLElement{
   static get observedAttributes(){ return ['width','height']; }
   connectedCallback(){
-    this.img = document.createElement('img');
-    this.img.alt = 'MixPlus logo';
-    this.appendChild(this.img);
-    this._applySize();
-    this.updateSrc();
+    this.img = document.createElement('img'); this.img.alt = 'MixPlus logo'; this.appendChild(this.img);
+    this._applySize(); this.updateSrc();
     const mo = new MutationObserver(()=>this.updateSrc());
-    mo.observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
-    this._mo = mo;
+    mo.observe(document.documentElement,{attributes:true,attributeFilter:['class']}); this._mo = mo;
   }
   disconnectedCallback(){ this._mo?.disconnect?.(); }
   attributeChangedCallback(){ this._applySize(); }
-  _applySize(){
-    const w = this.getAttribute('width') || '120';
-    const h = this.getAttribute('height') || '30';
-    this.img.width = +w; this.img.height = +h;
-  }
-  updateSrc(){
-    const isLight = document.documentElement.classList.contains('is-light');
-    this.img.src = isLight ? '/logos/logo-dark.svg' : '/logos/logo.svg';
-  }
+  _applySize(){ const w=this.getAttribute('width')||'120', h=this.getAttribute('height')||'30'; this.img.width=+w; this.img.height=+h; }
+  updateSrc(){ const isLight = document.documentElement.classList.contains('is-light'); this.img.src = isLight ? '/logos/logo-dark.svg' : '/logos/logo.svg'; }
 });
 
-/* افزودن/حذف کلاس اسکرول برای سالید شدن هدر */
+/* کلاس اسکرول برای سالید شدن هدر */
 const onScroll = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 6);
 onScroll(); window.addEventListener('scroll', onScroll);
 
-/* hover-intent خیلی سبک برای بستن آرام مگامنوها */
+/* --- Hover Intent و منطق محصولات --- */
+// تاخیر برای بسته‌شدن، تا کاربر فرصت حرکت به پنل را داشته باشد
 document.querySelectorAll('.mega').forEach((el) => {
   let hideTimer = null;
-  el.addEventListener('mouseleave', () => {
-    hideTimer = setTimeout(() => {
-      (el as HTMLElement).blur();
-    }, 220);
-  });
-  el.addEventListener('mouseenter', () => {
-    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
-  });
+  const open = ()=>{ el.classList.add('open'); };
+  const close = ()=>{ el.classList.remove('open'); };
+  const delayClose = ()=>{ hideTimer = setTimeout(close, 280); };
+  const cancelClose = ()=>{ if(hideTimer){clearTimeout(hideTimer);hideTimer=null;} };
+
+  el.addEventListener('mouseenter', cancelClose);
+  el.addEventListener('mouseleave', delayClose);
+  el.addEventListener('focusin', cancelClose);
+  el.addEventListener('focusout', delayClose);
 });
+
+// محصولات: لیست ریشه‌ها و پنل ساب
+const rootsEl = document.getElementById('prod-roots');
+const subsWrap = document.getElementById('prod-subs');
+if (rootsEl && subsWrap){
+  // اکتیو پیش‌فرض: اولین ریشه
+  let activeSlug = rootsEl.querySelector('.root')?.getAttribute('data-slug') || 'hob';
+  function activate(slug){
+    activeSlug = slug;
+    rootsEl.querySelectorAll('.root').forEach(a => a.setAttribute('aria-current', a.getAttribute('data-slug')===slug ? 'true':'false'));
+    subsWrap.querySelectorAll('.subs').forEach(ul => ul.classList.toggle('is-active', ul.getAttribute('data-for')===slug));
+  }
+  rootsEl.addEventListener('mouseenter', e => {
+    const a = e.target.closest('.root'); if(a) activate(a.getAttribute('data-slug'));
+  }, true);
+  rootsEl.addEventListener('focusin', e => {
+    const a = e.target.closest('.root'); if(a) activate(a.getAttribute('data-slug'));
+  });
+
+  // اندازه ستون‌ها = بیشترین عرض محتوا (fit در سطح هر ستون)
+  function fitColumns(){
+    // ریشه‌ها
+    let rw = 0;
+    rootsEl.querySelectorAll('.root').forEach(a => rw = Math.max(rw, a.offsetWidth));
+    // بزرگ‌ترین ساب در همه گروه‌ها
+    let sw = 0;
+    subsWrap.querySelectorAll('.subs').forEach(ul => ul.querySelectorAll('a').forEach(a => sw = Math.max(sw, a.offsetWidth)));
+    const panel = rootsEl.closest('.mega-panel');
+    panel?.style.setProperty('--rootw', (rw + 16) + 'px'); // padding compensation
+    panel?.style.setProperty('--subw', (sw + 16) + 'px');
+  }
+
+  // وقتی پنل باز شد، اندازه‌گیری کن
+  const prodMega = document.querySelector('.mega.products');
+  const obs = new MutationObserver(()=> fitColumns());
+  obs.observe(prodMega, { attributes:true, attributeFilter:['class'] });
+
+  // بار اول
+  activate(activeSlug);
+  setTimeout(fitColumns, 0);
+}
 </script>
