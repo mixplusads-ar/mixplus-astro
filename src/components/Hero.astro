@@ -17,40 +17,73 @@ const t = site[lang];
   <img id="heroFallback" src="/media/hero/images/hero-01.jpg" alt="Hero" style="display:none" loading="eager"/>
 
   <div class="overlay"></div>
+
+  <!-- متن‌های رندوم با انیمیشن -->
   <div class="content">
-    <div>
-      <h1>{t.heroTitle}</h1>
-      <p>{t.heroText}</p>
-      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
-        <a class="btn" href={`/${lang}/products/`}>{t.ctaProducts}</a>
-        <a class="btn ghost" href={`/${lang}/about/`}>{t.ctaAbout}</a>
-      </div>
+    <div id="heroCopy" class={`copy ${lang==='fa'?'rtl':'ltr'}`}>
+      <h1 id="heroTitle"></h1>
+      <p id="heroSubtitle"></p>
     </div>
   </div>
+
+  <!-- فلش اسکرول -->
+  <button id="heroScroll" class="scroll-indicator" aria-label="Scroll down" title="Scroll">
+    <!-- SVG ساده، بعداً می‌تونی عوضش کنی -->
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 </section>
+
+<style>
+  .copy { text-align:center; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.45); }
+  .copy.rtl { direction: rtl; }
+  .copy.ltr { direction: ltr; }
+  .copy h1 { font-size: clamp(28px, 5vw, 56px); font-weight:800; margin:0 0 10px; }
+  .copy p { max-width:760px; margin:0 auto; font-size: clamp(14px, 2.2vw, 18px); opacity:.95; }
+
+  /* انیمیشن ورود/خروج متن */
+  @keyframes fadeUpIn { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)} }
+  @keyframes fadeUpOut{ from{opacity:1; transform:translateY(0)} to{opacity:0; transform:translateY(-10px)} }
+  .enter { animation: fadeUpIn .5s ease forwards; }
+  .leave { animation: fadeUpOut .45s ease forwards; }
+
+  /* فلش اسکرول پایین */
+  .scroll-indicator {
+    position:absolute; left:50%; transform:translateX(-50%);
+    bottom:18px; width:44px; height:44px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.35);
+    background:rgba(0,0,0,.22); color:#fff; display:grid; place-items:center;
+    cursor:pointer; backdrop-filter: blur(6px);
+  }
+  .scroll-indicator:hover { border-color: rgba(255,255,255,.6); }
+  @keyframes bounceY { 0%,100%{ transform:translate(-50%,0)} 50%{ transform:translate(-50%,-6px)} }
+  .scroll-indicator { animation: bounceY 1.6s ease-in-out infinite; }
+</style>
 
 <script>
 /**
- * MixPlus Hero Player
- * - Reads videos from /media/hero/videos/video-01.mp4 ... video-04.mp4
- * - Random order, auto-advance, infinite loop (reshuffle after finishing all)
- * - Autoplay-safe (muted/inline + start when visible). If blocked/error -> skip to next.
- * - On theme toggle (html class change) -> restart from a new random video.
+ * ============ ویدئو ============
+ * - مسیر: /media/hero/videos/video-01.mp4 ... video-04.mp4
+ * - ترتیب کاملاً رندوم؛ بعد از هر ویدیو می‌رود بعدی؛ وقتی همه تمام شدند دوباره شافل و از اول (لوپ بی‌نهایت)
+ * - فقط یک‌بار هنگام لود صفحه استارت می‌خورد؛ اسکرول بالا/پایین یا تغییر تم باعث ری‌استارت نمی‌شود.
  */
-
 const PATH = '/media/hero/videos/';
 const FILES = [1,2,3,4].map(n => `video-0${n}.mp4`);
 
 const v = document.getElementById('heroVideo');
 const fallback = document.getElementById('heroFallback');
 
-v.muted = true;         // must be true for autoplay policies
-v.playsInline = true;   // iOS inline playback
+v.muted = true;
+v.playsInline = true;
 v.autoplay = true;
+
+// نگهداری وضعیت در window تا اتفاقی ری‌استارت نشود
+if (!window.__mixHeroPlayer__) window.__mixHeroPlayer__ = { started:false };
+const state = window.__mixHeroPlayer__;
 
 let queue = [];
 let idx = 0;
-let started = false;
 
 function shuffle(arr){
   const a = arr.slice();
@@ -60,14 +93,9 @@ function shuffle(arr){
   }
   return a;
 }
-
-function buildQueue(){
-  queue = shuffle(FILES).map(f => PATH + f);
-  idx = 0;
-}
+function buildQueue(){ queue = shuffle(FILES).map(f => PATH + f); idx = 0; }
 
 function setSource(src){
-  // Reset <source> for Safari to re-evaluate pipeline
   v.innerHTML = `<source src="${src}" type="video/mp4">`;
   v.load();
 }
@@ -85,90 +113,110 @@ async function safePlay(){
     const p = v.play();
     if (p && typeof p.then === 'function') await p;
   }catch(e){
-    // autoplay blocked or decode error -> skip
+    // اگر autoplay بلاک شد یا مشکل decode بود، فایل بعدی
     playNext();
   }
 }
 
 function playCurrent(){
   if (!queue.length) buildQueue();
-  const src = queue[idx];
-  setSource(src);
+  setSource(queue[idx]);
 
-  // try play after canplay (reliable across WebKit/Chromium)
-  const onCanPlay = () => {
-    v.removeEventListener('canplay', onCanPlay);
-    // ensure video element is visible (fallback hidden)
-    v.style.display = 'block';
-    fallback.style.display = 'none';
-    safePlay();
-  };
-  v.addEventListener('canplay', onCanPlay, { once: true });
+  const onCanPlay = () => { v.removeEventListener('canplay', onCanPlay); v.style.display='block'; fallback.style.display='none'; safePlay(); };
+  const onError   = () => { v.removeEventListener('error', onError); playNext(); };
 
-  // if file errors (404/codec), skip to next one
-  const onError = () => {
-    v.removeEventListener('error', onError);
-    playNext();
-  };
-  v.addEventListener('error', onError, { once: true });
+  v.addEventListener('canplay', onCanPlay, { once:true });
+  v.addEventListener('error', onError, { once:true });
 }
 
 function playNext(){
   if (!queue.length) buildQueue();
   idx++;
-  if (idx >= queue.length){
-    // Finished all 4 -> reshuffle for infinite random loop
-    buildQueue();
-  }
+  if (idx >= queue.length){ buildQueue(); }
   playCurrent();
 }
 
-// start only when hero becomes visible (improves autoplay success rate)
-function startWhenVisible(){
-  if (started) return;
-  started = true;
+// فقط یک‌بار استارت وقتی صفحه لود شد (بدون وابستگی به اسکرول)
+function startOnce(){
+  if (state.started) return;
+  state.started = true;
   buildQueue();
   playCurrent();
 }
-const io = new IntersectionObserver((entries)=>{
-  for (const e of entries){
-    if (e.isIntersecting){
-      startWhenVisible();
-      io.disconnect();
-      break;
-    }
-  }
-},{ threshold: .15 });
-io.observe(document.querySelector('.hero'));
+if (document.readyState === 'complete' || document.readyState === 'interactive') startOnce();
+else document.addEventListener('DOMContentLoaded', startOnce);
 
-// go to next file on natural end
 v.addEventListener('ended', playNext);
 
-// restart from a new random video when theme toggles (class change on <html>)
-const html = document.documentElement;
-const mo = new MutationObserver(muts=>{
-  for (const m of muts){
-    if (m.type === 'attributes' && m.attributeName === 'class'){
-      // restart with a fresh random queue
-      started = false;
-      v.pause();
-      buildQueue();
-      startWhenVisible();
-      break;
-    }
-  }
-});
-mo.observe(html, { attributes: true });
+/**
+ * ============ متن‌های رندوم با انیمیشن ============
+ * هر آیتم ۵ ثانیه می‌ماند؛ ترتیب رندوم؛ وقتی تمام شد دوباره شافل.
+ */
+const COPY_FA = [
+  ['کیفیت ایتالیایی، طراحی مدرن', 'استانداردهای جهانی در اجاق، سینک، فر و هود'],
+  ['فناوری و دوام', 'برای سال‌ها اطمینانِ استفاده روزمره'],
+  ['مینیمال و امضادار', 'زبان طراحی یکدست در تمام محصولات'],
+  ['قطعات منتخب', 'انتخاب سخت‌گیرانه برای عملکرد پایدار'],
+  ['کاربری راحت', 'طراحی ارگونومیک و جزئیات دقیق'],
+  ['گارانتی گسترده', 'شبکه نمایندگی‌های معتبر در سراسر کشور'],
+  ['الهام از ایتالیا', 'ترکیب زیبایی و عملکرد'],
+  ['جزئیات باکیفیت', 'پرداخت و مونتاژ دقیق'],
+  ['نوآوری مستمر', 'ارتقاء تجربه‌ی آشپزخانه'],
+  ['طراحی برای زندگی', 'زیبا، بادوام، قابل اعتماد'],
+];
+const COPY_EN = [
+  ['Italian-inspired quality', 'Engineered hobs, sinks, ovens and hoods'],
+  ['Built to last', 'Everyday reliability for years'],
+  ['Minimal & signature look', 'Unified design language across products'],
+  ['Selected components', 'Tuned for consistent performance'],
+  ['Comfort in use', 'Ergonomic details that matter'],
+  ['Nationwide warranty', 'Authorized dealers across the country'],
+  ['Inspired by Italy', 'Where beauty meets performance'],
+  ['Premium details', 'Precise finishing and assembly'],
+  ['Continuous innovation', 'Elevating the kitchen experience'],
+  ['Designed for life', 'Beautiful, durable, dependable'],
+];
 
-// safety: start even if hero already visible after hydration
-if (document.readyState === 'complete' || document.readyState === 'interactive'){
-  // if hero is already on screen, start immediately
-  const rect = document.querySelector('.hero')?.getBoundingClientRect();
-  if (rect && rect.top < window.innerHeight && rect.bottom > 0) startWhenVisible();
-} else {
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const rect = document.querySelector('.hero')?.getBoundingClientRect();
-    if (rect && rect.top < window.innerHeight && rect.bottom > 0) startWhenVisible();
-  });
+const copyPool = (document.documentElement.lang === 'fa' ? COPY_FA : COPY_EN);
+let textQueue = [];
+let textIdx = 0;
+
+function buildTextQueue(){
+  textQueue = shuffle(copyPool);
+  textIdx = 0;
 }
+
+const elTitle = document.getElementById('heroTitle');
+const elSub   = document.getElementById('heroSubtitle');
+
+function showCopy(pair){
+  // خروج با انیمیشن
+  elTitle.classList.remove('enter'); elSub.classList.remove('enter');
+  elTitle.classList.add('leave'); elSub.classList.add('leave');
+  setTimeout(()=>{
+    elTitle.textContent = pair[0];
+    elSub.textContent   = pair[1];
+    elTitle.classList.remove('leave'); elSub.classList.remove('leave');
+    elTitle.classList.add('enter'); elSub.classList.add('enter');
+  }, 320); // همگام با زمان fadeUpOut
+}
+
+function rotateCopy(){
+  if (!textQueue.length) buildTextQueue();
+  showCopy(textQueue[textIdx]);
+  textIdx++;
+  if (textIdx >= textQueue.length) buildTextQueue();
+}
+buildTextQueue();
+rotateCopy();
+setInterval(rotateCopy, 5000); // هر نوشته ۵ ثانیه می‌ماند
+
+/**
+ * ============ اسکرول با فلش ============
+ * کلیک → اسکرول نرم به اولین سکشن بعد از هیرو
+ */
+document.getElementById('heroScroll').addEventListener('click', () => {
+  const target = document.querySelector('.section');
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 </script>
