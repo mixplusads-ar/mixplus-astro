@@ -1,11 +1,27 @@
 ---
 import Base from '@/layouts/BaseLayout.astro';
+import { categories } from '@/data/categories.ts';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const c of categories) {
+    if (c.subs && c.subs.length) {
+      for (const s of c.subs) {
+        paths.push({ params: { category: c.slug, sub: s.slug } });
+      }
+    }
+  }
+  return paths;
+}
+
 const { params } = Astro;
 const lang = 'en';
+const cat = categories.find(c => c.slug === params.category);
+const sub = cat?.subs?.find(s => s.slug === params.sub);
 ---
-<Base lang={lang} title="MixPlus">
+<Base lang={lang} title={`Products - ${cat?.nameEn ?? ''} / ${sub?.nameEn ?? ''}`}>
   <section class="section container">
-    <h2 style="font-weight:800">{params?.sub ?? 'Subcategory'}</h2>
+    <h2 style="font-weight:800">{sub?.nameEn ?? 'Subcategory'}</h2>
     <p style="color:var(--muted)">This page is a placeholder and will be completed later.</p>
   </section>
 </Base>
