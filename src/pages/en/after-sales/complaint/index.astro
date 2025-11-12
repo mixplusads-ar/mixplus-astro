@@ -1,11 +1,10 @@
 ---
-import Base from '../../../layouts/BaseLayout.astro';
-const { params } = Astro;
+import Base from '@/layouts/BaseLayout.astro';
 const lang = 'en';
 ---
 <Base lang={lang} title="MixPlus">
   <section class="section container">
-    <h2 style="font-weight:800">{params?.sub ? params.sub : params?.category ? params.category : 'Page'}</h2>
-    <p style="color:var(--muted)">This page is a placeholder. You can implement content later.</p>
+    <h2 style="font-weight:800">Complaint</h2>
+    <p style="color:var(--muted)">This page is a placeholder and will be completed later.</p>
   </section>
 </Base>
