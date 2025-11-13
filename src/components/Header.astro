@@ -5,43 +5,37 @@ import { social } from '../data/social';
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
+const t = (fa:string,en:string)=> (isFa?fa:en);
 
-const t = (fa: string, en: string) => (isFa ? fa : en);
-
-// ریشه‌های مگامنو محصولات (ستون راست/چپ)
-const roots = [
-  { slug:'hob',  fa:'اجاق گاز',       en:'Hob'  },
-  { slug:'sink', fa:'سینک ظرف‌شویی',  en:'Sink' },
-  { slug:'hood', fa:'هود',            en:'Hood' },
-  { slug:'oven', fa:'فر',             en:'Oven' },
-];
-
-// کاتالوگ وابسته به زبان
 const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
+
+const roots = [
+  { slug:'hob',  fa:'اجاق گاز',      en:'Hob'  },
+  { slug:'sink', fa:'سینک ظرف‌شویی', en:'Sink' },
+  { slug:'hood', fa:'هود',           en:'Hood' },
+  { slug:'oven', fa:'فر',            en:'Oven' },
+];
 ---
+<header class="hdr" dir={isFa?'rtl':'ltr'}>
+  <div class="container hdr__row">
 
-<header class="hdr" dir={isFa ? 'rtl' : 'ltr'}>
-  <div class="container row">
-
-    {/** راست در FA، چپ در EN (دقیقاً مثل مرجع) */}
-    <nav class={`nav ${isFa ? 'slot-3' : 'slot-1'}`} aria-label="primary">
+    <!-- گروه سمت چپ در EN / سمت راست در FA -->
+    <nav class={`nav ${isFa?'slot-3':'slot-1'}`} aria-label="primary">
       {isFa ? (
         <>
-          <!-- محصولات (با مگامنو دو ستونه) -->
-          <div class="mega" tabindex="0" aria-haspopup="true">
+          <!-- محصولات -->
+          <div class="mega mega--products" tabindex="0" aria-haspopup="true">
             <a class="link">{t('محصولات','Products')}</a>
             <div class="bridge"></div>
             <div class="panel panel--products">
               <div class="cols">
                 <ul class="roots" id="roots-fa">
-                  {roots.map(r => (
-                    <li><a data-slug={r.slug} class="root" href={`/${lang}/products/${r.slug}/`}>{r.fa}</a></li>
-                  ))}
+                  {roots.map(r => <li><a class="root" data-slug={r.slug} href={`/${lang}/products/${r.slug}/`}>{r.fa}</a></li>)}
                 </ul>
                 <div class="subs" id="subs-fa">
                   {roots.map(r => {
-                    const cat = categories.find(c => c.slug === r.slug);
-                    const subs = (cat?.subs?.length) ? cat!.subs : [{ slug:'built-in', nameFa:'فر توکار', nameEn:'Built-in' }];
+                    const cat = categories.find(c=>c.slug===r.slug);
+                    const subs = (cat?.subs?.length) ? cat!.subs : [{slug:'built-in',nameFa:'فر توکار',nameEn:'Built-in'}];
                     return (
                       <ul data-for={r.slug}>
                         {subs.map(s => <li><a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{s.nameFa}</a></li>)}
@@ -70,63 +64,42 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
         </>
       ) : (
         <>
-          <!-- EN: ترتیب متفاوت طبق مرجع -->
-          <div class="mega" tabindex="0" aria-haspopup="true">
-            <a class="link">Products</a>
-            <div class="bridge"></div>
-            <div class="panel panel--products">
-              <div class="cols">
-                <ul class="roots" id="roots-en">
-                  {roots.map(r => <li><a data-slug={r.slug} class="root" href={`/${lang}/products/${r.slug}/`}>{r.en}</a></li>)}
-                </ul>
-                <div class="subs" id="subs-en">
-                  {roots.map(r => {
-                    const cat = categories.find(c => c.slug === r.slug);
-                    const subs = (cat?.subs?.length) ? cat!.subs : [{ slug:'built-in', nameFa:'فر توکار', nameEn:'Built-in' }];
-                    return (
-                      <ul data-for={r.slug}>
-                        {subs.map(s => <li><a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{s.nameEn}</a></li>)}
-                      </ul>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-
+          <a class="link" href={`/${lang}/products/`}>Products</a>
           <span class="pipe">|</span>
           <a class="link" href={`/${lang}/dealers/`}>Dealers</a>
           <span class="pipe">|</span>
-          <div class="mega" tabindex="0" aria-haspopup="true">
-            <a class="link">After-Sales</a>
-            <div class="bridge"></div>
-            <div class="panel panel--list">
-              <a href={`/${lang}/after-sales/complaint-process/`}>Complaint process</a>
-              <a href={`/${lang}/after-sales/warranty-terms/`}>Warranty terms</a>
-              <a href={`/${lang}/after-sales/installation-request/`}>Installation request</a>
-              <a href={`/${lang}/after-sales/complaint/`}>Complaint</a>
-            </div>
-          </div>
+          <a class="link" href={`/${lang}/after-sales/`}>After-Sales</a>
           <span class="pipe">|</span>
           <a class="link" href={`/${lang}/about/`}>About-Us</a>
         </>
       )}
     </nav>
 
-    <!-- لوگو مرکز -->
+    <!-- لوگو با فضای تنفسی دو طرف -->
     <a class="brand slot-2" href={`/${lang}/`} aria-label="MixPlus">
       <brand-logo width="120" height="30"></brand-logo>
     </a>
 
-    {/** چپ در FA / راست در EN (طبق مرجع) */}
-    <nav class={`nav ${isFa ? 'slot-1' : 'slot-3'}`} aria-label="secondary">
+    <!-- گروه مقابل: سمت راست در EN / سمت چپ در FA -->
+    <nav class={`nav ${isFa?'slot-1':'slot-3'}`} aria-label="secondary">
       {isFa ? (
         <>
-          <button class="link icon" title="Search" aria-label="Search" disabled>
-            <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-          </button>
+          <theme-switch class="link" title="Toggle theme"></theme-switch>
           <span class="pipe">|</span>
-          <div class="mega tiny"><a class="link">#</a><div class="bridge"></div>
+
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <a class="link">فارسی ▼</a>
+            <div class="bridge"></div>
+            <div class="panel panel--tiny"><a href={`/${otherLang}/`}>English</a></div>
+          </div>
+
+          <span class="pipe">|</span>
+          <a class="link" href={downloadHref} download>دانلود کاتالوگ</a>
+
+          <span class="pipe">|</span>
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <a class="link">#</a>
+            <div class="bridge"></div>
             <div class="panel panel--tiny">
               <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
               <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
@@ -135,22 +108,22 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
               <a href={social.telegram} target="_blank" rel="noopener">Telegram</a>
             </div>
           </div>
+
           <span class="pipe">|</span>
-          <a class="link" href={downloadHref} download>دانلود کاتالوگ</a>
-          <span class="pipe">|</span>
-          <div class="mega tiny"><a class="link">فارسی ▼</a><div class="bridge"></div>
-            <div class="panel panel--tiny"><a href={`/${otherLang}/`}>English</a></div>
-          </div>
-          <span class="pipe">|</span>
-          <theme-switch class="link" title="Toggle theme"></theme-switch>
+          <button class="link icon" aria-label="Search" title="Search" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+          </button>
         </>
       ) : (
         <>
-          <button class="link icon" title="Search" aria-label="Search" disabled>
+          <button class="link icon" aria-label="Search" title="Search" disabled>
             <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
           </button>
+
           <span class="pipe">|</span>
-          <div class="mega tiny"><a class="link">#</a><div class="bridge"></div>
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <a class="link">#</a>
+            <div class="bridge"></div>
             <div class="panel panel--tiny">
               <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
               <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
@@ -159,12 +132,17 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
               <a href={social.telegram} target="_blank" rel="noopener">Telegram</a>
             </div>
           </div>
+
           <span class="pipe">|</span>
           <a class="link" href={downloadHref} download>Download Catalog</a>
+
           <span class="pipe">|</span>
-          <div class="mega tiny"><a class="link">English ▼</a><div class="bridge"></div>
-            <div class="panel panel--tiny"><a href={`/${otherLang}/`}>{isFa ? 'فارسی' : 'Farsi'}</a></div>
+          <div class="mega tiny" tabindex="0" aria-haspopup="true">
+            <a class="link">English ▼</a>
+            <div class="bridge"></div>
+            <div class="panel panel--tiny"><a href={`/${otherLang}/`}>{isFa?'فارسی':'Farsi'}</a></div>
           </div>
+
           <span class="pipe">|</span>
           <theme-switch class="link" title="Toggle theme"></theme-switch>
         </>
@@ -174,40 +152,39 @@ const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 </header>
 
 <style>
-/* فقط پس‌زمینه‌ی هدر ترنسلوسنت + blur (پَنِل‌ها تغییر رنگ ندارند) */
-.hdr{position:sticky;top:0;z-index:60;border-bottom:1px solid transparent;background:rgba(255,255,255,.48);backdrop-filter:blur(10px)}
+/* Header container (فقط پس‌زمینه شفاف + blur) */
+.hdr{position:sticky;top:0;z-index:60;border-bottom:1px solid transparent;
+  background:rgba(255,255,255,.48);backdrop-filter:blur(10px)}
 html:not(.is-light) .hdr{background:rgba(16,20,26,.28)}
 html.scrolled .hdr{background:var(--card);border-bottom-color:var(--stroke);backdrop-filter:none}
 
-/* چینش */
-.row{display:flex;align-items:center;justify-content:space-between;height:68px}
+/* layout */
+.hdr__row{display:flex;align-items:center;justify-content:space-between;height:68px}
 .slot-1{order:1}.slot-2{order:2}.slot-3{order:3}
 .nav{display:flex;align-items:center;gap:16px;white-space:nowrap}
-.brand{display:inline-flex;align-items:center;justify-content:center;height:68px}
 
-/* لینک‌ها (فقط هاور سبز؛ هیچ underline) */
+/* فاصله‌ی تنفسی دو طرف لوگو */
+.brand{display:inline-flex;align-items:center;justify-content:center;height:68px;margin-inline:56px}
+
+/* links */
 .link{all:unset;cursor:pointer;font-weight:800;color:inherit;text-decoration:none}
 .link:hover{color:var(--brand);text-decoration:none}
 .icon svg{display:block;opacity:.9}
 .pipe{opacity:.5}
 
-/* پل و پنل مگامنو با hover-intent پایدار */
+/* mega (hover-intent + bridge) */
 .bridge{position:absolute;left:0;right:0;top:100%;height:12px}
 .mega{position:relative}
-.panel{
-  position:absolute;top:calc(100% + 6px);inset-inline-start:0;
-  background:var(--card);border:1px solid var(--stroke);border-radius:14px;
-  box-shadow:0 12px 32px rgba(0,0,0,.18);
-  padding:12px;opacity:0;transform:translateY(6px);pointer-events:none;
-  transition:opacity .18s ease,transform .18s ease;
-}
+.panel{position:absolute;top:calc(100% + 6px);inset-inline-start:0;background:var(--card);
+  border:1px solid var(--stroke);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);
+  padding:12px;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .18s,transform .18s}
 .mega:hover .panel,.mega:focus-within .panel{opacity:1;transform:translateY(0);pointer-events:auto}
 .panel--tiny{min-width:140px}
 .panel--list{display:flex;flex-direction:column;gap:10px;min-width:280px}
 .panel a{color:inherit;text-decoration:none}
 .panel a:hover{color:var(--brand);text-decoration:none}
 
-/* محصولات: دو ستون؛ ریشه‌ها سمت راست/چپ و ساب‌ها روبه‌رو */
+/* Products mega: two columns */
 .panel--products{padding:10px}
 .cols{display:flex;gap:12px;align-items:flex-start}
 .roots{list-style:none;margin:0;padding:6px;border-inline-end:1px solid var(--stroke);min-width:240px}
@@ -219,7 +196,7 @@ html.scrolled .hdr{background:var(--card);border-bottom-color:var(--stroke);back
 </style>
 
 <script>
-/* تم و لوگو */
+/* theme + logo */
 const KEY='mix_theme', html=document.documentElement;
 function applyTheme(v){ html.classList.toggle('is-light', v==='light'); }
 applyTheme(localStorage.getItem(KEY)||'light');
@@ -241,37 +218,30 @@ customElements.define('brand-logo', class extends HTMLElement{
   _update(){ const light=html.classList.contains('is-light'); this.img.src = light ? '/logos/logo-dark.svg' : '/logos/logo.svg'; }
 });
 
-/* اسکرول: سالید شدن هدر */
-const onScroll=()=>document.documentElement.classList.toggle('scrolled', window.scrollY>6);
+/* solid header when scrolling */
+const onScroll=()=>document.documentElement.classList.toggle('scrolled', scrollY>6);
 onScroll(); addEventListener('scroll', onScroll);
 
-/* Hover-intent پایدار برای بسته‌نشدن سریع */
+/* hover-intent */
 document.querySelectorAll('.mega').forEach(el=>{
   let t=null; const D=650;
   const open=()=>el.classList.add('open');
   const close=()=>el.classList.remove('open');
-  const delay=()=>{ t=setTimeout(close,D); };
-  const cancel=()=>{ if(t){clearTimeout(t);t=null;} };
-  el.addEventListener('mouseenter',()=>{cancel();open();});
+  const delay=()=>{t=setTimeout(close,D)}; const cancel=()=>{if(t){clearTimeout(t);t=null}}
+  el.addEventListener('mouseenter',()=>{cancel();open()});
   el.addEventListener('mouseleave',delay);
-  el.addEventListener('focusin',()=>{cancel();open();});
+  el.addEventListener('focusin',()=>{cancel();open()});
   el.addEventListener('focusout',delay);
-  el.querySelectorAll('.bridge,.panel').forEach(n=>{
-    n.addEventListener('mouseenter',cancel);
-    n.addEventListener('mouseleave',delay);
-  });
+  el.querySelectorAll('.bridge,.panel').forEach(n=>{n.addEventListener('mouseenter',cancel);n.addEventListener('mouseleave',delay)});
 });
 
-/* فعال‌کردن پیش‌فرضِ اولین ستونِ محصولات (صرفاً نمایشی، لینک‌ها کار می‌کنند) */
+/* products default subs + hover */
 function wireProducts(rootsId, subsId){
-  const roots = document.getElementById(rootsId);
-  const wrap  = document.getElementById(subsId);
-  if(!roots||!wrap) return;
-  const show = (slug)=>wrap.querySelectorAll('ul').forEach(u=>u.style.display = u.dataset.for===slug ? 'block' : 'none');
+  const roots=document.getElementById(rootsId), subs=document.getElementById(subsId);
+  if(!roots||!subs) return;
+  const show=(slug)=>subs.querySelectorAll('ul').forEach(u=>u.style.display = (u.dataset.for===slug?'block':'none'));
   show('hob');
-  roots.addEventListener('mouseenter',e=>{
-    const a=e.target.closest('.root'); if(a) show(a.dataset.slug);
-  }, true);
+  roots.addEventListener('mouseenter',e=>{const a=e.target.closest('.root'); if(a) show(a.dataset.slug)}, true);
 }
 wireProducts('roots-fa','subs-fa');
 wireProducts('roots-en','subs-en');
