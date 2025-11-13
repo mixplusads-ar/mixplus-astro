@@ -1,9 +1,24 @@
-<footer>
-  <div class="container">
-    <div class="meta">
-      <img src="/logos/logo.svg" alt="MixPlus" height="24" />
-      <span>© MixPlus — All rights reserved.</span>
-      <a href="/fa/">FA</a> · <a href="/en/">EN</a>
-    </div>
+---
+const { lang = 'fa' } = Astro.props;
+const isFa = lang === 'fa';
+const year = new Date().getFullYear();
+---
+<footer class="ft">
+  <div class="container ft__in">
+    <p class="meta">© MixPlus — {year}. {isFa ? 'تمامی حقوق محفوظ است.' : 'All rights reserved.'}</p>
+    <p class="langs">
+      <a href="/fa/">FA</a>
+      <span>·</span>
+      <a href="/en/">EN</a>
+    </p>
   </div>
 </footer>
+
+<style>
+.ft{padding:48px 0}
+.ft__in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.meta{margin:0;color:var(--muted)}
+.langs{margin:0;display:flex;align-items:center;gap:8px}
+.langs a{text-decoration:none;color:inherit}
+.langs a:hover{color:var(--brand)}
+</style>
