@@ -5,7 +5,6 @@ import { social } from '../data/social';
 const { lang = 'fa' } = Astro.props;
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
-const t = (fa: string, en: string) => (isFa ? fa : en);
 
 const downloadHref = `/public/docs/catalog-${lang}.pdf`.replace('/public','');
 
@@ -20,31 +19,14 @@ const roots = [
 <header class="hdr" dir={isFa ? 'rtl' : 'ltr'}>
   <div class="container hdr__row">
 
-    {/** گروه محصولات / نمایندگی / پس از فروش
-        - EN: سمت چپ
-        - FA: سمت راست
-    */}
+    {/** گروه «محصولات / نمایندگی‌ها / خدمات پس از فروش» */}
     <nav class={`nav ${isFa ? 'slot-3' : 'slot-1'}`} aria-label="primary">
       {isFa ? (
         <>
-          {/** ترتیب DOM برعکس تا در RTL از راست به چپ این بشود:
-               محصولات | نمایندگی‌های مجاز | خدمات پس از فروش
-           */}
-          <div class="mega" tabindex="0" aria-haspopup="true">
-            <a class="link">خدماتِ پس از فروش</a>
-            <div class="bridge"></div>
-            <div class="panel panel--list">
-              <a href={`/${lang}/after-sales/complaint-process/`}>فرآیند رسیدگی به شکایات</a>
-              <a href={`/${lang}/after-sales/warranty-terms/`}>شرایط گارانتی محصولات میکس‌پلاس</a>
-              <a href={`/${lang}/after-sales/installation-request/`}>درخواست نصب محصول</a>
-              <a href={`/${lang}/after-sales/complaint/`}>شکایت</a>
-            </div>
-          </div>
-
-          <span class="pipe">|</span>
-          <a class="link" href={`/${lang}/dealers/`}>نمایندگی‌های مجاز</a>
-          <span class="pipe">|</span>
-
+          {/** در RTL ترتیب DOM = ترتیب بصری از راست به چپ
+              پس باید این بشه: محصولات | نمایندگی‌های مجاز | خدمات پس از فروش
+          */}
+          {/** محصولات (مگامنو) – راست‌ترین آیتم */}
           <div class="mega mega--products" tabindex="0" aria-haspopup="true">
             <a class="link">محصولات</a>
             <div class="bridge"></div>
@@ -79,10 +61,26 @@ const roots = [
               </div>
             </div>
           </div>
+
+          <span class="pipe">|</span>
+          <a class="link" href={`/${lang}/dealers/`}>نمایندگی‌های مجاز</a>
+          <span class="pipe">|</span>
+
+          {/** خدمات پس از فروش (مگامنو لیستی) – چپ این گروه */}
+          <div class="mega" tabindex="0" aria-haspopup="true">
+            <a class="link">خدمات پس از فروش</a>
+            <div class="bridge"></div>
+            <div class="panel panel--list">
+              <a href={`/${lang}/after-sales/complaint-process/`}>فرآیند رسیدگی به شکایات</a>
+              <a href={`/${lang}/after-sales/warranty-terms/`}>شرایط گارانتی محصولات میکس‌پلاس</a>
+              <a href={`/${lang}/after-sales/installation-request/`}>درخواست نصب محصول</a>
+              <a href={`/${lang}/after-sales/complaint/`}>شکایت</a>
+            </div>
+          </div>
         </>
       ) : (
         <>
-          {/** EN: Products | Dealers | After-Sales | About-Us */}
+          {/** EN: Products | Dealers | After-Sales | About-Us (همون چیزی که الان جواب می‌ده) */}
           <div class="mega mega--products" tabindex="0" aria-haspopup="true">
             <a class="link">Products</a>
             <div class="bridge"></div>
@@ -139,18 +137,16 @@ const roots = [
       )}
     </nav>
 
-    {/** لوگو وسط با فاصلهٔ تنفسی دو طرف */}
+    {/** لوگو وسط با فاصله‌ی تنفسی دو طرف */}
     <a class="brand slot-2" href={`/${lang}/`} aria-label="MixPlus">
       <brand-logo width="120" height="30"></brand-logo>
     </a>
 
-    {/** گروه دوم
-        - EN: سمت راست → Search | # | Download Catalog | English ▼ | Theme
-        - FA: سمت چپ → Theme | فارسی ▼ | Download | # | Search
-    */}
+    {/** گروه دوم: سمت چپ در FA، سمت راست در EN */}
     <nav class={`nav ${isFa ? 'slot-1' : 'slot-3'}`} aria-label="secondary">
       {isFa ? (
         <>
+          {/** 🌙 | فارسی ▼ | دانلود کاتالوگ | درباره ما | # | 🔍 */}
           <theme-switch class="link" title="Toggle theme"></theme-switch>
           <span class="pipe">|</span>
 
@@ -164,6 +160,9 @@ const roots = [
 
           <span class="pipe">|</span>
           <a class="link" href={downloadHref} download>دانلود کاتالوگ</a>
+
+          <span class="pipe">|</span>
+          <a class="link" href={`/${lang}/about/`}>درباره ما</a>
 
           <span class="pipe">|</span>
           <div class="mega tiny" tabindex="0" aria-haspopup="true">
@@ -216,7 +215,7 @@ const roots = [
             <a class="link">English ▼</a>
             <div class="bridge"></div>
             <div class="panel panel--tiny">
-              <a href={`/${otherLang}/`}>{isFa ? 'فارسی' : 'Farsi'}</a>
+              <a href={`/${otherLang}/`}>Farsi</a>
             </div>
           </div>
 
@@ -260,17 +259,17 @@ html.scrolled .hdr{
 .nav{
   display:flex;
   align-items:center;
-  gap:12px;         /* دکمه‌ها متراکم‌تر */
+  gap:12px; /* کمی متراکم‌تر */
   white-space:nowrap;
 }
 
-/* لوگو با فاصله‌ی بیشتر */
+/* لوگو با فاصله‌ی تنفسی بیشتر */
 .brand{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   height:68px;
-  margin-inline:72px; /* دو طرف لوگو فضای خالی بیشتر */
+  margin-inline:72px;
 }
 
 /* لینک‌ها */
@@ -293,7 +292,7 @@ html.scrolled .hdr{
   opacity:.5;
 }
 
-/* مگامنو با hover-intent */
+/* مگامنو + hover-intent */
 .bridge{
   position:absolute;
   left:0;
@@ -318,6 +317,12 @@ html.scrolled .hdr{
   pointer-events:none;
   transition:opacity .18s ease, transform .18s ease;
 }
+/* پنل‌ها در حالت RTL از سمت راست چسبیده بشن تا از صفحه نزنن بیرون */
+.hdr[dir="rtl"] .panel{
+  inset-inline-start:auto;
+  inset-inline-end:0;
+}
+
 .mega:hover .panel,
 .mega:focus-within .panel{
   opacity:1;
@@ -342,7 +347,7 @@ html.scrolled .hdr{
   text-decoration:none;
 }
 
-/* مگامنو محصولات دو ستونه */
+/* محصولات دو ستونه */
 .panel--products{
   padding:10px;
 }
@@ -435,14 +440,14 @@ customElements.define('brand-logo', class extends HTMLElement{
   }
 });
 
-/* solid header on scroll */
+/* اسکرول */
 const onScroll = () => {
   document.documentElement.classList.toggle('scrolled', window.scrollY > 6);
 };
 onScroll();
 addEventListener('scroll', onScroll);
 
-/* hover-intent برای مگامنوها */
+/* hover-intent مگامنو */
 document.querySelectorAll('.mega').forEach(el => {
   let t = null;
   const D = 650;
@@ -462,7 +467,7 @@ document.querySelectorAll('.mega').forEach(el => {
   });
 });
 
-/* فعال‌کردن ساب‌کتگوری‌ها برای محصولات در هر دو زبان */
+/* محصولات: فعال‌سازی ساب‌کتگوری‌ها در هر دو زبان */
 function wireProducts(rootsId, subsId){
   const roots = document.getElementById(rootsId);
   const subs = document.getElementById(subsId);
