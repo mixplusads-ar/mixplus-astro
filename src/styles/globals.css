@@ -15,7 +15,11 @@
   --stroke:rgba(255,255,255,.08);
 
   /* social icons color (dark → white) */
-  --social-filter: invert(1);
+  :root{ --social-filter: invert(1); }       /* دارک → سفید */
+:root.is-light{ --social-filter: brightness(0); }  /* لایت → مشکی */
+
+a, .panel a { text-decoration: none; }     /* هیچ underline */
+
 
   /* spacing */
   --radius:16px;
