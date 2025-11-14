@@ -1,537 +1,881 @@
 ---
+// src/components/Header.astro
+
 import { categories } from '../data/categories';
 import { social } from '../data/social';
 
-const { lang = 'fa' } = Astro.props;
+// انتظار داریم صفحه‌ای که هدر را صدا می‌زند، prop زبان را بدهد
+// مثل: <Header lang="fa" /> یا <Header lang="en" />
+const { lang = 'fa' } = Astro.props as { lang?: 'fa' | 'en' };
+
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
 
-const downloadHref = `/docs/catalog-${lang}.pdf`;
+const root = `/${lang}`;
+const catalogHref = lang === 'fa'
+  ? '/docs/catalog-fa.pdf'
+  : '/docs/catalog-en.pdf';
 
-const roots = [
-  { slug: 'hob',  fa: 'اجاق گاز',        en: 'Hob' },
-  { slug: 'sink', fa: 'سینک ظرف‌شویی',   en: 'Sink' },
-  { slug: 'hood', fa: 'هود',             en: 'Hood' },
-  { slug: 'oven', fa: 'فر',              en: 'Oven' },
-];
+const aboutHref = `${root}/about/`;
+const dealersHref = `${root}/dealers/`;
+const productsRoot = `${root}/products/`;
+const afterSalesRoot = `${root}/after-sales/`;
+
+// متن‌ها
+const t = isFa
+  ? {
+      products: 'محصولات',
+      dealers: 'نمایندگی‌های مجاز',
+      afterSales: 'خدمات پس از فروش',
+      about: 'درباره ما',
+      downloadCatalog: 'دانلود کاتالوگ',
+      langLabel: 'فارسی',
+      otherLangLabel: 'English',
+      socialMenuLabel: '#',
+    }
+  : {
+      products: 'Products',
+      dealers: 'Dealers',
+      afterSales: 'After-Sales',
+      about: 'About-Us',
+      downloadCatalog: 'Download Catalog',
+      langLabel: 'English',
+      otherLangLabel: 'فارسی',
+      socialMenuLabel: '#',
+    };
+
+// ساخت مسیر صفحه خدمات پس از فروش
+const afterSalesPages = isFa
+  ? [
+      {
+        label: 'فرآیند رسیدگی به شکایات',
+        href: `${afterSalesRoot}complaint-process/`,
+      },
+      {
+        label: 'شرایط گارانتی محصولات میکس‌پلاس',
+        href: `${afterSalesRoot}warranty-terms/`,
+      },
+      {
+        label: 'درخواست نصب محصول',
+        href: `${afterSalesRoot}installation-request/`,
+      },
+      {
+        label: 'شکایت',
+        href: `${afterSalesRoot}complaint/`,
+      },
+    ]
+  : [
+      {
+        label: 'Complaint process',
+        href: `${afterSalesRoot}complaint-process/`,
+      },
+      {
+        label: 'Warranty terms',
+        href: `${afterSalesRoot}warranty-terms/`,
+      },
+      {
+        label: 'Installation request',
+        href: `${afterSalesRoot}installation-request/`,
+      },
+      {
+        label: 'Complaint',
+        href: `${afterSalesRoot}complaint/`,
+      },
+    ];
 ---
 
-<header class={`hdr ${isFa ? 'hdr--fa' : 'hdr--en'}`} dir={isFa ? 'rtl' : 'ltr'}>
-  <div class="container hdr__row">
-
-    {/** ناوبری سمت راست لوگو */}
-    <nav
-      class={`nav nav--primary ${isFa ? 'slot-3 nav--primary-fa' : 'slot-1 nav--primary-en'}`}
-      aria-label="Primary navigation"
-    >
-      {isFa ? (
-        <>
-          {/** محصولات | نمایندگی‌های مجاز | خدمات پس از فروش (از راست به چپ) */}
-          <div class="mega mega--products" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">محصولات</button>
-            <div class="bridge"></div>
-            <div class="panel panel--products">
-              <div class="cols">
-                <ul class="roots" id="roots-fa">
-                  {roots.map(r => (
-                    <li>
+<header class={`mix-header ${isFa ? 'mix-header--fa' : 'mix-header--en'}`}>
+  <div class="mix-header__inner">
+    {isFa ? (
+      <>
+        {/* گروه سمت راست در زبان فارسی: محصولات | نمایندگی‌ها | خدمات پس از فروش */}
+        <nav class="mix-header__nav mix-header__nav--primary">
+          <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
+            <button class="mix-header__link" type="button" data-trigger>
+              {t.products}
+            </button>
+            <div class="mix-mega mix-mega--products" data-panel>
+              <div class="mix-mega__col mix-mega__col--roots">
+                {categories.map((cat) => (
+                  <a
+                    href={
+                      cat.slug === 'oven'
+                        ? `${productsRoot}${cat.slug}/`
+                        : `${productsRoot}${cat.slug}/`
+                    }
+                    class="mix-mega__root"
+                    data-cat={cat.slug}
+                  >
+                    {isFa ? cat.nameFa : cat.nameEn}
+                  </a>
+                ))}
+              </div>
+              <div class="mix-mega__col mix-mega__col--subs" data-subs-container>
+                {categories.map((cat) =>
+                  cat.subs ? (
+                    <div
+                      class="mix-mega__subs"
+                      data-subs-for={cat.slug}
+                    >
+                      {cat.subs.map((sub) => (
+                        <a
+                          href={`${productsRoot}${cat.slug}/${sub.slug}/`}
+                          class="mix-mega__sub"
+                        >
+                          {isFa ? sub.nameFa : sub.nameEn}
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      class="mix-mega__subs"
+                      data-subs-for={cat.slug}
+                    >
                       <a
-                        class="root"
-                        data-slug={r.slug}
-                        href={`/${lang}/products/${r.slug}/`}
+                        href={`${productsRoot}${cat.slug}/`}
+                        class="mix-mega__sub mix-mega__sub--single"
                       >
-                        {r.fa}
+                        {isFa ? cat.nameFa : cat.nameEn}
                       </a>
-                    </li>
-                  ))}
-                </ul>
-                <div class="subs" id="subs-fa">
-                  {roots.map(r => {
-                    const cat = categories.find(c => c.slug === r.slug);
-                    const subs = (cat?.subs?.length)
-                      ? cat!.subs
-                      : [{ slug: 'built-in', nameFa: 'فر توکار', nameEn: 'Built-in' }];
-                    return (
-                      <ul data-for={r.slug}>
-                        {subs.map(s => (
-                          <li>
-                            <a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{s.nameFa}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    );
-                  })}
-                </div>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
 
-          <span class="pipe">|</span>
+          <a class="mix-header__link" href={dealersHref}>
+            {t.dealers}
+          </a>
 
-          <a class="link" href={`/${lang}/dealers/`}>نمایندگی‌های مجاز</a>
-
-          <span class="pipe">|</span>
-
-          <div class="mega" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">خدمات پس از فروش</button>
-            <div class="bridge"></div>
-            <div class="panel panel--list">
-              <a href={`/${lang}/after-sales/complaint-process/`}>فرآیند رسیدگی به شکایات</a>
-              <a href={`/${lang}/after-sales/warranty-terms/`}>شرایط گارانتی محصولات میکس‌پلاس</a>
-              <a href={`/${lang}/after-sales/installation-request/`}>درخواست نصب محصول</a>
-              <a href={`/${lang}/after-sales/complaint/`}>شکایت</a>
+          <div class="mix-header__item mix-header__item--has-mega" data-menu="after-sales">
+            <button class="mix-header__link" type="button" data-trigger>
+              {t.afterSales}
+            </button>
+            <div class="mix-mega mix-mega--aftersales" data-panel>
+              <div class="mix-mega__col mix-mega__col--single">
+                {afterSalesPages.map((item) => (
+                  <a href={item.href} class="mix-mega__sub">
+                    {item.label}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-        </>
-      ) : (
-        <>
-          {/** EN: Products | Dealers | After-Sales | About-Us */}
-          <div class="mega mega--products" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">Products</button>
-            <div class="bridge"></div>
-            <div class="panel panel--products">
-              <div class="cols">
-                <ul class="roots" id="roots-en">
-                  {roots.map(r => (
-                    <li>
+        </nav>
+
+        {/* لوگو وسط */}
+        <a href={root + '/'} class="mix-header__logo">
+          <img
+            src="/logos/logo.svg"
+            alt="MixPlus"
+            class="mix-header__logo-img mix-header__logo-img--light"
+          />
+          <img
+            src="/logos/logo-dark.svg"
+            alt="MixPlus"
+            class="mix-header__logo-img mix-header__logo-img--dark"
+          />
+        </a>
+
+        {/* گروه سمت چپ در فارسی: سرچ | # | درباره ما | دانلود کاتالوگ | زبان | تم */}
+        <nav class="mix-header__nav mix-header__nav--secondary">
+          <button class="mix-header__icon-btn" type="button" aria-label="جستجو">
+            <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
+          </button>
+
+          <div class="mix-header__divider"></div>
+
+          <div class="mix-header__item mix-header__item--has-dropdown" data-menu="social">
+            <button
+              class="mix-header__link mix-header__link--hash"
+              type="button"
+              data-trigger
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              {t.socialMenuLabel}
+            </button>
+            <div class="mix-dropdown mix-dropdown--social" data-panel>
+              <ul>
+                {social.map((item) => (
+                  <li>
+                    <a href={item.href} target="_blank" rel="noopener" aria-label={item.label}>
+                      <span class="mix-dropdown__label">{item.label}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div class="mix-header__divider"></div>
+
+          <a class="mix-header__link" href={aboutHref}>
+            {t.about}
+          </a>
+
+          <div class="mix-header__divider"></div>
+
+          <a class="mix-header__link" href={catalogHref} target="_blank" rel="noopener">
+            {t.downloadCatalog}
+          </a>
+
+          <div class="mix-header__divider"></div>
+
+          <div class="mix-header__item mix-header__item--has-dropdown" data-menu="lang">
+            <button
+              class="mix-header__link"
+              type="button"
+              data-trigger
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              {t.langLabel} ▼
+            </button>
+            <div class="mix-dropdown mix-dropdown--lang" data-panel>
+              <a href={`/${otherLang}/`} class="mix-dropdown__lang">
+                {t.otherLangLabel}
+              </a>
+            </div>
+          </div>
+
+          <div class="mix-header__divider"></div>
+
+          <button
+            class="mix-header__icon-btn"
+            type="button"
+            data-theme-toggle
+            aria-label="Switch theme"
+          >
+            <span class="mix-icon mix-icon--theme" aria-hidden="true"></span>
+          </button>
+        </nav>
+      </>
+    ) : (
+      <>
+        {/* EN: left side – Products | Dealers | After-Sales | About-Us */}
+        <nav class="mix-header__nav mix-header__nav--primary">
+          <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
+            <button class="mix-header__link" type="button" data-trigger>
+              {t.products}
+            </button>
+            <div class="mix-mega mix-mega--products" data-panel>
+              <div class="mix-mega__col mix-mega__col--roots">
+                {categories.map((cat) => (
+                  <a
+                    href={
+                      cat.slug === 'oven'
+                        ? `${productsRoot}${cat.slug}/`
+                        : `${productsRoot}${cat.slug}/`
+                    }
+                    class="mix-mega__root"
+                    data-cat={cat.slug}
+                  >
+                    {isFa ? cat.nameFa : cat.nameEn}
+                  </a>
+                ))}
+              </div>
+              <div class="mix-mega__col mix-mega__col--subs" data-subs-container>
+                {categories.map((cat) =>
+                  cat.subs ? (
+                    <div
+                      class="mix-mega__subs"
+                      data-subs-for={cat.slug}
+                    >
+                      {cat.subs.map((sub) => (
+                        <a
+                          href={`${productsRoot}${cat.slug}/${sub.slug}/`}
+                          class="mix-mega__sub"
+                        >
+                          {isFa ? sub.nameFa : sub.nameEn}
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      class="mix-mega__subs"
+                      data-subs-for={cat.slug}
+                    >
                       <a
-                        class="root"
-                        data-slug={r.slug}
-                        href={`/${lang}/products/${r.slug}/`}
+                        href={`${productsRoot}${cat.slug}/`}
+                        class="mix-mega__sub mix-mega__sub--single"
                       >
-                        {r.en}
+                        {isFa ? cat.nameFa : cat.nameEn}
                       </a>
-                    </li>
-                  ))}
-                </ul>
-                <div class="subs" id="subs-en">
-                  {roots.map(r => {
-                    const cat = categories.find(c => c.slug === r.slug);
-                    const subs = (cat?.subs?.length)
-                      ? cat!.subs
-                      : [{ slug: 'built-in', nameFa: 'فر توکار', nameEn: 'Built-in' }];
-                    return (
-                      <ul data-for={r.slug}>
-                        {subs.map(s => (
-                          <li>
-                            <a href={`/${lang}/products/${r.slug}/${s.slug}/`}>{s.nameEn}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    );
-                  })}
-                </div>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
 
-          <span class="pipe">|</span>
-          <a class="link" href={`/${lang}/dealers/`}>Dealers</a>
+          <a class="mix-header__link" href={dealersHref}>
+            {t.dealers}
+          </a>
 
-          <span class="pipe">|</span>
-
-          <div class="mega" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">After-Sales</button>
-            <div class="bridge"></div>
-            <div class="panel panel--list">
-              <a href={`/${lang}/after-sales/complaint-process/`}>Complaint process</a>
-              <a href={`/${lang}/after-sales/warranty-terms/`}>Warranty terms</a>
-              <a href={`/${lang}/after-sales/installation-request/`}>Installation request</a>
-              <a href={`/${lang}/after-sales/complaint/`}>Complaint</a>
+          <div class="mix-header__item mix-header__item--has-mega" data-menu="after-sales">
+            <button class="mix-header__link" type="button" data-trigger>
+              {t.afterSales}
+            </button>
+            <div class="mix-mega mix-mega--aftersales" data-panel>
+              <div class="mix-mega__col mix-mega__col--single">
+                {afterSalesPages.map((item) => (
+                  <a href={item.href} class="mix-mega__sub">
+                    {item.label}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
 
-          <span class="pipe">|</span>
-          <a class="link" href={`/${lang}/about/`}>About-Us</a>
-        </>
-      )}
-    </nav>
+          <a class="mix-header__link" href={aboutHref}>
+            {t.about}
+          </a>
+        </nav>
 
-    {/** لوگو */}
-    <a class="brand slot-2" href={`/${lang}/`} aria-label="MixPlus">
-      <brand-logo width="120" height="32"></brand-logo>
-    </a>
+        {/* logo center */}
+        <a href={root + '/'} class="mix-header__logo">
+          <img
+            src="/logos/logo.svg"
+            alt="MixPlus"
+            class="mix-header__logo-img mix-header__logo-img--light"
+          />
+          <img
+            src="/logos/logo-dark.svg"
+            alt="MixPlus"
+            class="mix-header__logo-img mix-header__logo-img--dark"
+          />
+        </a>
 
-    {/** ناوبری سمت چپ لوگو */}
-    <nav
-      class={`nav nav--secondary ${isFa ? 'slot-1 nav--secondary-fa' : 'slot-3 nav--secondary-en'}`}
-      aria-label="Secondary navigation"
-    >
-      {isFa ? (
-        <>
-          {/** از راست به چپ: سرچ | # | درباره ما | دانلود کاتالوگ | فارسی ▼ | تم */}
-
-          <theme-switch class="link" title="Toggle theme"></theme-switch>
-
-          <span class="pipe">|</span>
-
-          <div class="mega tiny" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">فارسی ▼</button>
-            <div class="bridge"></div>
-            <div class="panel panel--tiny">
-              <a href={`/${otherLang}/`}>English</a>
-            </div>
-          </div>
-
-          <span class="pipe">|</span>
-
-          <a class="link" href={downloadHref} download>دانلود کاتالوگ</a>
-
-          <span class="pipe">|</span>
-
-          <a class="link" href={`/${lang}/about/`}>درباره ما</a>
-
-          <span class="pipe">|</span>
-
-          <div class="mega tiny" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">#</button>
-            <div class="bridge"></div>
-            <div class="panel panel--tiny panel--social">
-              <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
-              <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
-              <a href={social.youtube}  target="_blank" rel="noopener">YouTube</a>
-              <a href={social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-              <a href={social.telegram} target="_blank" rel="noopener">Telegram</a>
-            </div>
-          </div>
-
-          <span class="pipe">|</span>
-
-          <button class="link icon" type="button" aria-label="Search" title="Search" disabled>
-            <svg width="18" height="18" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none" />
-              <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
-            </svg>
-          </button>
-        </>
-      ) : (
-        <>
-          <button class="link icon" type="button" aria-label="Search" title="Search" disabled>
-            <svg width="18" height="18" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none" />
-              <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
-            </svg>
+        {/* EN right side – search | # | Download | English ▼ | theme */}
+        <nav class="mix-header__nav mix-header__nav--secondary">
+          <button class="mix-header__icon-btn" type="button" aria-label="Search">
+            <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
           </button>
 
-          <span class="pipe">|</span>
+          <div class="mix-header__divider"></div>
 
-          <div class="mega tiny" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">#</button>
-            <div class="bridge"></div>
-            <div class="panel panel--tiny panel--social">
-              <a href={social.instagram} target="_blank" rel="noopener">Instagram</a>
-              <a href={social.aparat}   target="_blank" rel="noopener">Aparat</a>
-              <a href={social.youtube}  target="_blank" rel="noopener">YouTube</a>
-              <a href={social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-              <a href={social.telegram} target="_blank" rel="noopener">Telegram</a>
+          <div class="mix-header__item mix-header__item--has-dropdown" data-menu="social">
+            <button
+              class="mix-header__link mix-header__link--hash"
+              type="button"
+              data-trigger
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              {t.socialMenuLabel}
+            </button>
+            <div class="mix-dropdown mix-dropdown--social" data-panel>
+              <ul>
+                {social.map((item) => (
+                  <li>
+                    <a href={item.href} target="_blank" rel="noopener" aria-label={item.label}>
+                      <span class="mix-dropdown__label">{item.label}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <span class="pipe">|</span>
+          <div class="mix-header__divider"></div>
 
-          <a class="link" href={downloadHref} download>Download Catalog</a>
+          <a class="mix-header__link" href={catalogHref} target="_blank" rel="noopener">
+            {t.downloadCatalog}
+          </a>
 
-          <span class="pipe">|</span>
+          <div class="mix-header__divider"></div>
 
-          <div class="mega tiny" tabindex="0" aria-haspopup="true">
-            <button class="link" type="button">English ▼</button>
-            <div class="bridge"></div>
-            <div class="panel panel--tiny">
-              <a href={`/${otherLang}/`}>Farsi</a>
+          <div class="mix-header__item mix-header__item--has-dropdown" data-menu="lang">
+            <button
+              class="mix-header__link"
+              type="button"
+              data-trigger
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              {t.langLabel} ▼
+            </button>
+            <div class="mix-dropdown mix-dropdown--lang" data-panel>
+              <a href={`/${otherLang}/`} class="mix-dropdown__lang">
+                {t.otherLangLabel}
+              </a>
             </div>
           </div>
 
-          <span class="pipe">|</span>
+          <div class="mix-header__divider"></div>
 
-          <theme-switch class="link" title="Toggle theme"></theme-switch>
-        </>
-      )}
-    </nav>
+          <button
+            class="mix-header__icon-btn"
+            type="button"
+            data-theme-toggle
+            aria-label="Switch theme"
+          >
+            <span class="mix-icon mix-icon--theme" aria-hidden="true"></span>
+          </button>
+        </nav>
+      </>
+    )}
   </div>
 </header>
 
-<style>
-.hdr{
-  position:sticky;
-  top:0;
-  z-index:60;
-  border-bottom:1px solid transparent;
-  background:rgba(255,255,255,.50);
-  backdrop-filter:blur(10px);
-}
-html:not(.is-light) .hdr{
-  background:rgba(16,20,26,.30);
-}
-html.scrolled .hdr{
-  background:var(--card);
-  border-bottom-color:var(--stroke);
-  backdrop-filter:none;
-}
-
-.hdr__row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  height:72px;
-}
-
-.slot-1{ order:1; }
-.slot-2{ order:2; }
-.slot-3{ order:3; }
-
-.nav{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  white-space:nowrap;
-}
-
-/* فاصله دو طرف لوگو */
-.brand{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height:72px;
-  margin-inline:80px;
-}
-
-/* جهت چیدمان برای فارسی و انگلیسی */
-.hdr--fa .nav--primary-fa{
-  flex-direction:row;          /* این خط مشکل را حل می‌کند: دیگر row-reverse نیست */
-}
-.hdr--fa .nav--secondary-fa{
-  flex-direction:row;
-}
-
-/* لینک‌ها */
-.link{
-  all:unset;
-  cursor:pointer;
-  font-weight:800;
-  color:inherit;
-}
-.link:hover{
-  color:var(--brand);
-}
-.icon svg{
-  display:block;
-  opacity:.9;
-}
-.pipe{
-  opacity:.5;
-}
-
-/* مگامنو */
-.mega{
-  position:relative;
-}
-.bridge{
-  position:absolute;
-  left:0;
-  right:0;
-  top:100%;
-  height:10px;
-}
-.panel{
-  position:absolute;
-  top:calc(100% + 6px);
-  inset-inline-start:0;
-  background:var(--card);
-  border:1px solid var(--stroke);
-  border-radius:16px;
-  box-shadow:0 12px 32px rgba(0,0,0,.18);
-  padding:12px;
-  opacity:0;
-  transform:translateY(6px);
-  pointer-events:none;
-  transition:opacity .18s ease, transform .18s ease;
-}
-.hdr[dir="rtl"] .panel{
-  inset-inline-start:auto;
-  inset-inline-end:0;
-}
-
-.mega.open .panel{
-  opacity:1;
-  transform:translateY(0);
-  pointer-events:auto;
-}
-
-/* لیست ساده */
-.panel--list{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  min-width:260px;
-}
-
-/* منوهای کوچک (زبان / سوشیال) */
-.panel--tiny{
-  min-width:150px;
-}
-.panel--tiny.panel--social{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.panel--tiny a{
-  display:block;
-  padding:4px 8px;
-}
-
-.panel a{
-  color:inherit;
-}
-.panel a:hover{
-  color:var(--brand);
-}
-
-/* مگامنو محصولات */
-.panel--products{
-  padding:10px;
-}
-.cols{
-  display:flex;
-  gap:14px;
-  align-items:flex-start;
-}
-.roots{
-  list-style:none;
-  margin:0;
-  padding:6px;
-  border-inline-end:1px solid var(--stroke);
-  min-width:230px;
-}
-.root{
-  display:block;
-  padding:8px 10px;
-  border-radius:10px;
-  font-weight:800;
-}
-.root:hover{
-  color:var(--brand);
-}
-.subs > ul{
-  list-style:none;
-  margin:0;
-  padding:6px;
-  min-width:230px;
-}
-.subs a{
-  display:block;
-  padding:7px 10px;
-  border-radius:10px;
-}
-.subs a:hover{
-  color:var(--brand);
-}
-</style>
-
 <script>
-const THEME_KEY = 'mix_theme';
-const html = document.documentElement;
+  // --- hover-intent ساده برای مگامنو و دراپ‌داون‌ها ---
+  const HOVER_DELAY = 220;
 
-function applyTheme(value) {
-  html.classList.toggle('is-light', value === 'light');
-}
+  function setupHoverMenus() {
+    const menuGroups = document.querySelectorAll('[data-menu]');
+    menuGroups.forEach((group) => {
+      let openTimer = null;
+      let closeTimer = null;
+      const trigger = group.querySelector('[data-trigger]');
+      const panel = group.querySelector('[data-panel]');
 
-applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+      if (!trigger || !panel) return;
 
-customElements.define('theme-switch', class extends HTMLElement {
-  connectedCallback() {
-    this.setAttribute('role', 'button');
-    this.style.userSelect = 'none';
-    this.render();
-    this.addEventListener('click', () => {
-      const next = html.classList.contains('is-light') ? 'dark' : 'light';
-      localStorage.setItem(THEME_KEY, next);
-      applyTheme(next);
-      this.render();
+      const open = () => {
+        clearTimeout(closeTimer);
+        openTimer = setTimeout(() => {
+          group.classList.add('is-open');
+        }, HOVER_DELAY);
+      };
+
+      const close = () => {
+        clearTimeout(openTimer);
+        closeTimer = setTimeout(() => {
+          group.classList.remove('is-open');
+        }, HOVER_DELAY);
+      };
+
+      trigger.addEventListener('mouseenter', open);
+      trigger.addEventListener('mouseleave', close);
+      panel.addEventListener('mouseenter', open);
+      panel.addEventListener('mouseleave', close);
+
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        group.classList.toggle('is-open');
+      });
     });
+
+    // منطق سوییچ ساب‌کتگوری‌ها داخل مگامنو محصولات
+    const roots = document.querySelectorAll('.mix-mega__root');
+    const subsContainers = document.querySelectorAll('.mix-mega__subs');
+
+    function showSubs(slug) {
+      subsContainers.forEach((el) => {
+        if (el.getAttribute('data-subs-for') === slug) {
+          el.classList.add('is-active');
+        } else {
+          el.classList.remove('is-active');
+        }
+      });
+      roots.forEach((el) => {
+        if (el.getAttribute('data-cat') === slug) {
+          el.classList.add('is-active');
+        } else {
+          el.classList.remove('is-active');
+        }
+      });
+    }
+
+    if (roots.length) {
+      const firstSlug = roots[0].getAttribute('data-cat');
+      if (firstSlug) showSubs(firstSlug);
+
+      roots.forEach((root) => {
+        root.addEventListener('mouseenter', () => {
+          const slug = root.getAttribute('data-cat');
+          if (slug) showSubs(slug);
+        });
+        root.addEventListener('focus', () => {
+          const slug = root.getAttribute('data-cat');
+          if (slug) showSubs(slug);
+        });
+      });
+    }
+
+    // تم لایت/دارک
+    const THEME_KEY = 'mix_theme';
+    const themeToggle = document.querySelector('[data-theme-toggle]');
+    if (themeToggle) {
+      const root = document.documentElement;
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === 'dark' || saved === 'light') {
+        root.dataset.theme = saved;
+      }
+      themeToggle.addEventListener('click', () => {
+        const current = root.dataset.theme === 'dark' ? 'dark' : 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        localStorage.setItem(THEME_KEY, next);
+      });
+    }
+
+    // اسکرول: افزودن کلاس برای تغییر شفافیت هدر
+    const header = document.querySelector('.mix-header');
+    if (header) {
+      const onScroll = () => {
+        if (window.scrollY > 10) {
+          header.classList.add('mix-header--scrolled');
+        } else {
+          header.classList.remove('mix-header--scrolled');
+        }
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
   }
-  render() {
-    this.textContent = html.classList.contains('is-light') ? '☾' : '☀︎';
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', setupHoverMenus);
   }
-});
-
-customElements.define('brand-logo', class extends HTMLElement {
-  static get observedAttributes() { return ['width','height']; }
-  connectedCallback() {
-    this.img = document.createElement('img');
-    this.img.alt = 'MixPlus logo';
-    this.appendChild(this.img);
-    this._size();
-    this._update();
-    const mo = new MutationObserver(() => this._update());
-    mo.observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
-    this._mo = mo;
-  }
-  disconnectedCallback(){ this._mo?.disconnect?.(); }
-  attributeChangedCallback(){ this._size(); }
-  _size() {
-    const w = this.getAttribute('width') || '120';
-    const h = this.getAttribute('height') || '32';
-    this.img.width = +w;
-    this.img.height = +h;
-  }
-  _update() {
-    const light = html.classList.contains('is-light');
-    this.img.src = light ? '/logos/logo-dark.svg' : '/logos/logo.svg';
-  }
-});
-
-/* اسکرول برای تغییر پس‌زمینه هدر */
-function handleScroll(){
-  document.documentElement.classList.toggle('scrolled', window.scrollY > 6);
-}
-handleScroll();
-addEventListener('scroll', handleScroll);
-
-/* hover-intent برای مگامنوها */
-document.querySelectorAll('.mega').forEach(el => {
-  let timer = null;
-  const delay = 650;
-
-  const open = () => {
-    clearTimeout(timer);
-    el.classList.add('open');
-  };
-
-  const close = () => {
-    timer = setTimeout(() => el.classList.remove('open'), delay);
-  };
-
-  el.addEventListener('mouseenter', open);
-  el.addEventListener('mouseleave', close);
-  el.addEventListener('focusin', open);
-  el.addEventListener('focusout', close);
-
-  el.querySelectorAll('.bridge, .panel').forEach(node => {
-    node.addEventListener('mouseenter', open);
-    node.addEventListener('mouseleave', close);
-  });
-});
-
-/* سوییچ ساب‌کتگوری‌ها در مگامنو محصولات */
-function wireProducts(rootsId, subsId) {
-  const roots = document.getElementById(rootsId);
-  const subs  = document.getElementById(subsId);
-  if (!roots || !subs) return;
-
-  const show = slug => {
-    subs.querySelectorAll('ul').forEach(u => {
-      u.style.display = (u.dataset.for === slug) ? 'block' : 'none';
-    });
-  };
-
-  show('hob');
-
-  roots.addEventListener('mouseenter', e => {
-    const a = e.target.closest('.root');
-    if (a && a.dataset.slug) show(a.dataset.slug);
-  }, true);
-}
-
-wireProducts('roots-fa', 'subs-fa');
-wireProducts('roots-en', 'subs-en');
 </script>
+
+<style>
+  .mix-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    backdrop-filter: blur(10px);
+    background: rgba(15, 15, 20, 0.4);
+    border-bottom: 1px solid transparent;
+    transition: background 160ms ease, border-color 160ms ease;
+  }
+
+  .mix-header--scrolled {
+    background: var(--card, rgba(245, 245, 245, 0.96));
+    border-bottom-color: var(--stroke, rgba(0, 0, 0, 0.08));
+  }
+
+  html[data-theme='dark'] .mix-header {
+    background: rgba(10, 12, 16, 0.65);
+  }
+
+  html[data-theme='dark'] .mix-header--scrolled {
+    background: rgba(10, 12, 16, 0.98);
+  }
+
+  .mix-header__inner {
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 0.6rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.5rem;
+    font-family: var(--font-fa, inherit);
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+
+  .mix-header--en .mix-header__inner {
+    direction: ltr;
+    font-family: var(--font-en, system-ui);
+  }
+
+  .mix-header--fa .mix-header__inner {
+    direction: rtl;
+  }
+
+  .mix-header__nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.75rem;
+    white-space: nowrap;
+  }
+
+  .mix-header__nav--secondary {
+    font-size: 0.9rem;
+  }
+
+  .mix-header__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 2.5rem;
+  }
+
+  .mix-header__logo-img {
+    height: 32px;
+    display: block;
+  }
+
+  .mix-header__logo-img--dark {
+    display: none;
+  }
+
+  html[data-theme='dark'] .mix-header__logo-img--light {
+    display: none;
+  }
+
+  html[data-theme='dark'] .mix-header__logo-img--dark {
+    display: block;
+  }
+
+  .mix-header__link {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: var(--fg, #111);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    position: relative;
+  }
+
+  html[data-theme='dark'] .mix-header__link {
+    color: #f7f7f8;
+  }
+
+  .mix-header__link:hover,
+  .mix-header__link:focus-visible {
+    color: var(--brand, #0fa99c);
+  }
+
+  .mix-header__link--hash {
+    font-weight: 700;
+  }
+
+  .mix-header__divider {
+    width: 1px;
+    height: 1.4rem;
+    background: rgba(0, 0, 0, 0.16);
+  }
+
+  html[data-theme='dark'] .mix-header__divider {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .mix-header__icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mix-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    position: relative;
+  }
+
+  .mix-icon--search::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+  }
+
+  .mix-icon--search::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 7px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+
+  .mix-icon--theme::before {
+    content: '☾';
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  html[data-theme='dark'] .mix-icon--theme::before {
+    content: '☀';
+  }
+
+  /* مگا منوها */
+
+  .mix-header__item--has-mega {
+    position: relative;
+  }
+
+  .mix-mega {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 100%;
+    margin-top: 0.9rem;
+    min-width: 420px;
+    background: var(--card, #fff);
+    border-radius: 14px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    padding: 1.25rem 1.5rem;
+    display: none;
+    gap: 2rem;
+    z-index: 50;
+  }
+
+  .mix-header--en .mix-mega {
+    direction: ltr;
+  }
+
+  .mix-header--fa .mix-mega {
+    direction: rtl;
+  }
+
+  html[data-theme='dark'] .mix-mega {
+    background: #10141b;
+  }
+
+  .mix-header__item.is-open > .mix-mega {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) minmax(160px, 1fr);
+  }
+
+  .mix-mega__col--single {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mix-mega__root {
+    display: block;
+    padding-block: 0.4rem;
+    padding-inline-end: 0.75rem;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .mix-mega__root.is-active {
+    color: var(--brand, #0fa99c);
+    font-weight: 700;
+  }
+
+  .mix-mega__root.is-active::before {
+    content: '';
+    position: absolute;
+    inset-inline-end: 0;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    width: 3px;
+    border-radius: 999px;
+    background: var(--brand, #0fa99c);
+  }
+
+  .mix-mega__subs {
+    display: none;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .mix-mega__subs.is-active {
+    display: flex;
+  }
+
+  .mix-mega__sub {
+    text-decoration: none;
+    color: inherit;
+    padding-block: 0.25rem;
+  }
+
+  .mix-mega__sub:hover,
+  .mix-mega__sub:focus-visible {
+    color: var(--brand, #0fa99c);
+  }
+
+  /* دراپ‌داون شبکه‌های اجتماعی و زبان */
+
+  .mix-dropdown {
+    position: absolute;
+    top: 100%;
+    margin-top: 0.8rem;
+    inset-inline-start: 0;
+    min-width: 180px;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    background: var(--card, #fff);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
+    display: none;
+    z-index: 60;
+  }
+
+  .mix-header--en .mix-dropdown {
+    direction: ltr;
+  }
+
+  .mix-header--fa .mix-dropdown {
+    direction: rtl;
+  }
+
+  html[data-theme='dark'] .mix-dropdown {
+    background: #10141b;
+  }
+
+  .mix-header__item.is-open > .mix-dropdown {
+    display: block;
+  }
+
+  .mix-dropdown--social ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .mix-dropdown--social a {
+    text-decoration: none;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .mix-dropdown__label {
+    font-size: 0.9rem;
+  }
+
+  .mix-dropdown__lang {
+    text-decoration: none;
+    color: inherit;
+    font-size: 0.9rem;
+  }
+
+  .mix-dropdown__lang:hover,
+  .mix-dropdown__lang:focus-visible {
+    color: var(--brand, #0fa99c);
+  }
+
+  @media (max-width: 1120px) {
+    .mix-header__inner {
+      padding-inline: 1.25rem;
+      gap: 1.5rem;
+    }
+
+    .mix-header__nav {
+      gap: 1.1rem;
+      font-size: 0.9rem;
+    }
+
+    .mix-header__logo {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  @media (max-width: 880px) {
+    /* این پروژه فعلاً روی دسکتاپ است؛ برای موبایل بعداً می‌سازیم منوی همبرگری */
+    .mix-header__inner {
+      padding-inline: 1rem;
+    }
+  }
+</style>
