@@ -2,24 +2,17 @@
 // src/components/Header.astro
 
 import { categories } from '../data/categories';
-import * as socialModule from '../data/social';
-
-const socialItems =
-  Array.isArray((socialModule as any).social)
-    ? (socialModule as any).social
-    : Array.isArray((socialModule as any).default)
-      ? (socialModule as any).default
-      : [];
+import { social as socialItems } from '../data/social';
 
 const { lang = 'fa' } = Astro.props as { lang?: 'fa' | 'en' };
-
 const isFa = lang === 'fa';
 const otherLang = isFa ? 'en' : 'fa';
 
 const root = `/${lang}`;
-const catalogHref = lang === 'fa'
-  ? '/docs/catalog-fa.pdf'
-  : '/docs/catalog-en.pdf';
+const catalogHref =
+  lang === 'fa'
+    ? '/docs/catalog-fa.pdf'
+    : '/docs/catalog-en.pdf';
 
 const aboutHref = `${root}/about/`;
 const dealersHref = `${root}/dealers/`;
@@ -91,7 +84,7 @@ const afterSalesPages = isFa
   <div class="mix-header__inner">
     {isFa ? (
       <>
-        {/* FA – راست لوگو */}
+        {/* راست لوگو – فارسی */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -137,9 +130,13 @@ const afterSalesPages = isFa
             </div>
           </div>
 
+          <div class="mix-header__divider"></div>
+
           <a class="mix-header__link" href={dealersHref}>
             {t.dealers}
           </a>
+
+          <div class="mix-header__divider"></div>
 
           <div class="mix-header__item mix-header__item--has-mega" data-menu="after-sales">
             <button class="mix-header__link" type="button" data-trigger>
@@ -160,18 +157,18 @@ const afterSalesPages = isFa
         {/* لوگو وسط */}
         <a href={root + '/'} class="mix-header__logo">
           <img
-            src="/logos/logo.svg"
+            src="/logos/logo-dark.svg"
             alt="MixPlus"
             class="mix-header__logo-img mix-header__logo-img--light"
           />
           <img
-            src="/logos/logo-dark.svg"
+            src="/logos/logo.svg"
             alt="MixPlus"
             class="mix-header__logo-img mix-header__logo-img--dark"
           />
         </a>
 
-        {/* FA – چپ لوگو */}
+        {/* چپ لوگو – فارسی */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="جستجو">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -193,7 +190,7 @@ const afterSalesPages = isFa
               <ul>
                 {socialItems.map((item: any) => (
                   <li>
-                    <a href={item.href} target="_blank" rel="noopener" aria-label={item.label}>
+                    <a href={item.href} target="_blank" rel="noopener noreferrer">
                       <span class="mix-dropdown__label">{item.label}</span>
                     </a>
                   </li>
@@ -247,7 +244,7 @@ const afterSalesPages = isFa
       </>
     ) : (
       <>
-        {/* EN – left */}
+        {/* چپ لوگو – انگلیسی */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -293,9 +290,13 @@ const afterSalesPages = isFa
             </div>
           </div>
 
+          <div class="mix-header__divider"></div>
+
           <a class="mix-header__link" href={dealersHref}>
             {t.dealers}
           </a>
+
+          <div class="mix-header__divider"></div>
 
           <div class="mix-header__item mix-header__item--has-mega" data-menu="after-sales">
             <button class="mix-header__link" type="button" data-trigger>
@@ -312,26 +313,28 @@ const afterSalesPages = isFa
             </div>
           </div>
 
+          <div class="mix-header__divider"></div>
+
           <a class="mix-header__link" href={aboutHref}>
             {t.about}
           </a>
         </nav>
 
-        {/* logo center */}
+        {/* لوگو وسط – انگلیسی */}
         <a href={root + '/'} class="mix-header__logo">
           <img
-            src="/logos/logo.svg"
+            src="/logos/logo-dark.svg"
             alt="MixPlus"
             class="mix-header__logo-img mix-header__logo-img--light"
           />
           <img
-            src="/logos/logo-dark.svg"
+            src="/logos/logo.svg"
             alt="MixPlus"
             class="mix-header__logo-img mix-header__logo-img--dark"
           />
         </a>
 
-        {/* EN – right */}
+        {/* راست لوگو – انگلیسی */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="Search">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -353,7 +356,7 @@ const afterSalesPages = isFa
               <ul>
                 {socialItems.map((item: any) => (
                   <li>
-                    <a href={item.href} target="_blank" rel="noopener" aria-label={item.label}>
+                    <a href={item.href} target="_blank" rel="noopener noreferrer">
                       <span class="mix-dropdown__label">{item.label}</span>
                     </a>
                   </li>
@@ -408,9 +411,11 @@ const afterSalesPages = isFa
 
   function setupHoverMenus() {
     const menuGroups = document.querySelectorAll('[data-menu]');
+
     menuGroups.forEach((group) => {
       let openTimer = null;
       let closeTimer = null;
+
       const trigger = group.querySelector('[data-trigger]');
       const panel = group.querySelector('[data-panel]');
 
@@ -441,24 +446,16 @@ const afterSalesPages = isFa
       });
     });
 
-    // مگا منوی محصولات
+    // مگامنو محصولات
     const roots = document.querySelectorAll('.mix-mega__root');
     const subsContainers = document.querySelectorAll('.mix-mega__subs');
 
     function showSubs(slug) {
       subsContainers.forEach((el) => {
-        if (el.getAttribute('data-subs-for') === slug) {
-          el.classList.add('is-active');
-        } else {
-          el.classList.remove('is-active');
-        }
+        el.classList.toggle('is-active', el.getAttribute('data-subs-for') === slug);
       });
       roots.forEach((el) => {
-        if (el.getAttribute('data-cat') === slug) {
-          el.classList.add('is-active');
-        } else {
-          el.classList.remove('is-active');
-        }
+        el.classList.toggle('is-active', el.getAttribute('data-cat') === slug);
       });
     }
 
@@ -471,24 +468,19 @@ const afterSalesPages = isFa
           const slug = root.getAttribute('data-cat');
           if (slug) showSubs(slug);
         });
-        root.addEventListener('focus', () => {
-          const slug = root.getAttribute('data-cat');
-          if (slug) showSubs(slug);
-        });
       });
     }
 
-    // تم لایت / دارک – روی کل سایت
+    // تم – روی کل سایت (html)
     const THEME_KEY = 'mix_theme';
     const rootEl = document.documentElement;
-    const body = document.body;
     const themeToggle = document.querySelector('[data-theme-toggle]');
 
     const applyTheme = (theme) => {
       const t = theme === 'dark' ? 'dark' : 'light';
       rootEl.dataset.theme = t;
-      body.classList.toggle('theme-dark', t === 'dark');
-      body.classList.toggle('theme-light', t === 'light');
+      rootEl.classList.toggle('theme-dark', t === 'dark');
+      rootEl.classList.toggle('theme-light', t === 'light');
     };
 
     const saved = localStorage.getItem(THEME_KEY);
@@ -507,7 +499,7 @@ const afterSalesPages = isFa
       });
     }
 
-    // شفافیت هدر در اسکرول
+    // شفافیت هدر هنگام اسکرول
     const header = document.querySelector('.mix-header');
     if (header) {
       const onScroll = () => {
@@ -532,23 +524,19 @@ const afterSalesPages = isFa
     position: sticky;
     top: 0;
     z-index: 40;
-    backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(14px);
+    background: transparent; /* کاملاً شفاف روی هیرو */
     border-bottom: 1px solid transparent;
     transition: background 160ms ease, border-color 160ms ease;
   }
 
-  html[data-theme='dark'] .mix-header {
-    background: rgba(10, 12, 16, 0.55);
-  }
-
   .mix-header--scrolled {
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.9);
     border-bottom-color: rgba(0, 0, 0, 0.08);
   }
 
   html[data-theme='dark'] .mix-header--scrolled {
-    background: rgba(10, 12, 16, 0.88);
+    background: rgba(10, 12, 16, 0.9);
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
@@ -577,7 +565,7 @@ const afterSalesPages = isFa
   .mix-header__nav {
     display: inline-flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 0.9rem;
     white-space: nowrap;
   }
 
@@ -589,7 +577,7 @@ const afterSalesPages = isFa
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding-inline: 3.6rem;
+    padding-inline: 4.2rem; /* فاصله‌ی بیشتر دو طرف لوگو */
   }
 
   .mix-header__logo-img {
@@ -597,6 +585,7 @@ const afterSalesPages = isFa
     display: block;
   }
 
+  /* جا‌به‌جایی لوگوی دارک/لایت */
   .mix-header__logo-img--dark {
     display: none;
   }
@@ -624,6 +613,7 @@ const afterSalesPages = isFa
     position: relative;
   }
 
+  html.theme-dark .mix-header__link,
   html[data-theme='dark'] .mix-header__link {
     color: #f7f7f8;
   }
@@ -643,8 +633,9 @@ const afterSalesPages = isFa
     background: rgba(0, 0, 0, 0.16);
   }
 
+  html.theme-dark .mix-header__divider,
   html[data-theme='dark'] .mix-header__divider {
-    background: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.18);
   }
 
   .mix-header__icon-btn {
@@ -692,6 +683,7 @@ const afterSalesPages = isFa
     line-height: 1;
   }
 
+  html.theme-dark .mix-icon--theme::before,
   html[data-theme='dark'] .mix-icon--theme::before {
     content: '☀';
   }
@@ -706,6 +698,7 @@ const afterSalesPages = isFa
     top: 100%;
     margin-top: 0.9rem;
     min-width: 420px;
+    max-width: min(520px, 90vw);
     border-radius: 14px;
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
     padding: 1.25rem 1.5rem;
@@ -716,6 +709,7 @@ const afterSalesPages = isFa
     color: #111111;
   }
 
+  html.theme-dark .mix-mega,
   html[data-theme='dark'] .mix-mega {
     background: #10141b;
     color: #f7f7f8;
@@ -812,6 +806,7 @@ const afterSalesPages = isFa
     color: #111;
   }
 
+  html.theme-dark .mix-dropdown,
   html[data-theme='dark'] .mix-dropdown {
     background: #10141b;
     color: #f7f7f8;
@@ -823,6 +818,16 @@ const afterSalesPages = isFa
 
   .mix-header--fa .mix-dropdown {
     direction: rtl;
+  }
+
+  .mix-header--en .mix-header__item--has-dropdown > .mix-dropdown {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+
+  .mix-header--fa .mix-header__item--has-dropdown > .mix-dropdown {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
   }
 
   .mix-header__item.is-open > .mix-dropdown {
@@ -843,7 +848,6 @@ const afterSalesPages = isFa
     color: inherit;
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
   }
 
   .mix-dropdown__label {
@@ -868,12 +872,12 @@ const afterSalesPages = isFa
     }
 
     .mix-header__nav {
-      gap: 1rem;
+      gap: 0.8rem;
       font-size: 0.9rem;
     }
 
     .mix-header__logo {
-      padding-inline: 2.6rem;
+      padding-inline: 3.2rem;
     }
   }
 
