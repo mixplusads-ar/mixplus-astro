@@ -2,10 +2,17 @@
 // src/components/Header.astro
 
 import { categories } from '../data/categories';
-import { social } from '../data/social';
+// social را به صورت ماژول کامل می‌گیریم که همه حالت‌های export را پوشش بدهیم
+import * as socialModule from '../data/social';
 
-// انتظار داریم صفحه‌ای که هدر را صدا می‌زند، prop زبان را بدهد
-// مثل: <Header lang="fa" /> یا <Header lang="en" />
+// همیشه یک آرایه امن از لینک‌های سوشیال بساز
+const socialItems =
+  Array.isArray((socialModule as any).social)
+    ? (socialModule as any).social
+    : Array.isArray((socialModule as any).default)
+      ? (socialModule as any).default
+      : [];
+
 const { lang = 'fa' } = Astro.props as { lang?: 'fa' | 'en' };
 
 const isFa = lang === 'fa';
@@ -44,7 +51,7 @@ const t = isFa
       socialMenuLabel: '#',
     };
 
-// ساخت مسیر صفحه خدمات پس از فروش
+// صفحات خدمات پس از فروش
 const afterSalesPages = isFa
   ? [
       {
@@ -88,7 +95,7 @@ const afterSalesPages = isFa
   <div class="mix-header__inner">
     {isFa ? (
       <>
-        {/* گروه سمت راست در زبان فارسی: محصولات | نمایندگی‌ها | خدمات پس از فروش */}
+        {/* FA – سمت راست لوگو: محصولات | نمایندگی‌ها | خدمات پس از فروش */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -98,11 +105,7 @@ const afterSalesPages = isFa
               <div class="mix-mega__col mix-mega__col--roots">
                 {categories.map((cat) => (
                   <a
-                    href={
-                      cat.slug === 'oven'
-                        ? `${productsRoot}${cat.slug}/`
-                        : `${productsRoot}${cat.slug}/`
-                    }
+                    href={`${productsRoot}${cat.slug}/`}
                     class="mix-mega__root"
                     data-cat={cat.slug}
                   >
@@ -113,10 +116,7 @@ const afterSalesPages = isFa
               <div class="mix-mega__col mix-mega__col--subs" data-subs-container>
                 {categories.map((cat) =>
                   cat.subs ? (
-                    <div
-                      class="mix-mega__subs"
-                      data-subs-for={cat.slug}
-                    >
+                    <div class="mix-mega__subs" data-subs-for={cat.slug}>
                       {cat.subs.map((sub) => (
                         <a
                           href={`${productsRoot}${cat.slug}/${sub.slug}/`}
@@ -127,10 +127,7 @@ const afterSalesPages = isFa
                       ))}
                     </div>
                   ) : (
-                    <div
-                      class="mix-mega__subs"
-                      data-subs-for={cat.slug}
-                    >
+                    <div class="mix-mega__subs" data-subs-for={cat.slug}>
                       <a
                         href={`${productsRoot}${cat.slug}/`}
                         class="mix-mega__sub mix-mega__sub--single"
@@ -178,7 +175,7 @@ const afterSalesPages = isFa
           />
         </a>
 
-        {/* گروه سمت چپ در فارسی: سرچ | # | درباره ما | دانلود کاتالوگ | زبان | تم */}
+        {/* FA – سمت چپ لوگو: سرچ | # | درباره ما | کاتالوگ | زبان | تم */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="جستجو">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -198,7 +195,7 @@ const afterSalesPages = isFa
             </button>
             <div class="mix-dropdown mix-dropdown--social" data-panel>
               <ul>
-                {social.map((item) => (
+                {socialItems.map((item: any) => (
                   <li>
                     <a href={item.href} target="_blank" rel="noopener" aria-label={item.label}>
                       <span class="mix-dropdown__label">{item.label}</span>
@@ -254,7 +251,7 @@ const afterSalesPages = isFa
       </>
     ) : (
       <>
-        {/* EN: left side – Products | Dealers | After-Sales | About-Us */}
+        {/* EN – left: Products | Dealers | After-Sales | About-Us */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -264,11 +261,7 @@ const afterSalesPages = isFa
               <div class="mix-mega__col mix-mega__col--roots">
                 {categories.map((cat) => (
                   <a
-                    href={
-                      cat.slug === 'oven'
-                        ? `${productsRoot}${cat.slug}/`
-                        : `${productsRoot}${cat.slug}/`
-                    }
+                    href={`${productsRoot}${cat.slug}/`}
                     class="mix-mega__root"
                     data-cat={cat.slug}
                   >
@@ -279,10 +272,7 @@ const afterSalesPages = isFa
               <div class="mix-mega__col mix-mega__col--subs" data-subs-container>
                 {categories.map((cat) =>
                   cat.subs ? (
-                    <div
-                      class="mix-mega__subs"
-                      data-subs-for={cat.slug}
-                    >
+                    <div class="mix-mega__subs" data-subs-for={cat.slug}>
                       {cat.subs.map((sub) => (
                         <a
                           href={`${productsRoot}${cat.slug}/${sub.slug}/`}
@@ -293,10 +283,7 @@ const afterSalesPages = isFa
                       ))}
                     </div>
                   ) : (
-                    <div
-                      class="mix-mega__subs"
-                      data-subs-for={cat.slug}
-                    >
+                    <div class="mix-mega__subs" data-subs-for={cat.slug}>
                       <a
                         href={`${productsRoot}${cat.slug}/`}
                         class="mix-mega__sub mix-mega__sub--single"
@@ -348,7 +335,7 @@ const afterSalesPages = isFa
           />
         </a>
 
-        {/* EN right side – search | # | Download | English ▼ | theme */}
+        {/* EN – right: search | # | Download | English ▼ | theme */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="Search">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -368,7 +355,7 @@ const afterSalesPages = isFa
             </button>
             <div class="mix-dropdown mix-dropdown--social" data-panel>
               <ul>
-                {social.map((item) => (
+                {socialItems.map((item: any) => (
                   <li>
                     <a href={item.href} target="_blank" rel="noopener" aria-label={item.label}>
                       <span class="mix-dropdown__label">{item.label}</span>
@@ -421,7 +408,6 @@ const afterSalesPages = isFa
 </header>
 
 <script>
-  // --- hover-intent ساده برای مگامنو و دراپ‌داون‌ها ---
   const HOVER_DELAY = 220;
 
   function setupHoverMenus() {
@@ -459,7 +445,7 @@ const afterSalesPages = isFa
       });
     });
 
-    // منطق سوییچ ساب‌کتگوری‌ها داخل مگامنو محصولات
+    // فعال‌سازی ساب‌کتگوری‌های مگامنو محصولات
     const roots = document.querySelectorAll('.mix-mega__root');
     const subsContainers = document.querySelectorAll('.mix-mega__subs');
 
@@ -513,7 +499,6 @@ const afterSalesPages = isFa
       });
     }
 
-    // اسکرول: افزودن کلاس برای تغییر شفافیت هدر
     const header = document.querySelector('.mix-header');
     if (header) {
       const onScroll = () => {
@@ -700,8 +685,6 @@ const afterSalesPages = isFa
     content: '☀';
   }
 
-  /* مگا منوها */
-
   .mix-header__item--has-mega {
     position: relative;
   }
@@ -792,8 +775,6 @@ const afterSalesPages = isFa
     color: var(--brand, #0fa99c);
   }
 
-  /* دراپ‌داون شبکه‌های اجتماعی و زبان */
-
   .mix-dropdown {
     position: absolute;
     top: 100%;
@@ -873,7 +854,6 @@ const afterSalesPages = isFa
   }
 
   @media (max-width: 880px) {
-    /* این پروژه فعلاً روی دسکتاپ است؛ برای موبایل بعداً می‌سازیم منوی همبرگری */
     .mix-header__inner {
       padding-inline: 1rem;
     }
