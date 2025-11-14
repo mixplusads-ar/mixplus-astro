@@ -2,10 +2,8 @@
 // src/components/Header.astro
 
 import { categories } from '../data/categories';
-// social را به صورت ماژول کامل می‌گیریم که همه حالت‌های export را پوشش بدهیم
 import * as socialModule from '../data/social';
 
-// همیشه یک آرایه امن از لینک‌های سوشیال بساز
 const socialItems =
   Array.isArray((socialModule as any).social)
     ? (socialModule as any).social
@@ -28,7 +26,6 @@ const dealersHref = `${root}/dealers/`;
 const productsRoot = `${root}/products/`;
 const afterSalesRoot = `${root}/after-sales/`;
 
-// متن‌ها
 const t = isFa
   ? {
       products: 'محصولات',
@@ -51,7 +48,6 @@ const t = isFa
       socialMenuLabel: '#',
     };
 
-// صفحات خدمات پس از فروش
 const afterSalesPages = isFa
   ? [
       {
@@ -95,7 +91,7 @@ const afterSalesPages = isFa
   <div class="mix-header__inner">
     {isFa ? (
       <>
-        {/* FA – سمت راست لوگو: محصولات | نمایندگی‌ها | خدمات پس از فروش */}
+        {/* FA – راست لوگو */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -175,7 +171,7 @@ const afterSalesPages = isFa
           />
         </a>
 
-        {/* FA – سمت چپ لوگو: سرچ | # | درباره ما | کاتالوگ | زبان | تم */}
+        {/* FA – چپ لوگو */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="جستجو">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -251,7 +247,7 @@ const afterSalesPages = isFa
       </>
     ) : (
       <>
-        {/* EN – left: Products | Dealers | After-Sales | About-Us */}
+        {/* EN – left */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -335,7 +331,7 @@ const afterSalesPages = isFa
           />
         </a>
 
-        {/* EN – right: search | # | Download | English ▼ | theme */}
+        {/* EN – right */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="Search">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -445,7 +441,7 @@ const afterSalesPages = isFa
       });
     });
 
-    // فعال‌سازی ساب‌کتگوری‌های مگامنو محصولات
+    // مگا منوی محصولات
     const roots = document.querySelectorAll('.mix-mega__root');
     const subsContainers = document.querySelectorAll('.mix-mega__subs');
 
@@ -482,23 +478,36 @@ const afterSalesPages = isFa
       });
     }
 
-    // تم لایت/دارک
+    // تم لایت / دارک – روی کل سایت
     const THEME_KEY = 'mix_theme';
+    const rootEl = document.documentElement;
+    const body = document.body;
     const themeToggle = document.querySelector('[data-theme-toggle]');
+
+    const applyTheme = (theme) => {
+      const t = theme === 'dark' ? 'dark' : 'light';
+      rootEl.dataset.theme = t;
+      body.classList.toggle('theme-dark', t === 'dark');
+      body.classList.toggle('theme-light', t === 'light');
+    };
+
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === 'dark' || saved === 'light') {
+      applyTheme(saved);
+    } else {
+      applyTheme('light');
+    }
+
     if (themeToggle) {
-      const root = document.documentElement;
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === 'dark' || saved === 'light') {
-        root.dataset.theme = saved;
-      }
       themeToggle.addEventListener('click', () => {
-        const current = root.dataset.theme === 'dark' ? 'dark' : 'light';
+        const current = rootEl.dataset.theme === 'dark' ? 'dark' : 'light';
         const next = current === 'dark' ? 'light' : 'dark';
-        root.dataset.theme = next;
+        applyTheme(next);
         localStorage.setItem(THEME_KEY, next);
       });
     }
 
+    // شفافیت هدر در اسکرول
     const header = document.querySelector('.mix-header');
     if (header) {
       const onScroll = () => {
@@ -523,23 +532,24 @@ const afterSalesPages = isFa
     position: sticky;
     top: 0;
     z-index: 40;
-    backdrop-filter: blur(10px);
-    background: rgba(15, 15, 20, 0.4);
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.55);
     border-bottom: 1px solid transparent;
     transition: background 160ms ease, border-color 160ms ease;
   }
 
-  .mix-header--scrolled {
-    background: var(--card, rgba(245, 245, 245, 0.96));
-    border-bottom-color: var(--stroke, rgba(0, 0, 0, 0.08));
+  html[data-theme='dark'] .mix-header {
+    background: rgba(10, 12, 16, 0.55);
   }
 
-  html[data-theme='dark'] .mix-header {
-    background: rgba(10, 12, 16, 0.65);
+  .mix-header--scrolled {
+    background: rgba(255, 255, 255, 0.88);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
   }
 
   html[data-theme='dark'] .mix-header--scrolled {
-    background: rgba(10, 12, 16, 0.98);
+    background: rgba(10, 12, 16, 0.88);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
   .mix-header__inner {
@@ -567,7 +577,7 @@ const afterSalesPages = isFa
   .mix-header__nav {
     display: inline-flex;
     align-items: center;
-    gap: 1.75rem;
+    gap: 1.25rem;
     white-space: nowrap;
   }
 
@@ -579,7 +589,7 @@ const afterSalesPages = isFa
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding-inline: 2.5rem;
+    padding-inline: 3.6rem;
   }
 
   .mix-header__logo-img {
@@ -605,7 +615,7 @@ const afterSalesPages = isFa
     padding: 0;
     margin: 0;
     font: inherit;
-    color: var(--fg, #111);
+    color: #111;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -620,7 +630,7 @@ const afterSalesPages = isFa
 
   .mix-header__link:hover,
   .mix-header__link:focus-visible {
-    color: var(--brand, #0fa99c);
+    color: #0fa99c;
   }
 
   .mix-header__link--hash {
@@ -646,6 +656,7 @@ const afterSalesPages = isFa
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    color: inherit;
   }
 
   .mix-icon {
@@ -685,23 +696,29 @@ const afterSalesPages = isFa
     content: '☀';
   }
 
-  .mix-header__item--has-mega {
+  .mix-header__item--has-mega,
+  .mix-header__item--has-dropdown {
     position: relative;
   }
 
   .mix-mega {
     position: absolute;
-    inset-inline-start: 0;
     top: 100%;
     margin-top: 0.9rem;
     min-width: 420px;
-    background: var(--card, #fff);
     border-radius: 14px;
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
     padding: 1.25rem 1.5rem;
     display: none;
     gap: 2rem;
     z-index: 50;
+    background: #ffffff;
+    color: #111111;
+  }
+
+  html[data-theme='dark'] .mix-mega {
+    background: #10141b;
+    color: #f7f7f8;
   }
 
   .mix-header--en .mix-mega {
@@ -712,8 +729,14 @@ const afterSalesPages = isFa
     direction: rtl;
   }
 
-  html[data-theme='dark'] .mix-mega {
-    background: #10141b;
+  .mix-header--en .mix-header__item--has-mega > .mix-mega {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+
+  .mix-header--fa .mix-header__item--has-mega > .mix-mega {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
   }
 
   .mix-header__item.is-open > .mix-mega {
@@ -739,7 +762,7 @@ const afterSalesPages = isFa
   }
 
   .mix-mega__root.is-active {
-    color: var(--brand, #0fa99c);
+    color: #0fa99c;
     font-weight: 700;
   }
 
@@ -751,7 +774,7 @@ const afterSalesPages = isFa
     bottom: 0.3rem;
     width: 3px;
     border-radius: 999px;
-    background: var(--brand, #0fa99c);
+    background: #0fa99c;
   }
 
   .mix-mega__subs {
@@ -772,21 +795,26 @@ const afterSalesPages = isFa
 
   .mix-mega__sub:hover,
   .mix-mega__sub:focus-visible {
-    color: var(--brand, #0fa99c);
+    color: #0fa99c;
   }
 
   .mix-dropdown {
     position: absolute;
     top: 100%;
     margin-top: 0.8rem;
-    inset-inline-start: 0;
     min-width: 180px;
     padding: 0.75rem 1rem;
     border-radius: 14px;
-    background: var(--card, #fff);
+    background: #ffffff;
     box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
     display: none;
     z-index: 60;
+    color: #111;
+  }
+
+  html[data-theme='dark'] .mix-dropdown {
+    background: #10141b;
+    color: #f7f7f8;
   }
 
   .mix-header--en .mix-dropdown {
@@ -795,10 +823,6 @@ const afterSalesPages = isFa
 
   .mix-header--fa .mix-dropdown {
     direction: rtl;
-  }
-
-  html[data-theme='dark'] .mix-dropdown {
-    background: #10141b;
   }
 
   .mix-header__item.is-open > .mix-dropdown {
@@ -834,28 +858,28 @@ const afterSalesPages = isFa
 
   .mix-dropdown__lang:hover,
   .mix-dropdown__lang:focus-visible {
-    color: var(--brand, #0fa99c);
+    color: #0fa99c;
   }
 
   @media (max-width: 1120px) {
     .mix-header__inner {
-      padding-inline: 1.25rem;
-      gap: 1.5rem;
+      padding-inline: 1.6rem;
+      gap: 1.8rem;
     }
 
     .mix-header__nav {
-      gap: 1.1rem;
+      gap: 1rem;
       font-size: 0.9rem;
     }
 
     .mix-header__logo {
-      padding-inline: 1.5rem;
+      padding-inline: 2.6rem;
     }
   }
 
   @media (max-width: 880px) {
     .mix-header__inner {
-      padding-inline: 1rem;
+      padding-inline: 1.2rem;
     }
   }
 </style>
