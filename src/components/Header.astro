@@ -2,7 +2,15 @@
 // src/components/Header.astro
 
 import { categories } from '../data/categories';
-import { social as socialItems } from '../data/social';
+import * as socialModule from '../data/social';
+
+// همیشه یک آرایه امن از سوشیال‌ها بساز
+const socialItems =
+  Array.isArray((socialModule as any).social)
+    ? (socialModule as any).social
+    : Array.isArray((socialModule as any).default)
+      ? (socialModule as any).default
+      : [];
 
 const { lang = 'fa' } = Astro.props as { lang?: 'fa' | 'en' };
 const isFa = lang === 'fa';
@@ -84,7 +92,7 @@ const afterSalesPages = isFa
   <div class="mix-header__inner">
     {isFa ? (
       <>
-        {/* راست لوگو – فارسی */}
+        {/* راست لوگو – فارسی: محصولات | | نمایندگی‌ها | | خدمات پس از فروش */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -156,6 +164,7 @@ const afterSalesPages = isFa
 
         {/* لوگو وسط */}
         <a href={root + '/'} class="mix-header__logo">
+          {/* در لایت از لوگوی تیره، در دارک از روشن استفاده کن */}
           <img
             src="/logos/logo-dark.svg"
             alt="MixPlus"
@@ -168,7 +177,7 @@ const afterSalesPages = isFa
           />
         </a>
 
-        {/* چپ لوگو – فارسی */}
+        {/* چپ لوگو – فارسی: سرچ | # | درباره ما | کاتالوگ | زبان | تم */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="جستجو">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -244,7 +253,7 @@ const afterSalesPages = isFa
       </>
     ) : (
       <>
-        {/* چپ لوگو – انگلیسی */}
+        {/* EN – left: Products | Dealers | After-Sales | About-Us */}
         <nav class="mix-header__nav mix-header__nav--primary">
           <div class="mix-header__item mix-header__item--has-mega" data-menu="products">
             <button class="mix-header__link" type="button" data-trigger>
@@ -334,7 +343,7 @@ const afterSalesPages = isFa
           />
         </a>
 
-        {/* راست لوگو – انگلیسی */}
+        {/* راست لوگو – انگلیسی: Search | # | Catalog | Lang | Theme */}
         <nav class="mix-header__nav mix-header__nav--secondary">
           <button class="mix-header__icon-btn" type="button" aria-label="Search">
             <span class="mix-icon mix-icon--search" aria-hidden="true"></span>
@@ -471,14 +480,16 @@ const afterSalesPages = isFa
       });
     }
 
-    // تم – روی کل سایت (html)
+    // تم – روی کل سایت (html و body)
     const THEME_KEY = 'mix_theme';
     const rootEl = document.documentElement;
+    const body = document.body;
     const themeToggle = document.querySelector('[data-theme-toggle]');
 
     const applyTheme = (theme) => {
       const t = theme === 'dark' ? 'dark' : 'light';
       rootEl.dataset.theme = t;
+      body.dataset.theme = t;
       rootEl.classList.toggle('theme-dark', t === 'dark');
       rootEl.classList.toggle('theme-light', t === 'light');
     };
@@ -525,7 +536,7 @@ const afterSalesPages = isFa
     top: 0;
     z-index: 40;
     backdrop-filter: blur(14px);
-    background: transparent; /* کاملاً شفاف روی هیرو */
+    background: transparent; /* روی هیرو کاملاً شفاف */
     border-bottom: 1px solid transparent;
     transition: background 160ms ease, border-color 160ms ease;
   }
@@ -585,7 +596,6 @@ const afterSalesPages = isFa
     display: block;
   }
 
-  /* جا‌به‌جایی لوگوی دارک/لایت */
   .mix-header__logo-img--dark {
     display: none;
   }
@@ -647,7 +657,7 @@ const afterSalesPages = isFa
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: inherit;
+    color: inherit; /* آیکون‌ها هم مثل متن سفید/مشکی می‌شوند */
   }
 
   .mix-icon {
@@ -723,6 +733,7 @@ const afterSalesPages = isFa
     direction: rtl;
   }
 
+  /* محل باز شدن مگامنو – انگلیسی از چپ، فارسی از راست */
   .mix-header--en .mix-header__item--has-mega > .mix-mega {
     inset-inline-start: 0;
     inset-inline-end: auto;
@@ -820,6 +831,7 @@ const afterSalesPages = isFa
     direction: rtl;
   }
 
+  /* محل باز شدن دراپ‌داون سوشیال/زبان */
   .mix-header--en .mix-header__item--has-dropdown > .mix-dropdown {
     inset-inline-start: 0;
     inset-inline-end: auto;
