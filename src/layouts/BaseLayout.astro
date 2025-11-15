@@ -1,36 +1,25 @@
 ---
-import '../styles/globals.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { site } from '../data/site.ts';
-
-const { lang='fa', title, description } = Astro.props;
-const t = site[lang];
+const { title = "MixPlus", description = "" } = Astro.props;
 ---
-<html lang={lang} dir={lang==='fa'?'rtl':'ltr'} class={`lang-${lang} is-light`}>
+
+<html lang={Astro.url.pathname.startsWith("/en") ? "en" : "fa"} data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title || t.title}</title>
-    <meta name="description" content={description || t.description} />
-    <link rel="alternate" hrefLang="fa" href="/fa/" />
-    <link rel="alternate" hrefLang="en" href="/en/" />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/KALAMEH-REGULAR.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/Montserrat-Regular.woff2" crossorigin />
-    <meta property="og:title" content={t.title} />
-    <meta property="og:description" content={t.description} />
-    <meta property="og:image" content="/media/hero/images/hero-01.jpg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="/fonts/kalameh.css" />
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/styles/globals.css" />
   </head>
+
   <body>
-    <Header lang={lang} />
+    <slot name="header" />
     <main>
       <slot />
     </main>
-    <Footer />
-    <script>
-      // Add scrolled class
-      const onScroll = () => document.documentElement.classList.toggle('scrolled', window.scrollY>6);
-      onScroll(); window.addEventListener('scroll', onScroll);
-    </script>
   </body>
 </html>
