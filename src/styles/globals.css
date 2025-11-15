@@ -175,3 +175,26 @@ html[dir="ltr"] .pipe{margin:0 8px}
 
 /* ---------- Smooth scroll for in-page anchors ---------- */
 html{scroll-behavior:smooth}
+
+html[data-theme="light"] {
+  --bg: #f3f3f3;
+  --fg: #111111;
+  --card: #ffffff;
+  --stroke: rgba(0, 0, 0, 0.08);
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+html[data-theme="dark"] {
+  --bg: #05070a;
+  --fg: #f7f7f7;
+  --card: #0b0f16;
+  --stroke: rgba(255, 255, 255, 0.12);
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+}
